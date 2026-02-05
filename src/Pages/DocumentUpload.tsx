@@ -7,9 +7,18 @@ const DocumentUpload = () => {
 
   return (
     <div className="finance-page">
+      <div className="finance-top-bar">
+        <span>Document Management - Upload Portal</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#28a745' }}></span>
+            STATUS ACTIVE
+          </span>
+        </span>
+      </div>
       <div style={{ padding: '24px 20px', maxWidth: '800px', margin: '0 auto' }}>
         <div className="finance-header">
-          <h1 style={{ fontSize: '1.75rem', margin: 0, background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          <h1 style={{ fontSize: '1.75rem', margin: 0, color: '#343a40', fontWeight: 700 }}>
             Document Management
           </h1>
           <p className="subtitle">Upload documents and review submissions</p>
@@ -33,6 +42,9 @@ const DocumentUpload = () => {
           </div>
           {activeTab === 'upload' && <UploadDocument />}
           {activeTab === 'review' && <Review />}
+        </div>
+        <div className="finance-footer">
+          <span>Document Management Portal</span>
         </div>
       </div>
     </div>
@@ -70,7 +82,7 @@ const UploadDocument = () => {
 
   return (
     <div>
-      <h3 style={{ textAlign: 'center', marginBottom: '20px', color: '#475569', fontWeight: 600, fontSize: '1.1rem' }}>
+      <h3 style={{ textAlign: 'center', marginBottom: '20px', color: '#343a40', fontWeight: 600, fontSize: '1.1rem' }}>
         Upload Documents
       </h3>
       {documents.map((doc, index) => (
@@ -89,7 +101,7 @@ const UploadDocument = () => {
                 style={{ display: 'none' }}
               />
               {selectedFiles[doc] && (
-                <span style={{ fontSize: '0.875rem', color: '#64748b', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: '0.875rem', color: '#6c757d', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {selectedFiles[doc]!.name}
                 </span>
               )}
@@ -113,7 +125,7 @@ const UploadDocument = () => {
       ))}
       {activeView && (
         <div className="doc-viewer-panel">
-          <h4 style={{ textAlign: 'center', marginBottom: '20px', color: '#334155', fontWeight: 600 }}>
+          <h4 style={{ textAlign: 'center', marginBottom: '20px', color: '#343a40', fontWeight: 600 }}>
             Viewing {activeView}
           </h4>
           <iframe src={uploadedDocs[activeView]} width="100%" height="600px" title={`Document: ${activeView}`} />
@@ -136,8 +148,8 @@ const Review = () => {
           <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor" />
         </svg>
       </div>
-      <h3 style={{ color: '#475569', fontWeight: 600, marginBottom: '8px' }}>Review Section</h3>
-      <p style={{ color: '#64748b', margin: 0 }}>Review functionality will be implemented here.</p>
+      <h3 style={{ color: '#343a40', fontWeight: 600, marginBottom: '8px' }}>Review Section</h3>
+      <p style={{ color: '#6c757d', margin: 0 }}>Review functionality will be implemented here.</p>
     </div>
   );
 };

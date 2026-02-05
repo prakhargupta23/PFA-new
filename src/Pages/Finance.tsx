@@ -116,9 +116,18 @@ export default function Finance() {
 
   return (
     <Box className="finance-page">
+      <Box className="finance-top-bar">
+        <span>Finance Portal - Dashboard</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#28a745' }}></span>
+            STATUS ACTIVE
+          </span>
+        </span>
+      </Box>
       <Container maxWidth="lg" sx={{ py: 4, px: { xs: 2, sm: 3 } }}>
         <Box className="finance-header">
-          <Typography variant="h4" component="h1" sx={{ fontSize: { xs: "1.5rem", sm: "1.75rem", md: "2rem" } }}>
+          <Typography variant="h4" component="h1" sx={{ fontSize: { xs: "1.5rem", sm: "1.75rem", md: "2rem" }, color: '#343a40', fontWeight: 700 }}>
             Finance Portal Dashboard
           </Typography>
           <p className="subtitle">Multi-tab interface for messaging, AI history, and document management</p>
@@ -168,7 +177,7 @@ export default function Finance() {
                   flexShrink: 0,
                   px: 2
                 }}>
-                  <FormatQuoteIcon sx={{ mr: 1, color: "#0d9488" }} />
+                  <FormatQuoteIcon sx={{ mr: 1, color: "#007bff" }} />
                   <Typography variant="h6" component="h2" noWrap>
                     Message History
                   </Typography>
@@ -205,10 +214,10 @@ export default function Finance() {
                       <Box className="icon-wrap">
                         <FormatQuoteIcon sx={{ fontSize: 40 }} />
                       </Box>
-                      <Typography variant="body1" sx={{ fontWeight: 500, color: "#475569", mb: 0.5 }}>
+                      <Typography variant="body1" sx={{ fontWeight: 500, color: "#495057", mb: 0.5 }}>
                         No messages yet
                       </Typography>
-                      <Typography variant="body2" sx={{ color: "#94a3b8" }}>
+                      <Typography variant="body2" sx={{ color: "#6c757d" }}>
                         Start typing on the right to add your first message.
                       </Typography>
                     </Box>
@@ -235,10 +244,10 @@ export default function Finance() {
                               flexWrap: "wrap",
                               gap: 1
                             }}>
-                              <Typography variant="caption" color="text.secondary" noWrap>
+                              <Typography variant="caption" sx={{ color: "#6c757d" }} noWrap>
                                 Message #{message.id}
                               </Typography>
-                              <Typography variant="caption" color="text.secondary" noWrap>
+                              <Typography variant="caption" sx={{ color: "#6c757d" }} noWrap>
                                 {formatTime(message.timestamp)}
                               </Typography>
                             </Box>
@@ -290,7 +299,7 @@ export default function Finance() {
                   flexShrink: 0,
                   px: 2
                 }}>
-                  <HistoryIcon sx={{ mr: 1, color: "#0d9488" }} />
+                  <HistoryIcon sx={{ mr: 1, color: "#007bff" }} />
                   <Typography variant="h6" component="h2" noWrap>
                     AI Conversation History
                   </Typography>
@@ -314,13 +323,13 @@ export default function Finance() {
                   <Box className="icon-wrap">
                     <HistoryIcon sx={{ fontSize: 40 }} />
                   </Box>
-                  <Typography variant="h6" gutterBottom align="center" sx={{ color: "#475569", fontWeight: 600 }}>
+                  <Typography variant="h6" gutterBottom align="center" sx={{ color: "#343a40", fontWeight: 600 }}>
                     AI History Section
                   </Typography>
-                  <Typography variant="body2" align="center" sx={{ maxWidth: "85%", mb: 2, color: "#64748b" }}>
+                  <Typography variant="body2" align="center" sx={{ maxWidth: "85%", mb: 2, color: "#6c757d" }}>
                     This tab will display your previous AI conversations, queries, and analysis.
                   </Typography>
-                  <Typography variant="caption" align="center" sx={{ color: "#94a3b8" }}>
+                  <Typography variant="caption" align="center" sx={{ color: "#adb5bd" }}>
                     Configure AI integration to start seeing your history here.
                   </Typography>
                 </Box>
@@ -380,7 +389,7 @@ export default function Finance() {
                       mb: 2
                     }}
                   >
-                    <SendIcon sx={{ mr: 1, color: "#0d9488" }} />
+                    <SendIcon sx={{ mr: 1, color: "#007bff" }} />
                     Compose New Message
                   </Typography>
                   
@@ -404,8 +413,8 @@ export default function Finance() {
                           height: "100%",
                           alignItems: "flex-start",
                           borderRadius: 2,
-                          bgcolor: "#f8fafc",
-                          "&:hover": { bgcolor: "#f1f5f9" },
+                          bgcolor: "#f8f9fa",
+                          "&:hover": { bgcolor: "#e9ecef" },
                           "&.Mui-focused": { bgcolor: "#fff" },
                         },
                       }}
@@ -430,7 +439,7 @@ export default function Finance() {
                     borderTop: "1px solid",
                     borderColor: "divider"
                   }}>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{ color: "#6c757d" }}>
                       Character count: {inputText.length}/1000
                     </Typography>
                     
@@ -464,7 +473,7 @@ export default function Finance() {
                   flexShrink: 0,
                   px: 2
                 }}>
-                  <DescriptionIcon sx={{ mr: 1, color: "#0d9488" }} />
+                  <DescriptionIcon sx={{ mr: 1, color: "#007bff" }} />
                   <Typography variant="h6" component="h2" noWrap>
                     Document Viewer
                   </Typography>
@@ -488,13 +497,13 @@ export default function Finance() {
                   <Box className="icon-wrap">
                     <DescriptionIcon sx={{ fontSize: 40 }} />
                   </Box>
-                  <Typography variant="h6" gutterBottom align="center" sx={{ color: "#475569", fontWeight: 600 }}>
+                  <Typography variant="h6" gutterBottom align="center" sx={{ color: "#343a40", fontWeight: 600 }}>
                     Document View Section
                   </Typography>
-                  <Typography variant="body2" align="center" sx={{ maxWidth: "85%", mb: 2, color: "#64748b" }}>
+                  <Typography variant="body2" align="center" sx={{ maxWidth: "85%", mb: 2, color: "#6c757d" }}>
                     This tab will display uploaded documents, PDFs, or other financial reports for analysis.
                   </Typography>
-                  <Typography variant="caption" align="center" sx={{ color: "#94a3b8" }}>
+                  <Typography variant="caption" align="center" sx={{ color: "#adb5bd" }}>
                     Upload documents to view them here.
                   </Typography>
                 </Box>
@@ -506,9 +515,9 @@ export default function Finance() {
 
         {/* Footer Stats */}
         <Box className="finance-footer">
-          <Typography variant="caption" component="span">
+          <span>
             Total messages: {messages.length} · Last updated: {new Date().toLocaleTimeString()}
-          </Typography>
+          </span>
         </Box>
       </Container>
     </Box>

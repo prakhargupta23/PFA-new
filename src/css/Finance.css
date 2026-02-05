@@ -2,31 +2,39 @@
 
 .finance-page {
   min-height: 100vh;
-  background: linear-gradient(160deg, #f0f9ff 0%, #e0f2fe 35%, #f8fafc 70%, #f1f5f9 100%);
+  background: #ffffff;
   background-attachment: fixed;
 }
 
+.finance-top-bar {
+  background: #212529;
+  color: #ffffff;
+  padding: 0.75rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
 .finance-header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-  color: #f8fafc;
+  background: #ffffff;
+  color: #343a40;
   padding: 1.75rem 2rem;
-  border-radius: 16px;
+  border-radius: 0;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.15), 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-bottom: 2px solid #007bff;
 }
 
 .finance-header h1 {
   font-weight: 700;
   letter-spacing: -0.02em;
   margin: 0 0 0.25rem 0;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #343a40;
+  font-size: 1.75rem;
 }
 
 .finance-header .subtitle {
-  color: #94a3b8;
+  color: #6c757d;
   font-size: 0.95rem;
   margin: 0;
 }
@@ -50,11 +58,11 @@
 }
 
 .finance-tabs .Mui-selected {
-  color: #0d9488 !important;
+  color: #007bff !important;
 }
 
 .finance-tabs .MuiTabs-indicator {
-  background: linear-gradient(90deg, #0d9488, #14b8a6);
+  background: #007bff;
   height: 3px;
   border-radius: 3px 3px 0 0;
 }
@@ -78,19 +86,19 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: linear-gradient(180deg, #0d9488, #14b8a6);
+  background: #007bff;
   border-radius: 4px 0 0 4px;
 }
 
 .finance-empty-state {
-  color: #64748b;
+  color: #6c757d;
 }
 
 .finance-empty-state .icon-wrap {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+  background: #e7f3ff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,13 +106,18 @@
 }
 
 .finance-empty-state .icon-wrap svg {
-  color: #0d9488;
+  color: #007bff;
+  opacity: 0.9;
+}
+
+.finance-empty-state .icon-wrap svg {
+  color: #007bff;
   opacity: 0.9;
 }
 
 .finance-submit-btn {
-  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important;
-  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.35) !important;
+  background: #0056b3 !important;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.35) !important;
   font-weight: 600 !important;
   text-transform: none !important;
   letter-spacing: 0.02em !important;
@@ -112,61 +125,78 @@
 }
 
 .finance-submit-btn:hover {
-  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.4) !important;
+  background: #004085 !important;
+  box-shadow: 0 4px 16px rgba(0, 123, 255, 0.4) !important;
   transform: translateY(-1px);
 }
 
 .finance-submit-btn:disabled {
-  background: #cbd5e1 !important;
+  background: #adb5bd !important;
   box-shadow: none !important;
 }
 
 .finance-footer {
-  padding: 0.75rem 0;
-  color: #64748b;
+  background: #212529;
+  color: #ffffff;
+  padding: 0.75rem 2rem;
   font-size: 0.8rem;
-  border-top: 1px solid #e2e8f0;
-  margin-top: 0.5rem;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.finance-footer a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.finance-footer a:hover {
+  text-decoration: underline;
 }
 
 /* Chip badges */
 .finance-chip-messages {
-  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important;
+  background: #007bff !important;
   color: #fff !important;
   font-weight: 600 !important;
 }
 
 .finance-chip-coming {
-  background: linear-gradient(135deg, #64748b 0%, #475569 100%) !important;
-  color: #f1f5f9 !important;
+  background: #6c757d !important;
+  color: #fff !important;
   font-weight: 500 !important;
+}
+
+.finance-chip-status {
+  background: #28a745 !important;
+  color: #fff !important;
+  font-weight: 600 !important;
 }
 
 /* Document Upload page – shared theme */
 .doc-tab-btn {
   padding: 12px 24px;
   margin-right: 10px;
-  border: 2px solid #0d9488;
+  border: 2px solid #007bff;
   border-radius: 25px;
   cursor: pointer;
   font-weight: 600;
   transition: all 0.25s ease;
-  background: #f8fafc;
-  color: #475569;
+  background: #ffffff;
+  color: #6c757d;
   text-transform: none;
   letter-spacing: 0.02em;
 }
 
 .doc-tab-btn:hover {
-  background: #f0fdfa;
-  color: #0d9488;
+  background: #e7f3ff;
+  color: #007bff;
 }
 
 .doc-tab-btn.active {
-  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  background: #007bff;
   color: #fff;
-  border-color: #0d9488;
-  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.35);
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.35);
 }
 
 .doc-row {
@@ -189,7 +219,7 @@
 .doc-row-label {
   flex: 1;
   font-weight: 600;
-  color: #334155;
+  color: #343a40;
 }
 
 .doc-btn-primary {
@@ -200,18 +230,19 @@
   font-weight: 600;
   font-size: 0.875rem;
   transition: box-shadow 0.2s ease, transform 0.15s ease;
-  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  background: #0056b3;
   color: #fff;
-  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
 }
 
 .doc-btn-primary:hover:not(:disabled) {
-  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.4);
+  background: #004085;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
   transform: translateY(-1px);
 }
 
 .doc-btn-primary:disabled {
-  background: #cbd5e1;
+  background: #adb5bd;
   box-shadow: none;
   cursor: not-allowed;
 }
@@ -222,26 +253,26 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #e2e8f0;
+  background: #f8f9fa;
+  color: #495057;
+  border: 1px solid #dee2e6;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
 .doc-btn-close:hover {
-  background: #e2e8f0;
-  color: #334155;
+  background: #e9ecef;
+  color: #343a40;
 }
 
 .doc-viewer-panel {
   margin-top: 24px;
   padding: 24px;
-  background: #f8fafc;
+  background: #f8f9fa;
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #dee2e6;
 }
 
 .doc-viewer-panel iframe {
-  border: 1px solid #e2e8f0;
+  border: 1px solid #dee2e6;
   border-radius: 8px;
 }
