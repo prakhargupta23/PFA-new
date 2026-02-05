@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import bg2 from '../assets/bg2.jpg';
+import React, { useState, useRef } from 'react';
+import { uploadDocument } from '../services/document.service';
+import bg2 from '../assets/bg3.png';
 
 const DocumentUpload = () => {
   const [activeTab, setActiveTab] = useState('upload');
@@ -68,6 +69,26 @@ const DocumentUpload = () => {
 };
 
 const UploadDocument = () => {
+  const [selectedFiles, setSelectedFiles] = useState<{ [key: string]: File | null }>({});
+  const [uploadedDocs, setUploadedDocs] = useState<{ [key: string]: string }>({});
+  const [uploading, setUploading] = useState<{ [key: string]: boolean }>({});
+  const [activeView, setActiveView] = useState<string | null>(null);
+  const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+
+  const uploadFile = async (doc: string, file: File) => {
+    setUploading(prev => ({ ...prev, [doc]: true }));
+    try {
+      const url = await uploadDocument(doc, file);
+      setUploadedDocs(prev => ({ ...prev, [doc]: url }));
+      setSelectedFiles(prev => ({ ...prev, [doc]: null }));
+    } catch (error) {
+      console.error('Upload failed', error);
+      alert('Upload failed. Please try again.');
+    } finally {
+      setUploading(prev => ({ ...prev, [doc]: false }));
+    }
+  };
+
   const documents = [
     'DRM APP',
     'D&G Letter',
@@ -95,18 +116,81 @@ const UploadDocument = () => {
         onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'none'}
         >
           <span style={{ flex: 1, fontWeight: 'bold', color: '#333' }}>{doc}</span>
-          <input
-            type="file"
-            style={{
-              padding: '8px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              backgroundColor: 'white',
-              cursor: 'pointer'
-            }}
-          />
+          {uploadedDocs[doc] ? (
+            <button
+              onClick={() => setActiveView(doc)}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#28a745',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              View
+            </button>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <input
+                type="file"
+                ref={(el) => fileInputRefs.current[doc] = el}
+                onChange={(e) => setSelectedFiles(prev => ({ ...prev, [doc]: e.target.files?.[0] || null }))}
+                style={{ display: 'none' }}
+              />
+              {selectedFiles[doc] && (
+                <span style={{ fontSize: '14px', color: '#555' }}>{selectedFiles[doc]!.name}</span>
+              )}
+              <button
+                onClick={() => {
+                  if (selectedFiles[doc]) {
+                    uploadFile(doc, selectedFiles[doc]!);
+                  } else {
+                    fileInputRefs.current[doc]?.click();
+                  }
+                }}
+                disabled={uploading[doc]}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: uploading[doc] ? '#ccc' : '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: uploading[doc] ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {uploading[doc] ? 'Uploading...' : selectedFiles[doc] ? 'Upload' : 'Choose File'}
+              </button>
+            </div>
+          )}
         </div>
       ))}
+      {activeView && (
+        <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
+          <h4 style={{ textAlign: 'center', marginBottom: '20px' }}>Viewing {activeView}</h4>
+          <iframe
+            src={uploadedDocs[activeView]}
+            width="100%"
+            height="600px"
+            style={{ border: '1px solid #ccc', borderRadius: '4px' }}
+          />
+          <div style={{ textAlign: 'center', marginTop: '20px' }}>
+            <button
+              onClick={() => setActiveView(null)}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#dc3545',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
