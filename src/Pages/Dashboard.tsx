@@ -1,9 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Typography, IconButton, Button, Snackbar, Alert } from "@mui/material";
 import {
-  Monitor as DeviceIcon,
-  Sync as RefreshIcon,
-  Fullscreen as FullscreenIcon,
+  Devices as DeviceIcon,
+  Refresh as RefreshIcon,
+  OpenInFull as FullscreenIcon,
   ShowChart as SummaryIcon,
   Business as CapexIcon,
   AttachMoney as OweIcon,
@@ -11,15 +11,22 @@ import {
   SmartToy as AiIcon,
   Logout as LogoutIcon,
   Person as PersonIcon,
+  CalendarToday as CalendarIcon,
+  NotificationsNone as NotificationsIcon,
   Upload as UploadIcon,
 } from "@mui/icons-material";
 import ExecutiveSummary from "../modules/ExecutiveSummary";
+import CapexAnalysis from "../modules/CapexAnalysis";
+import OweManagement from "../modules/OweManagement";
+import AuditInspection from "../modules/AuditInspection";
+import AIDecisionBrain from "../modules/AIDecisionBrain";
 import { parseExcelFile, allMonths } from "../utils/pfaUtils";
 import { submitPfaData } from "../services/pfa.service";
 import "../css/dashboard.css";
 
-const SIDEBAR_WIDTH = 260;
-const TOP_BAR_HEIGHT = 48;
+const SIDEBAR_WIDTH = 190;
+const TOP_BAR_HEIGHT = 46;
+const DEFAULT_DIVISION = "North Western Railway";
 
 type NavKey = "executive-summary" | "capex" | "owe" | "audit" | "ai-brain";
 
@@ -31,13 +38,39 @@ const navItems: { key: NavKey; label: string; icon: React.ReactNode }[] = [
   { key: "ai-brain", label: "AI Decision Brain", icon: <AiIcon /> },
 ];
 
-const DEFAULT_DIVISION = "North Western Railway";
-
 export default function Dashboard() {
   const [activeNav, setActiveNav] = useState<NavKey>("executive-summary");
   const [uploadLoading, setUploadLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: "success" | "error" | "info" }>({ open: false, message: "", severity: "info" });
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: "success" | "error" | "info" }>({
+    open: false,
+    message: "",
+    severity: "info",
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mainContentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [activeNav]);
+
+  const renderMainContent = () => {
+    switch (activeNav) {
+      case "executive-summary":
+        return <ExecutiveSummary />;
+      case "capex":
+        return <CapexAnalysis />;
+      case "owe":
+        return <OweManagement />;
+      case "audit":
+        return <AuditInspection />;
+      case "ai-brain":
+        return <AIDecisionBrain />;
+      default:
+        return <ExecutiveSummary />;
+    }
+  };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -66,31 +99,17 @@ export default function Dashboard() {
     }
   };
 
-  const renderMainContent = () => {
-    switch (activeNav) {
-      case "executive-summary":
-        return <ExecutiveSummary />;
-      case "capex":
-      case "owe":
-      case "audit":
-      case "ai-brain":
-      default:
-        return null;
-    }
-  };
-
   return (
     <Box className="raiguard-dashboard">
-      {/* Top header bar */}
       <Box
         className="dashboard-top-bar"
         sx={{
           height: TOP_BAR_HEIGHT,
-          bgcolor: "#1a1d24",
-          color: "#fff",
+          bgcolor: "#FFFFFF",
+          color: "#0F172A",
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: "center",
           px: 2,
           position: "fixed",
           top: 0,
@@ -99,38 +118,50 @@ export default function Dashboard() {
           zIndex: 1100,
         }}
       >
-        <Typography variant="body1" fontWeight={600}>
+        <Typography variant="body2" fontWeight={600}>
           RailGuard PFA - Financial Governance Agent
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mr: 1 }}>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept=".xlsx,.xls"
-              style={{ display: "none" }}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleUploadClick}
-              disabled={uploadLoading}
-              startIcon={<UploadIcon />}
-            >
-              <Typography variant="caption">{uploadLoading ? "Uploading…" : "Upload"}</Typography>
-            </Button>
-          </Box>
-          <IconButton size="small" sx={{ color: "#fff" }}>
-            <RefreshIcon fontSize="small" />
+        <Box sx={{ position: "absolute", right: 8, display: "flex", alignItems: "center", gap: 0.3 }}>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept=".xlsx,.xls"
+            style={{ display: "none" }}
+          />
+          <Button
+            size="small"
+            variant="contained"
+            onClick={handleUploadClick}
+            disabled={uploadLoading}
+            startIcon={<UploadIcon sx={{ fontSize: 14 }} />}
+            sx={{ minWidth: 78, height: 28, borderRadius: 1.4, fontSize: "10px", textTransform: "none", bgcolor: "#2E63EE" }}
+          >
+            {uploadLoading ? "Uploading..." : "Upload"}
+          </Button>
+          <IconButton size="small" sx={{ color: "#334155" }}>
+            <DeviceIcon sx={{ fontSize: 16 }} />
+            <Typography sx={{ fontSize: "11px", ml: 0.4 }}>Device</Typography>
           </IconButton>
-          <IconButton size="small" sx={{ color: "#fff" }}>
-            <FullscreenIcon fontSize="small" />
+          <IconButton size="small" sx={{ color: "#334155" }}>
+            <RefreshIcon sx={{ fontSize: 16 }} />
+          </IconButton>
+          <IconButton size="small" sx={{ color: "#334155" }}>
+            <FullscreenIcon sx={{ fontSize: 16 }} />
           </IconButton>
         </Box>
       </Box>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={5000}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert severity={snackbar.severity} onClose={() => setSnackbar((s) => ({ ...s, open: false }))}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
 
-      {/* Sidebar */}
       <Box
         className="dashboard-sidebar"
         sx={{
@@ -139,7 +170,7 @@ export default function Dashboard() {
           top: TOP_BAR_HEIGHT,
           left: 0,
           bottom: 0,
-          bgcolor: "#1C273C",
+          bgcolor: "#0B1635",
           color: "#fff",
           display: "flex",
           flexDirection: "column",
@@ -147,27 +178,23 @@ export default function Dashboard() {
         }}
       >
         <Box sx={{ p: 2, borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 0.5 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, mb: 0.3 }}>
             <Box
               sx={{
-                width: 40,
-                height: 40,
+                width: 28,
+                height: 28,
                 borderRadius: 1,
-                bgcolor: "#2563EB",
+                bgcolor: "#2D66F5",
               }}
             />
             <Box>
-              <Typography variant="h6" fontWeight={700} sx={{ lineHeight: 1.2 }}>
-                RailGuard
-              </Typography>
-              <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.7)" }}>
-                PFA PORTAL V2.0
-              </Typography>
+              <Typography sx={{ fontSize: "13px", fontWeight: 700, lineHeight: 1.2 }}>RailGuard</Typography>
+              <Typography sx={{ fontSize: "9px", color: "rgba(255,255,255,0.7)" }}>PFA PORTAL V_2.0</Typography>
             </Box>
           </Box>
         </Box>
 
-        <Box sx={{ flex: 1, py: 2, overflow: "auto" }}>
+        <Box sx={{ flex: 1, py: 1.5, overflow: "auto" }}>
           {navItems.map((item) => {
             const isActive = activeNav === item.key;
             return (
@@ -178,47 +205,45 @@ export default function Dashboard() {
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 1.5,
-                  px: 2,
-                  py: 1.5,
+                  gap: 1,
+                  px: 1.5,
+                  py: 1,
                   mx: 1,
-                  mb: 0.5,
-                  borderRadius: 1.5,
-                  bgcolor: isActive ? "#2563EB" : "transparent",
+                  mb: 0.7,
+                  borderRadius: 1.2,
+                  bgcolor: isActive ? "#2E63EE" : "transparent",
                   color: "#fff",
                   cursor: "pointer",
-                  "&:hover": { bgcolor: isActive ? "#2563EB" : "rgba(255,255,255,0.08)" },
+                  border: "1px solid",
+                  borderColor: isActive ? "transparent" : "rgba(255,255,255,0.06)",
+                  "&:hover": { bgcolor: isActive ? "#2E63EE" : "rgba(255,255,255,0.08)" },
                 }}
               >
-                {item.icon}
-                <Typography variant="body2" fontWeight={500}>
-                  {item.label}
-                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center" }}>{item.icon}</Box>
+                <Typography sx={{ fontSize: "11px", fontWeight: 500 }}>{item.label}</Typography>
               </Box>
             );
           })}
         </Box>
 
-        <Box sx={{ p: 2, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+        <Box sx={{ p: 1.2, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.2, p: 1, borderRadius: 1.2, border: "1px solid rgba(255,255,255,0.12)" }}>
             <Box
               sx={{
-                width: 44,
-                height: 44,
+                width: 28,
+                height: 28,
                 borderRadius: "50%",
-                bgcolor: "#22c55e",
+                bgcolor: "#19325A",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <PersonIcon sx={{ color: "#fff", fontSize: 24 }} />
+              <PersonIcon sx={{ color: "#fff", fontSize: 16 }} />
             </Box>
             <Box>
-              <Typography variant="body2" fontWeight={600}>
-                Sh. Rajendra Kumar
-              </Typography>
-              <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.7)" }}>
+              <Typography sx={{ fontSize: "9px", fontWeight: 600, lineHeight: 1.2 }}>Sh. Rajendra Kumar</Typography>
+              <Typography sx={{ fontSize: "8px", color: "rgba(255,255,255,0.7)", lineHeight: 1.2 }}>
                 PRINCIPAL FINANCIAL ADVISER
               </Typography>
             </Box>
@@ -227,47 +252,48 @@ export default function Dashboard() {
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: 1,
+              gap: 0.6,
               cursor: "pointer",
-              color: "rgba(255,255,255,0.9)",
+              color: "rgba(255,255,255,0.75)",
+              pl: 0.8,
               "&:hover": { color: "#fff" },
             }}
           >
-            <LogoutIcon sx={{ fontSize: 20 }} />
-            <Typography variant="body2">Logout</Typography>
+            <LogoutIcon sx={{ fontSize: 12 }} />
+            <Typography sx={{ fontSize: "10px" }}>Logout</Typography>
           </Box>
         </Box>
       </Box>
 
-      {/* Main content area */}
       <Box
         className="dashboard-main"
+        ref={mainContentRef}
         sx={{
           marginLeft: SIDEBAR_WIDTH,
           marginTop: TOP_BAR_HEIGHT,
           minHeight: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
-          bgcolor: "#F5F7FA",
-          p: 3,
+          bgcolor: "#EEF2F7",
+          p: 2,
           width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
           boxSizing: "border-box",
           overflow: "auto",
         }}
       >
         <Box sx={{ width: "100%", minHeight: "100%" }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 2, mb: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
+              <CalendarIcon sx={{ color: "#64748B", fontSize: 14 }} />
+              <Typography sx={{ fontSize: "11px", color: "#64748B" }}>Wk 1, Feb 2026</Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
+              <NotificationsIcon sx={{ color: "#64748B", fontSize: 14 }} />
+              <Typography sx={{ fontSize: "11px", color: "#64748B" }}>Notifications</Typography>
+              <Typography sx={{ fontSize: "11px", color: "#EF4444" }}>*</Typography>
+            </Box>
+          </Box>
           {renderMainContent()}
         </Box>
       </Box>
-
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert severity={snackbar.severity} onClose={() => setSnackbar((s) => ({ ...s, open: false }))}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }
