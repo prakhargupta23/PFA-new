@@ -1,9 +1,53 @@
-/* Add this to your CSS file */
+/* RailGuard Dashboard layout */
+.raiguard-dashboard {
+  min-height: 100vh;
+  background: #F5F7FA;
+}
 
-/* Default styles for larger screens */
+.dashboard-top-bar {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-sidebar .nav-item {
+  transition: background-color 0.2s ease;
+}
+
+/* Responsive: stack main below sidebar on small screens */
+@media screen and (max-width: 900px) {
+  .dashboard-main {
+    margin-left: 0 !important;
+    margin-top: 48px !important;
+  }
+  .dashboard-sidebar {
+    width: 100% !important;
+    height: auto !important;
+    position: relative !important;
+    top: 48px !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+  }
+  .dashboard-sidebar > div:first-of-type {
+    flex: 1;
+  }
+  .dashboard-sidebar > div:nth-of-type(2) {
+    flex: none;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .dashboard-sidebar > div:last-of-type {
+    width: 100%;
+    flex-direction: row !important;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+/* Default styles for larger screens (legacy) */
 .toggleButtonGroupContainer {
   display: flex;
-  flex-direction: row; /* buttons side by side */
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   margin-top: 2px;
@@ -13,14 +57,13 @@
   flex-direction: column;
 }
 
-/* Media query for screens smaller than 1202px */
 @media screen and (max-width: 1202px) {
   .mainContainer {
-    height: "auto";
+    height: auto;
   }
   .toggleButtonGroupContainer {
     display: flex;
-    flex-direction: column; /* stack buttons vertically */
+    flex-direction: column;
     flex-wrap: wrap;
   }
 }

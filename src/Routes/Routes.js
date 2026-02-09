@@ -4,8 +4,9 @@ import { createBrowserRouter } from "react-router-dom";
 
 import LoginPage from "../Pages/LoginPage";
 import PrivateRoute from "./PrivateRoute";
-import Finance from "../Pages/Finance";
+import Dashboard from "../Pages/Dashboard";
 import DocumentUpload from "../Pages/DocumentUpload";
+import ExecutiveSummary from "../modules/ExecutiveSummary";
 
 export const routes = createBrowserRouter([
   // {
@@ -18,7 +19,7 @@ export const routes = createBrowserRouter([
   // },
   {
     path: "/*",
-    element: <Finance />,
+    element: <Dashboard />,
   },
   {
     path: "/Upload",
