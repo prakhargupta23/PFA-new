@@ -285,7 +285,7 @@ export default function Dashboard() {
           </Box>
         </Box>
 
-        <Box sx={{ flex: 1, py: 1.5, overflow: "auto" }}>
+        <Box sx={{ flex: 1, py: 1.5, overflow: "hidden" }}>
           {navItems.map((item) => {
             const isActive = activeNav === item.key;
             return (
@@ -361,16 +361,17 @@ export default function Dashboard() {
         ref={mainContentRef}
         sx={{
           marginLeft: SIDEBAR_WIDTH,
-          marginTop: TOP_BAR_HEIGHT,
-          minHeight: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
+          marginTop: `${TOP_BAR_HEIGHT}px`,
+          height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
           bgcolor: "#EEF2F7",
           p: 2,
           width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
           boxSizing: "border-box",
-          overflow: "auto",
+          overflowY: "auto",
+          overflowX: "hidden",
         }}
       >
-        <Box sx={{ width: "100%", minHeight: "100%" }}>
+        <Box sx={{ width: "100%" }}>
           <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 2, mb: 1 }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
               <CalendarIcon sx={{ color: "#64748B", fontSize: 14 }} />

@@ -5,10 +5,15 @@ import { GlobalStyles } from "@mui/material";
 const globalScrollbarStyles = (
   <GlobalStyles
     styles={{
+      "html, body, #root": {
+        height: "100%",
+        overflow: "hidden",
+        margin: 0,
+      },
       // For Chrome, Safari, and Opera
       "::-webkit-scrollbar": {
-        width: "12px", // Width of the vertical scrollbar
-        height: "10px", // Height of the horizontal scrollbar
+        width: "8px", // Width of the vertical scrollbar
+        height: "8px", // Height of the horizontal scrollbar
       },
       "::-webkit-scrollbar-track": {
         background: "#f0f0f0", // Track color
