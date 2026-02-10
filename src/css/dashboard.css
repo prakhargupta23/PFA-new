@@ -1,6 +1,7 @@
 /* RailGuard Dashboard layout */
 .raiguard-dashboard {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background: #F5F7FA;
 }
 

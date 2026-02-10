@@ -29,6 +29,7 @@ const TOP_BAR_HEIGHT = 46;
 const DEFAULT_DIVISION = "North Western Railway";
 
 type NavKey = "executive-summary" | "capex" | "owe" | "audit" | "ai-brain";
+type SnackbarSeverity = "success" | "error" | "info";
 
 const navItems: { key: NavKey; label: string; icon: React.ReactNode }[] = [
   { key: "executive-summary", label: "Executive Summary", icon: <SummaryIcon /> },
@@ -41,7 +42,7 @@ const navItems: { key: NavKey; label: string; icon: React.ReactNode }[] = [
 export default function Dashboard() {
   const [activeNav, setActiveNav] = useState<NavKey>("executive-summary");
   const [uploadLoading, setUploadLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: "success" | "error" | "info" }>({
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: SnackbarSeverity }>({
     open: false,
     message: "",
     severity: "info",
@@ -53,6 +54,10 @@ export default function Dashboard() {
     if (mainContentRef.current) {
       mainContentRef.current.scrollTo({ top: 0, behavior: "auto" });
     }
+    const timer = window.setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [activeNav]);
 
   const renderMainContent = () => {
@@ -76,24 +81,105 @@ export default function Dashboard() {
     fileInputRef.current?.click();
   };
 
+  const showSnackbar = (message: string, severity: SnackbarSeverity) => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const handleFinancialUpload = async (file: File, contextLabel: string, nav: NavKey) => {
+    const now = new Date();
+    const month = allMonths[now.getMonth()];
+    const year = String(now.getFullYear());
+
+    const buffer = await file.arrayBuffer();
+    const { finalData } = await parseExcelFile(buffer, DEFAULT_DIVISION, month, year, []);
+    await submitPfaData({
+      ...finalData,
+      sourceModule: nav,
+      sourceLabel: contextLabel,
+    });
+    showSnackbar(`${contextLabel} upload completed successfully.`, "success");
+  };
+
+  const handleAIBrainUpload = async (file: File) => {
+    if (file.size === 0) {
+      throw new Error("Selected file is empty.");
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    showSnackbar(`AI Brain file "${file.name}" received for briefing.`, "success");
+  };
+
+  const getUploadConfig = (nav: NavKey) => {
+    switch (nav) {
+      case "executive-summary":
+        return {
+          label: "Upload Executive",
+          accept: ".xlsx,.xls",
+          color: "#2eeee4",
+          hoverColor: "#d01e98",
+          textColor: "#FFFFFF",
+          handler: (file: File) => handleFinancialUpload(file, "Executive Summary", nav),
+        };
+      case "capex":
+        return {
+          label: "Upload CAPEX",
+          accept: ".xlsx,.xls",
+          color: "#53219900",
+          hoverColor: "#cf1dd8",
+          textColor: "#111111",
+          handler: (file: File) => handleFinancialUpload(file, "CAPEX / Works", nav),
+        };
+      case "owe":
+        return {
+          label: "Upload OWE",
+          accept: ".xlsx,.xls,.csv",
+          color: "#0EA5A4",
+          hoverColor: "#0B8685",
+          textColor: "#FFFFFF",
+          handler: (file: File) => handleFinancialUpload(file, "OWE / Expenditure", nav),
+        };
+      case "audit":
+        return {
+          label: "Upload Audit",
+          accept: ".xlsx,.xls,.csv",
+          color: "#F59E0B",
+          hoverColor: "#D97706",
+          textColor: "#FFFFFF",
+          handler: (file: File) => handleFinancialUpload(file, "Audit & Inspections", nav),
+        };
+      case "ai-brain":
+        return {
+          label: "Upload AI Input",
+          accept: ".pdf,.doc,.docx,.txt,.xlsx,.xls,.csv",
+          color: "#7C3AED",
+          hoverColor: "#6D28D9",
+          textColor: "#FFFFFF",
+          handler: (file: File) => handleAIBrainUpload(file),
+        };
+      default:
+        return {
+          label: "Upload",
+          accept: ".xlsx,.xls",
+          color: "#2E63EE",
+          hoverColor: "#1E4FD0",
+          textColor: "#FFFFFF",
+          handler: (file: File) => handleFinancialUpload(file, "Executive Summary", "executive-summary"),
+        };
+    }
+  };
+
+  const activeUploadConfig = getUploadConfig(activeNav);
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = "";
 
-    const now = new Date();
-    const month = allMonths[now.getMonth()];
-    const year = String(now.getFullYear());
-
     setUploadLoading(true);
     try {
-      const buffer = await file.arrayBuffer();
-      const { finalData } = await parseExcelFile(buffer, DEFAULT_DIVISION, month, year, []);
-      await submitPfaData(finalData);
-      setSnackbar({ open: true, message: "File uploaded and data sent successfully.", severity: "success" });
+      await activeUploadConfig.handler(file);
     } catch (err: any) {
       const message = err?.response?.data?.message ?? err?.message ?? "Upload failed.";
-      setSnackbar({ open: true, message, severity: "error" });
+      showSnackbar(message, "error");
     } finally {
       setUploadLoading(false);
     }
@@ -105,7 +191,7 @@ export default function Dashboard() {
         className="dashboard-top-bar"
         sx={{
           height: TOP_BAR_HEIGHT,
-          bgcolor: "#FFFFFF",
+          bgcolor: "#ffffff",
           color: "#0F172A",
           display: "flex",
           alignItems: "center",
@@ -126,7 +212,7 @@ export default function Dashboard() {
             type="file"
             ref={fileInputRef}
             onChange={handleFileChange}
-            accept=".xlsx,.xls"
+            accept={activeUploadConfig.accept}
             style={{ display: "none" }}
           />
           <Button
@@ -135,9 +221,18 @@ export default function Dashboard() {
             onClick={handleUploadClick}
             disabled={uploadLoading}
             startIcon={<UploadIcon sx={{ fontSize: 14 }} />}
-            sx={{ minWidth: 78, height: 28, borderRadius: 1.4, fontSize: "10px", textTransform: "none", bgcolor: "#2E63EE" }}
+            sx={{
+              minWidth: 120,
+              height: 28,
+              borderRadius: 1.4,
+              fontSize: "10px",
+              textTransform: "none",
+              bgcolor: activeUploadConfig.color,
+              color: activeUploadConfig.textColor,
+              "&:hover": { bgcolor: activeUploadConfig.hoverColor },
+            }}
           >
-            {uploadLoading ? "Uploading..." : "Upload"}
+            {uploadLoading ? "Uploading..." : activeUploadConfig.label}
           </Button>
           <IconButton size="small" sx={{ color: "#334155" }}>
             <DeviceIcon sx={{ fontSize: 16 }} />
@@ -194,7 +289,7 @@ export default function Dashboard() {
           </Box>
         </Box>
 
-        <Box sx={{ flex: 1, py: 1.5, overflow: "auto" }}>
+        <Box sx={{ flex: 1, py: 1.5, overflow: "hidden" }}>
           {navItems.map((item) => {
             const isActive = activeNav === item.key;
             return (
@@ -269,17 +364,19 @@ export default function Dashboard() {
         className="dashboard-main"
         ref={mainContentRef}
         sx={{
-          marginLeft: SIDEBAR_WIDTH,
-          marginTop: TOP_BAR_HEIGHT,
-          minHeight: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
+          position: "fixed",
+          top: TOP_BAR_HEIGHT,
+          left: SIDEBAR_WIDTH,
+          right: 0,
+          bottom: 0,
           bgcolor: "#EEF2F7",
           p: 2,
-          width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
           boxSizing: "border-box",
-          overflow: "auto",
+          overflowY: "auto",
+          overflowX: "hidden",
         }}
       >
-        <Box sx={{ width: "100%", minHeight: "100%" }}>
+        <Box sx={{ width: "100%" }}>
           <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 2, mb: 1 }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
               <CalendarIcon sx={{ color: "#64748B", fontSize: 14 }} />
