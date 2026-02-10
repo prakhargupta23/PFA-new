@@ -54,6 +54,10 @@ export default function Dashboard() {
     if (mainContentRef.current) {
       mainContentRef.current.scrollTo({ top: 0, behavior: "auto" });
     }
+    const timer = window.setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [activeNav]);
 
   const renderMainContent = () => {
@@ -360,12 +364,13 @@ export default function Dashboard() {
         className="dashboard-main"
         ref={mainContentRef}
         sx={{
-          marginLeft: SIDEBAR_WIDTH,
-          marginTop: `${TOP_BAR_HEIGHT}px`,
-          height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
+          position: "fixed",
+          top: TOP_BAR_HEIGHT,
+          left: SIDEBAR_WIDTH,
+          right: 0,
+          bottom: 0,
           bgcolor: "#EEF2F7",
           p: 2,
-          width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
           boxSizing: "border-box",
           overflowY: "auto",
           overflowX: "hidden",
