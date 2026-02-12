@@ -16,6 +16,27 @@ const divisionChartData = [
 const escalateDivisions = ["JAIPUR", "AJMER", "JODHPUR", "BIKANER"];
 
 export default function ExecutiveSummary() {
+  const handleCardClick = async (title: string, value: string) => {
+    try {
+      const response = await fetch("https://nwrwhatsappapi-a3f6f0dfd5hbdka3.centralindia-01.azurewebsites.net/send-hi", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: ["+917800752003@c.us"],
+          data: `${title}: ${value}`,
+          mentions: ["+917800752003@c.us"],
+        }),
+      });
+      const data = await response.json();
+      console.log("Data sent successfully:", data);
+      alert(`Sent ${title}: ${value} to server!`);
+    } catch (error) {
+      console.error("Error sending data:", error);
+    }
+  };
+
   return (
     <Box sx={{ width: "100%" }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
@@ -35,23 +56,35 @@ export default function ExecutiveSummary() {
         <Typography sx={{ fontSize: "12px", color: "#A5B4FC", mb: 1.5 }}>Zone: North Western Railway</Typography>
 
         <Box sx={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 1 }}>
-          <Box sx={{ bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1 }}>
+          <Box sx={{
+            bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
+          }}
+            onClick={() => handleCardClick("UTILIZATION", "84.2%")}
+          >
             <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>UTILIZATION</Typography>
             <Typography sx={{ fontSize: "38px", color: "white", fontWeight: 700 }}>84.2%</Typography>
           </Box>
-          <Box sx={{ bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1 }}>
+          <Box sx={{
+            bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
+          }} onClick={() => { }}>
             <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>EARNINGS GROWTH</Typography>
             <Typography sx={{ fontSize: "38px", color: "#22C55E", fontWeight: 700 }}>+5.2%</Typography>
           </Box>
-          <Box sx={{ bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1 }}>
+          <Box sx={{
+            bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
+          }} onClick={() => { }}>
             <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>CRITICAL AUDIT</Typography>
             <Typography sx={{ fontSize: "38px", color: "#FACC15", fontWeight: 700 }}>2</Typography>
           </Box>
-          <Box sx={{ bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1 }}>
+          <Box sx={{
+            bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
+          }} onClick={() => { }}>
             <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>GOVERNANCE SCORE</Typography>
             <Typography sx={{ fontSize: "38px", color: "#93C5FD", fontWeight: 700 }}>88</Typography>
           </Box>
-          <Box sx={{ bgcolor: "rgba(255,255,255,0.08)", borderRadius: 1.2, p: 1.1 }}>
+          <Box sx={{
+            bgcolor: "rgba(255,255,255,0.08)", borderRadius: 1.2, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
+          }} onClick={() => { }}>
             <Box sx={{ display: "flex", gap: 0.6, alignItems: "center", mb: 0.5 }}>
               <BoltIcon sx={{ color: "#93C5FD", fontSize: 14 }} />
               <Typography sx={{ fontSize: "10px", color: "#CBD5E1", fontWeight: 700 }}>YEAR-END FORESIGHT</Typography>
