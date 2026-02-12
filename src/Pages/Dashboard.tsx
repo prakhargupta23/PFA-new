@@ -9,6 +9,7 @@ import {
   AttachMoney as OweIcon,
   Assignment as AuditIcon,
   SmartToy as AiIcon,
+  ListAlt as TaskIcon,
   Logout as LogoutIcon,
   Person as PersonIcon,
   CalendarToday as CalendarIcon,
@@ -20,6 +21,7 @@ import CapexAnalysis from "../modules/CapexAnalysis";
 import OweManagement from "../modules/OweManagement";
 import AuditInspection from "../modules/AuditInspection";
 import AIDecisionBrain from "../modules/AIDecisionBrain";
+import TaskManagement from "../modules/TaskManagement";
 import { parseExcelFile, allMonths } from "../utils/pfaUtils";
 import { submitPfaData } from "../services/pfa.service";
 import "../css/dashboard.css";
@@ -28,7 +30,7 @@ const SIDEBAR_WIDTH = 190;
 const TOP_BAR_HEIGHT = 46;
 const DEFAULT_DIVISION = "North Western Railway";
 
-type NavKey = "executive-summary" | "capex" | "owe" | "audit" | "ai-brain";
+type NavKey = "executive-summary" | "capex" | "owe" | "audit" | "ai-brain" | "tasks";
 type SnackbarSeverity = "success" | "error" | "info";
 
 const navItems: { key: NavKey; label: string; icon: React.ReactNode }[] = [
@@ -37,6 +39,7 @@ const navItems: { key: NavKey; label: string; icon: React.ReactNode }[] = [
   { key: "owe", label: "OWE / Expenditure", icon: <OweIcon /> },
   { key: "audit", label: "Audit & Inspections", icon: <AuditIcon /> },
   { key: "ai-brain", label: "AI Decision Brain", icon: <AiIcon /> },
+  { key: "tasks", label: "Task Management", icon: <TaskIcon /> },
 ];
 
 export default function Dashboard() {
@@ -72,6 +75,8 @@ export default function Dashboard() {
         return <AuditInspection />;
       case "ai-brain":
         return <AIDecisionBrain />;
+      case "tasks":
+        return <TaskManagement />;
       default:
         return <ExecutiveSummary />;
     }
