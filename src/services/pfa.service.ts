@@ -1,5 +1,6 @@
 import axios from "axios";
 import { config } from "../shared/constants/config";
+import { fetchWrapper } from "../helpers/fetch-wrapper";
 
 const API_URL = config.apiUrl;
 
@@ -16,14 +17,12 @@ export interface PfaFinalData {
  * @param finalData - The parsed data from pfaUtils.parseExcelFile (finalData)
  * @returns Backend response
  */
-export const submitPfaData = async (finalData: PfaFinalData) => {
+export const submitPfaData = (finalData: PfaFinalData) => {
   try {
-    const response = await axios.post(`${API_URL}/api/pfa-data`, finalData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    return response.data;
+    console.log("finalData", finalData);
+    const response = fetchWrapper.post(`${config.apiUrl}/api/upload-zonal-data`, finalData);
+    console.log("response", response);
+    return response;
   } catch (error: any) {
     console.error("Error submitting PFA data:", error?.response?.data ?? error.message);
     throw error;

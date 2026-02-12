@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Typography, Chip } from "@mui/material";
 import { Public as GlobeIcon, Bolt as BoltIcon, Chat as EscalateIcon } from "@mui/icons-material";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { callToAction } from "../services/whatsapp.service";
 
 const divisionChartData = [
   { name: "Jaipur", utilization: 820, timeLapse: 90 },
@@ -18,20 +19,9 @@ const escalateDivisions = ["JAIPUR", "AJMER", "JODHPUR", "BIKANER"];
 export default function ExecutiveSummary() {
   const handleCardClick = async (title: string, value: string) => {
     try {
-      const response = await fetch("https://nwrwhatsappapi-a3f6f0dfd5hbdka3.centralindia-01.azurewebsites.net/send-hi", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          to: ["+917800752003@c.us"],
-          data: `${title}: ${value}`,
-          mentions: ["+917800752003@c.us"],
-        }),
-      });
-      const data = await response.json();
+      const data = await callToAction(title, value);
       console.log("Data sent successfully:", data);
-      alert(`Sent ${title}: ${value} to server!`);
+      alert(`Task created successfully!`);
     } catch (error) {
       console.error("Error sending data:", error);
     }
@@ -59,7 +49,6 @@ export default function ExecutiveSummary() {
           <Box sx={{
             bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
           }}
-            onClick={() => handleCardClick("UTILIZATION", "84.2%")}
           >
             <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>UTILIZATION</Typography>
             <Typography sx={{ fontSize: "38px", color: "white", fontWeight: 700 }}>84.2%</Typography>
@@ -130,7 +119,8 @@ export default function ExecutiveSummary() {
 
         <Box sx={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1 }}>
           {escalateDivisions.map((div) => (
-            <Box key={div} sx={{ borderRadius: 1, p: 1, bgcolor: "#F1F5F9", border: "1px solid #E2E8F0" }}>
+            <Box key={div} sx={{ borderRadius: 1, p: 1, bgcolor: "#F1F5F9", border: "1px solid #E2E8F0" }}
+              onClick={() => handleCardClick(div, "Escalate Now")}>
               <Typography sx={{ fontSize: "9px", color: "#64748B", mb: 0.4 }}>{div}</Typography>
               <Typography sx={{ fontSize: "11px", color: "#0F172A", fontWeight: 700 }}>ESCALATE NOW</Typography>
             </Box>

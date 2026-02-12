@@ -1,17 +1,28 @@
 import React from "react";
-import { Box, Typography, Chip, Button } from "@mui/material";
+import { Box, Typography, Chip, Button, IconButton } from "@mui/material";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import { callToAction } from "../services/whatsapp.service";
 
 const tableRows = [
-  { smh: "SMH-2 Repairs & Main.P.Way", div: "HQ/NWR", grant: "₹946.7", actual: "₹760.87", variance: "+46.31", trend: "UP" },
-  { smh: "SMH-4 Repairs&Maint.C&W", div: "HQ/NWR", grant: "₹807.2", actual: "₹687.3", variance: "+80.43", trend: "UP" },
-  { smh: "SMH-8 Operat.Exp.-Fuel", div: "HQ/NWR", grant: "₹2160", actual: "₹1645.59", variance: "+25.56", trend: "UP" },
-  { smh: "SMH-3 Repairs&Maint Powers", div: "HQ/NWR", grant: "₹146.7", actual: "₹104.66", variance: "-5.78", trend: "DOWN" },
+  { smh: "SMH-2 Repairs & Main.P.Way", div: "HQ/NWR", grant: "₹946.7", actual: "₹760.87", variance: "+46.31", trend: "UP", whatsapp: "Generate Draft Note for Sr. DFM" },
+  { smh: "SMH-4 Repairs&Maint.C&W", div: "HQ/NWR", grant: "₹807.2", actual: "₹687.3", variance: "+80.43", trend: "UP", whatsapp: "Generate Draft Note for Sr. DFM" },
+  { smh: "SMH-8 Operat.Exp.-Fuel", div: "HQ/NWR", grant: "₹2160", actual: "₹1645.59", variance: "+25.56", trend: "UP", whatsapp: "Generate Draft Note for Sr. DFM" },
+  { smh: "SMH-3 Repairs&Maint Powers", div: "HQ/NWR", grant: "₹146.7", actual: "₹104.66", variance: "-5.78", trend: "DOWN", whatsapp: "Generate Draft Note for Sr. DFM" },
 ];
 
 export default function OweManagement() {
+  const createtask = async (title: string, value: string) => {
+    try {
+      const data = await callToAction(title, value);
+      console.log("Data sent successfully:", data);
+      alert(`Task created successfully!`);
+    } catch (error) {
+      console.error("Error sending data:", error);
+    }
+  };
   return (
     <Box>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
@@ -23,19 +34,20 @@ export default function OweManagement() {
         <Box>
           <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "#1E293B", mb: 1 }}>SMH-wise Budget Compliance</Typography>
           <Box sx={{ borderRadius: 1.2, overflow: "hidden", border: "1px solid #E2E8F0" }}>
-            <Box sx={{ display: "grid", gridTemplateColumns: "2fr 0.7fr 0.7fr 0.7fr 0.7fr 0.8fr", px: 1.2, py: 1, bgcolor: "#F1F5F9" }}>
+            <Box sx={{ display: "grid", gridTemplateColumns: "2fr 0.7fr 0.7fr 0.7fr 0.7fr 0.8fr 0.5fr", px: 1.2, py: 1, bgcolor: "#F1F5F9", alignItems: "center" }}>
               <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>SMH DESCRIPTION</Typography>
               <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>DIV</Typography>
               <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>GRANT</Typography>
               <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>ACTUAL</Typography>
               <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>VAR</Typography>
               <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>TREND</Typography>
+              <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B", textAlign: "center" }}>ACTION</Typography>
             </Box>
 
             {tableRows.map((row) => {
               const up = row.trend === "UP";
               return (
-                <Box key={row.smh} sx={{ display: "grid", gridTemplateColumns: "2fr 0.7fr 0.7fr 0.7fr 0.7fr 0.8fr", px: 1.2, py: 1.1, borderTop: "1px solid #EDF2F7", bgcolor: "#F8FAFC" }}>
+                <Box key={row.smh} sx={{ display: "grid", gridTemplateColumns: "2fr 0.7fr 0.7fr 0.7fr 0.7fr 0.8fr 0.5fr", alignItems: "center", px: 1.2, py: 1.1, borderTop: "1px solid #EDF2F7", bgcolor: "#F8FAFC" }}>
                   <Typography sx={{ fontSize: "12px", color: "#334155", fontWeight: 600 }}>{row.smh}</Typography>
                   <Typography sx={{ fontSize: "12px", color: "#64748B" }}>{row.div}</Typography>
                   <Typography sx={{ fontSize: "12px", color: "#334155" }}>{row.grant}</Typography>
@@ -45,6 +57,9 @@ export default function OweManagement() {
                     {up ? <TrendingUpIcon sx={{ fontSize: 13, color: "#DC2626" }} /> : <TrendingDownIcon sx={{ fontSize: 13, color: "#16A34A" }} />}
                     <Typography sx={{ fontSize: "11px", color: up ? "#DC2626" : "#16A34A", fontWeight: 700 }}>{row.trend}</Typography>
                   </Box>
+                  <IconButton size="small" sx={{ color: "#25D366" }}>
+                    <WhatsAppIcon fontSize="small" onClick={() => createtask(row.div, `\nTo:${row.whatsapp}\nSMH: ${row.smh}\nGrant: ${row.grant}\nActual: ${row.actual}\nVariance: ${row.variance}\nTrend: ${row.trend}`)} />
+                  </IconButton>
                 </Box>
               );
             })}
