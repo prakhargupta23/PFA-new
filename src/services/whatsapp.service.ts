@@ -12,7 +12,7 @@ export const callToAction = async (title: string, value: string) => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                to: ["+917800752003@c.us"],
+                to: ["+917800752003@c.us", "120363407012014309@g.us"],
                 data: `Task Created: \n${title}: ${value}\n`,
                 mentions: ["7800752003"],
             }),
