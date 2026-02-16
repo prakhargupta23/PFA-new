@@ -4,6 +4,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PendingIcon from "@mui/icons-material/Pending";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { taskService } from "../services/task.service";
+import { useCallback } from "react";
 
 interface Task {
     _id: string;
@@ -22,19 +23,17 @@ export default function TaskManagement() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(false);
 
-    const fetchTasks = async () => {
+    const fetchTasks = useCallback(async () => {
         try {
             setLoading(true);
             const response = await taskService.getAllTasks();
-            console.log("dashboard tasks response", response);
             setTasks(response || []);
-            console.log("dashboard tasks", tasks);
         } catch (error) {
             console.error("Error fetching tasks:", error);
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     const handleStatusUpdate = async (taskId: string, newStatus: string) => {
         try {
@@ -48,7 +47,7 @@ export default function TaskManagement() {
 
     useEffect(() => {
         fetchTasks();
-    }, []);
+    }, [fetchTasks]);
 
     return (
         <Box>
