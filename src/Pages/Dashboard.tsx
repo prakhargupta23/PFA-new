@@ -342,7 +342,7 @@ export default function Dashboard() {
               <PersonIcon sx={{ color: "#fff", fontSize: 16 }} />
             </Box>
             <Box>
-              <Typography sx={{ fontSize: "9px", fontWeight: 600, lineHeight: 1.2 }}>Sh. Rajendra Kumar</Typography>
+              <Typography sx={{ fontSize: "9px", fontWeight: 600, lineHeight: 1.2 }}>Username</Typography>
               <Typography sx={{ fontSize: "8px", color: "rgba(255,255,255,0.7)", lineHeight: 1.2 }}>
                 PRINCIPAL FINANCIAL ADVISER
               </Typography>
