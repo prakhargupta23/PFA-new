@@ -1,8 +1,5 @@
-import axios from "axios";
 import { config } from "../shared/constants/config";
 import { fetchWrapper } from "../helpers/fetch-wrapper";
-
-const API_URL = config.apiUrl;
 
 export interface PfaFinalData {
   zonaldata?: any[];
