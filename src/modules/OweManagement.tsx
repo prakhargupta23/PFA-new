@@ -1,19 +1,119 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Box, Typography, Chip, Button, IconButton } from "@mui/material";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { callToAction } from "../services/whatsapp.service";
+import { getOweData } from "../services/owedashboard.service";
 
-const tableRows = [
-  { smh: "SMH-2 Repairs & Main.P.Way", div: "HQ/NWR", grant: "₹946.7", actual: "₹760.87", variance: "+46.31", trend: "UP", whatsapp: "Generate Draft Note for Sr. DFM" },
-  { smh: "SMH-4 Repairs&Maint.C&W", div: "HQ/NWR", grant: "₹807.2", actual: "₹687.3", variance: "+80.43", trend: "UP", whatsapp: "Generate Draft Note for Sr. DFM" },
-  { smh: "SMH-8 Operat.Exp.-Fuel", div: "HQ/NWR", grant: "₹2160", actual: "₹1645.59", variance: "+25.56", trend: "UP", whatsapp: "Generate Draft Note for Sr. DFM" },
-  { smh: "SMH-3 Repairs&Maint Powers", div: "HQ/NWR", grant: "₹146.7", actual: "₹104.66", variance: "-5.78", trend: "DOWN", whatsapp: "Generate Draft Note for Sr. DFM" },
-];
+type OweRow = {
+  smh: string;
+  div: string;
+  grant: string;
+  actual: string;
+  variance: string;
+  trend: "UP" | "DOWN";
+  whatsapp: string;
+};
 
-export default function OweManagement() {
+const DEFAULT_WHATSAPP_TARGET = "Generate Draft Note for Sr. DFM";
+
+const toNumber = (value: unknown): number => {
+  if (typeof value === "number") return value;
+  if (typeof value !== "string") return 0;
+
+  const parsed = Number(value.replace(/[^\d.-]/g, ""));
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const toCurrency = (value: unknown): string => `${toNumber(value)} crore`;
+
+const toVarianceString = (value: unknown): string => {
+  if (typeof value === "string" && value.trim()) {
+    const trimmed = value.trim();
+    return trimmed.endsWith("%") ? trimmed : `${trimmed}%`;
+  }
+
+  const n = toNumber(value);
+  return n > 0 ? `+${n}%` : `${n}%`;
+};
+
+const toTrend = (value: unknown): "UP" | "DOWN" => {
+  if (typeof value === "string") {
+    const normalized = value.trim().toUpperCase();
+    if (normalized === "UP" || normalized === "DOWN") return normalized;
+  }
+
+  return toNumber(value) >= 0 ? "UP" : "DOWN";
+};
+
+const extractRows = (payload: any): any[] => {
+  if (Array.isArray(payload)) return payload;
+
+  if (Array.isArray(payload?.rows)) return payload.rows;
+  if (Array.isArray(payload?.tableRows)) return payload.tableRows;
+  if (Array.isArray(payload?.smhRows)) return payload.smhRows;
+  if (Array.isArray(payload?.data)) return payload.data;
+
+  return [];
+};
+
+const getSmhOrder = (smh: string): number => {
+  const match = smh.match(/SMH-(\d+)/i);
+  if (!match) return Number.MAX_SAFE_INTEGER;
+  return Number(match[1]);
+};
+
+export default function OweManagement({ month, year }: { month?: number; year?: number }) {
+  const now = new Date();
+  const selectedMonth = month ?? now.getMonth() + 1;
+  const selectedYear = year ?? now.getFullYear();
+  const [tableRows, setTableRows] = useState<OweRow[]>([]);
+
+  useEffect(() => {
+    const loadRows = async () => {
+      try {
+        const response = await getOweData(selectedMonth, selectedYear);
+        const rawRows = extractRows(response);
+
+        const mappedRows: OweRow[] = rawRows.map((row: any) => {
+          const varianceRaw =
+            row.variance ?? row.var ?? row.diffActualVsBP ?? row.difference ?? 0;
+          const trendRaw = row.trend ?? varianceRaw;
+
+          return {
+            smh:
+              row.smh ??
+              row.smhDescription ??
+              row.category ??
+              row.description ??
+              row.head ??
+              "-",
+            div: "NWR",
+            grant: toCurrency(row.grant ?? row.obg ?? row.rbg ?? 0),
+            actual: toCurrency(
+              row.actual ?? row.actualForMonth ?? row.actualToEndCurrentYear ?? 0
+            ),
+            variance: toVarianceString(varianceRaw),
+            trend: toTrend(trendRaw),
+            whatsapp: row.whatsapp ?? DEFAULT_WHATSAPP_TARGET,
+          };
+        });
+
+        const sortedRows = [...mappedRows].sort((a, b) => getSmhOrder(a.smh) - getSmhOrder(b.smh));
+        setTableRows(sortedRows);
+      } catch (error) {
+        console.error("Error fetching OWE rows:", error);
+        setTableRows([]);
+      }
+    };
+
+    loadRows();
+  }, [selectedMonth, selectedYear]);
+
+  const hasRows = useMemo(() => tableRows.length > 0, [tableRows]);
+
   const createtask = async (title: string, value: string) => {
     try {
       const data = await callToAction(title, value);
@@ -23,6 +123,7 @@ export default function OweManagement() {
       console.error("Error sending data:", error);
     }
   };
+
   return (
     <Box>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
@@ -47,7 +148,7 @@ export default function OweManagement() {
             {tableRows.map((row) => {
               const up = row.trend === "UP";
               return (
-                <Box key={row.smh} sx={{ display: "grid", gridTemplateColumns: "2fr 0.7fr 0.7fr 0.7fr 0.7fr 0.8fr 0.5fr", alignItems: "center", px: 1.2, py: 1.1, borderTop: "1px solid #EDF2F7", bgcolor: "#F8FAFC" }}>
+                <Box key={`${row.smh}-${row.div}`} sx={{ display: "grid", gridTemplateColumns: "2fr 0.7fr 0.7fr 0.7fr 0.7fr 0.8fr 0.5fr", alignItems: "center", px: 1.2, py: 1.1, borderTop: "1px solid #EDF2F7", bgcolor: "#F8FAFC" }}>
                   <Typography sx={{ fontSize: "12px", color: "#334155", fontWeight: 600 }}>{row.smh}</Typography>
                   <Typography sx={{ fontSize: "12px", color: "#64748B" }}>{row.div}</Typography>
                   <Typography sx={{ fontSize: "12px", color: "#334155" }}>{row.grant}</Typography>
@@ -63,6 +164,14 @@ export default function OweManagement() {
                 </Box>
               );
             })}
+
+            {!hasRows && (
+              <Box sx={{ px: 1.2, py: 1.5, borderTop: "1px solid #EDF2F7", bgcolor: "#F8FAFC" }}>
+                <Typography sx={{ fontSize: "12px", color: "#64748B" }}>
+                  No SHM data available for the selected month/year.
+                </Typography>
+              </Box>
+            )}
           </Box>
         </Box>
 

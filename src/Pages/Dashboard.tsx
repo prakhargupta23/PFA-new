@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Typography, IconButton, Button, Snackbar, Alert } from "@mui/material";
+import { Box, Typography, IconButton, Button, Snackbar, Alert, FormControl, Select, MenuItem, Menu } from "@mui/material";
 import {
   Devices as DeviceIcon,
   Refresh as RefreshIcon,
@@ -24,7 +24,8 @@ import AIDecisionBrain from "../modules/AIDecisionBrain";
 import TaskManagement from "../modules/TaskManagement";
 import { parseExcelFile, allMonths } from "../utils/pfaUtils";
 import { submitPfaData } from "../services/pfa.service";
-import "../css/dashboard.css";
+import { parseOweExcelFile } from "../utils/owe.Utils";
+import { submitOweData } from "../services/owe.service";
 
 const SIDEBAR_WIDTH = 190;
 const TOP_BAR_HEIGHT = 46;
@@ -43,8 +44,12 @@ const navItems: { key: NavKey; label: string; icon: React.ReactNode }[] = [
 ];
 
 export default function Dashboard() {
+  const now = new Date();
   const [activeNav, setActiveNav] = useState<NavKey>("executive-summary");
   const [uploadLoading, setUploadLoading] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState<string>(allMonths[now.getMonth()]);
+  const [selectedYear, setSelectedYear] = useState<string>(String(now.getFullYear()));
+  const [uploadMenuAnchor, setUploadMenuAnchor] = useState<null | HTMLElement>(null);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: SnackbarSeverity }>({
     open: false,
     message: "",
@@ -52,6 +57,9 @@ export default function Dashboard() {
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mainContentRef = useRef<HTMLDivElement>(null);
+  const BASE_YEAR = 2017;
+  const currentYear = now.getFullYear();
+  const yearOptions = Array.from({ length: currentYear - BASE_YEAR + 1 }, (_, i) => String(BASE_YEAR + i));
 
   useEffect(() => {
     if (mainContentRef.current) {
@@ -64,26 +72,58 @@ export default function Dashboard() {
   }, [activeNav]);
 
   const renderMainContent = () => {
+    const monthNumber = allMonths.indexOf(selectedMonth) + 1;
+
     switch (activeNav) {
+      // case "executive-summary":
+      //   return <ExecutiveSummary />;
       case "executive-summary":
-        return <ExecutiveSummary />;
+  return (
+    <ExecutiveSummary
+      month={monthNumber}
+      year={Number(selectedYear)}
+    />
+  );
+
       case "capex":
         return <CapexAnalysis />;
       case "owe":
-        return <OweManagement />;
+        return <OweManagement month={monthNumber} year={Number(selectedYear)} />;
       case "audit":
         return <AuditInspection />;
       case "ai-brain":
         return <AIDecisionBrain />;
       case "tasks":
         return <TaskManagement />;
-      default:
-        return <ExecutiveSummary />;
+      default: {
+        const monthNumber = allMonths.indexOf(selectedMonth) + 1;
+        return (
+          <ExecutiveSummary
+            month={monthNumber}
+            year={Number(selectedYear)}
+          />
+        );
+      }
     }
   };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
+  };
+  const shouldUseUploadMenu = activeNav === "executive-summary" || activeNav === "owe";
+  const isUploadMenuOpen = Boolean(uploadMenuAnchor);
+
+  const handleUploadMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setUploadMenuAnchor(event.currentTarget);
+  };
+
+  const handleUploadMenuClose = () => {
+    setUploadMenuAnchor(null);
+  };
+
+  const handleMenuUploadClick = () => {
+    handleUploadMenuClose();
+    handleUploadClick();
   };
 
   const showSnackbar = (message: string, severity: SnackbarSeverity) => {
@@ -91,17 +131,23 @@ export default function Dashboard() {
   };
 
   const handleFinancialUpload = async (file: File, contextLabel: string, nav: NavKey) => {
-    const now = new Date();
-    const month = allMonths[now.getMonth()];
-    const year = String(now.getFullYear());
+    const month = selectedMonth;
+    const year = selectedYear;
 
     const buffer = await file.arrayBuffer();
-    const { finalData } = await parseExcelFile(buffer, DEFAULT_DIVISION, month, year, []);
-    await submitPfaData({
-      ...finalData,
-      sourceModule: nav,
-      sourceLabel: contextLabel,
-    });
+    if (nav === "owe") {
+      const { finalData } = await parseOweExcelFile(buffer, DEFAULT_DIVISION, month, year);
+      console.log("Parsed OWE Excel Data:", finalData);
+      await submitOweData(finalData);
+    } else {
+      const { finalData } = await parseExcelFile(buffer, DEFAULT_DIVISION, month, year, []);
+      console.log("Parsed Excel Data:", finalData);
+      await submitPfaData({
+        ...finalData,
+        sourceModule: nav,
+        sourceLabel: contextLabel,
+      });
+    }
     showSnackbar(`${contextLabel} upload completed successfully.`, "success");
   };
 
@@ -201,7 +247,7 @@ export default function Dashboard() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          px: 2,
+          px: 1,
           position: "fixed",
           top: 0,
           left: 0,
@@ -212,7 +258,54 @@ export default function Dashboard() {
         <Typography variant="body2" fontWeight={600}>
           RailGuard PFA - Financial Governance Agent
         </Typography>
+        
+
+     
+<FormControl size="small" sx={{ mr:5 }}>
+  <Select
+    value={selectedMonth}
+    onChange={(e) => setSelectedMonth(e.target.value)}
+    sx={{
+      height: 32,
+      fontSize: "12px",
+      bgcolor: "#a2bbdb",
+      borderRadius: 1,
+      mr: -3
+      
+    }}
+  >
+    {allMonths.map((month) => (
+      <MenuItem key={month} value={month}>
+        {month}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
+
+<FormControl size="small" sx={{ mr: 3 }}>
+  <Select
+    value={selectedYear}
+    onChange={(e) => setSelectedYear(e.target.value)}
+    sx={{
+      height: 32,
+      fontSize: "12px",
+      bgcolor: "#a2bbdb",
+      borderRadius: 1,
+      mr: 3
+    }}
+  >
+    {yearOptions.map((year) => (
+      <MenuItem key={year} value={year}>
+        {year}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
+
+{/* ended here  */}
         <Box sx={{ position: "absolute", right: 8, display: "flex", alignItems: "center", gap: 0.3 }}>
+        {/* <Box sx={{ ml: "auto", display: "flex", alignItems: "center", gap: 1 }}> */}
+
           <input
             type="file"
             ref={fileInputRef}
@@ -223,7 +316,13 @@ export default function Dashboard() {
           <Button
             size="small"
             variant="contained"
-            onClick={handleUploadClick}
+            onClick={(event) => {
+              if (shouldUseUploadMenu) {
+                handleUploadMenuOpen(event);
+                return;
+              }
+              handleUploadClick();
+            }}
             disabled={uploadLoading}
             startIcon={<UploadIcon sx={{ fontSize: 14 }} />}
             sx={{
@@ -239,6 +338,58 @@ export default function Dashboard() {
           >
             {uploadLoading ? "Uploading..." : activeUploadConfig.label}
           </Button>
+          <Menu
+            anchorEl={uploadMenuAnchor}
+            open={shouldUseUploadMenu && isUploadMenuOpen}
+            onClose={handleUploadMenuClose}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+            PaperProps={{ sx: { p: 1.2, mt: 0.6, minWidth: 210 } }}
+          >
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+              <FormControl size="small" fullWidth>
+                <Select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  sx={{ fontSize: "11px", height: 32 }}
+                >
+                  {allMonths.map((month) => (
+                    <MenuItem key={month} value={month} sx={{ fontSize: "11px" }}>
+                      {month}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl size="small" fullWidth>
+                <Select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  sx={{ fontSize: "11px", height: 32 }}
+                >
+                  {yearOptions.map((year) => (
+                    <MenuItem key={year} value={year} sx={{ fontSize: "11px" }}>
+                      {year}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Button
+                size="small"
+                variant="contained"
+                onClick={handleMenuUploadClick}
+                disabled={uploadLoading}
+                sx={{
+                  height: 32,
+                  fontSize: "11px",
+                  textTransform: "none",
+                  bgcolor: "#2E63EE",
+                  "&:hover": { bgcolor: "#1E4FD0" },
+                }}
+              >
+                Upload Excel
+              </Button>
+            </Box>
+          </Menu>
           <IconButton size="small" sx={{ color: "#334155" }}>
             <DeviceIcon sx={{ fontSize: 16 }} />
             <Typography sx={{ fontSize: "11px", ml: 0.4 }}>Device</Typography>

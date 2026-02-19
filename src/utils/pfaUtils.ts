@@ -52,10 +52,6 @@ export const parseExcelFile = async (
       const sheetNames: { [key: string]: string } = {
         Zonaldata: "Zonal data",
         Unitdata: "Unit data",
-
-
-
-       
       };
 
     // const sheetNames: { [key: string]: string} = {
@@ -185,10 +181,14 @@ export const parseExcelFile = async (
                 actualforthemonthlastyearopenline: row.p,
                 actualforthemonthlastyearconst: row.q,
                 actualforthemonthlastyeartotal: row.r,
+//   missing s,t,u in the above, added below
+                actualuptothemonthopenline: row.s,
+                actualuptothemonthconst: row.t,
+                actualuptothemonthtotal: row.u,
 
-                utilizationofopenline: row.s,
-                utilizationofconst: row.t,
-                utilizationoftotal: row.u,
+                utilizationofopenline: row.v,
+                utilizationofconst: row.w,
+                utilizationoftotal: row.x,
                 
             })): [],
         unitdata: sheets.Unitdata
@@ -211,7 +211,7 @@ export const parseExcelFile = async (
         selectedMonthYear,
         division,
       };
-      console.log("workingExpenditure",finalData)
+      console.log("excel extracted data",finalData)
   
       const enrichedData = data.map((item) => ({
         ...item,

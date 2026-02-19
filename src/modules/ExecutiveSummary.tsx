@@ -1,22 +1,59 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
 import { Box, Typography, Chip } from "@mui/material";
 import { Public as GlobeIcon, Bolt as BoltIcon, Chat as EscalateIcon } from "@mui/icons-material";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { callToAction } from "../services/whatsapp.service";
+import { getDashboardData } from "../services/dashboardService";
 
-const divisionChartData = [
-  { name: "Jaipur", utilization: 820, timeLapse: 90 },
-  { name: "Jaipur", utilization: 85, timeLapse: 90 },
-  { name: "Ajmer", utilization: 45, timeLapse: 90 },
-  { name: "Ajmer", utilization: 105, timeLapse: 90 },
-  { name: "Jodhpur", utilization: 95, timeLapse: 90 },
-  { name: "Bikaner", utilization: 68, timeLapse: 90 },
-  { name: "Bikaner", utilization: 225, timeLapse: 90 },
-];
 
-const escalateDivisions = ["JAIPUR", "AJMER", "JODHPUR", "BIKANER"];
+const escalateDivisions = ["JODHPUR", "BIKANER", "AJMER", "JAIPUR"];
 
-export default function ExecutiveSummary() {
+export default function ExecutiveSummary({ month, year }: { month: number; year: number }) {
+const [utilization, setUtilization] = useState(0);
+const [earningsGrowth, setEarningsGrowth] = useState<number>(0);
+const [divisionData, setDivisionData] = useState([]);
+const maxGraphValue = Math.max(200, ...divisionData.map((item: any) => Number(item.utilization) || 0));
+const yAxisMax = Math.ceil(maxGraphValue / 50) * 50;
+const yAxisTicks = Array.from({ length: yAxisMax / 50 + 1 }, (_, i) => i * 50);
+useEffect(() => {
+  if (month && year) {
+    fetchDashboard();
+  }
+}, [month, year]);
+
+
+  
+  const fetchDashboard = async () => {
+    try {
+      const data = await getDashboardData(month, year);
+      setUtilization(data.utilization || 0);
+      setEarningsGrowth(Number(data.earningsGrowth) || 0);
+      setDivisionData(
+  data.graphData?.map((item: any, index: number) => ({
+    name: escalateDivisions[index],   // JAIPUR, AJMER etc
+    utilization: Number(item.value)
+  })) || []
+);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const formatGrowth = (value: number) => {
+    const absValue = Math.abs(value);
+    const twoDecimals = absValue.toFixed(2);
+    const formatted = twoDecimals.endsWith("00")
+      ? absValue.toFixed(1)
+      : twoDecimals.endsWith("0")
+        ? absValue.toFixed(1)
+        : twoDecimals;
+    return value >= 0 ? `+${formatted}%` : `-${formatted}%`;
+  };
+
+  const earningsGrowthText = formatGrowth(earningsGrowth);
+  const earningsGrowthColor = earningsGrowth < 0 ? "#EF4444" : "#22C55E";
+  const utilizationText = Number(utilization).toFixed(2).replace(/\.?0+$/, "");
   const handleCardClick = async (title: string, value: string) => {
     try {
       const data = await callToAction(title, value);
@@ -51,13 +88,14 @@ export default function ExecutiveSummary() {
           }}
           >
             <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>UTILIZATION</Typography>
-            <Typography sx={{ fontSize: "38px", color: "white", fontWeight: 700 }}>84.2%</Typography>
+            <Typography sx={{ fontSize: "38px", color: "white", fontWeight: 700 }}>{utilizationText}%
+</Typography>
           </Box>
           <Box sx={{
             bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
           }} onClick={() => { }}>
             <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>EARNINGS GROWTH</Typography>
-            <Typography sx={{ fontSize: "38px", color: "#22C55E", fontWeight: 700 }}>+5.2%</Typography>
+            <Typography sx={{ fontSize: "38px", color: earningsGrowthColor, fontWeight: 700 }}>{earningsGrowthText}</Typography>
           </Box>
           <Box sx={{
             bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
@@ -88,10 +126,24 @@ export default function ExecutiveSummary() {
           <Typography sx={{ fontSize: "22px", fontWeight: 700, color: "#111827", mb: 1 }}>Division Efficiency Matrix</Typography>
           <Box sx={{ height: 320 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={divisionChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <BarChart data={divisionData} margin={{ top: 10, right: 10, left: 8, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="#94A3B8" />
-                <YAxis domain={[0, 1000]} tick={{ fontSize: 10 }} stroke="#94A3B8" />
+                <XAxis
+                  dataKey="name"
+                  interval={0}
+                  height={48}
+                  angle={-15}
+                  textAnchor="end"
+                  tick={{ fontSize: 10, fill: "#64748B" }}
+                  stroke="#94A3B8"
+                />
+                <YAxis
+                  domain={[0, yAxisMax]}
+                  ticks={yAxisTicks}
+                  tick={{ fontSize: 10 }}
+                  stroke="#94A3B8"
+                  label={{ value: "fig. in crores", angle: -90, position: "insideLeft", style: { fill: "#64748B", fontSize: 10 } }}
+                />
                 <Tooltip />
                 <Bar dataKey="utilization" fill="#3B63E2" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="timeLapse" fill="#CBD5E1" radius={[3, 3, 0, 0]} />
