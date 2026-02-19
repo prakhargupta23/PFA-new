@@ -1,25 +1,19 @@
 /** @format */
 
 import { createBrowserRouter } from "react-router-dom";
-
-import LoginPage from "../Pages/LoginPage";
-import PrivateRoute from "./PrivateRoute";
 import Dashboard from "../Pages/Dashboard";
 import DocumentUpload from "../Pages/DocumentUpload";
-import ExecutiveSummary from "../modules/ExecutiveSummary";
+import VoiceInput from "../components/voicecapturing";
 
 export const routes = createBrowserRouter([
-  // {
-  //   path: "/Expenditure",
-  //   element: (
-  //     <PrivateRoute>
-  //       <Expenditure />
-  //     </PrivateRoute>
-  //   ),
-  // },
+
   {
     path: "/*",
     element: <Dashboard />,
+  },
+  {
+    path: "/voice",
+    element: <VoiceInput />,
   },
   {
     path: "/Upload",

@@ -1,7 +1,5 @@
-import axios from "axios";
 import { config } from "../shared/constants/config";
 import { fetchWrapper } from "../helpers/fetch-wrapper";
-import { Segment } from "@mui/icons-material";
 
 
 export const callToAction = async (title: string, value: string) => {

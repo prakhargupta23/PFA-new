@@ -16,7 +16,6 @@ import {
   CloudUpload as CloudUploadIcon,
   Download as DownloadIcon,
   Close as CloseIcon,
-  CheckCircle as CheckCircleIcon,
   Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { uploadDocumenttoblob, getdata } from '../services/document.service';
@@ -49,36 +48,36 @@ const DocumentUpload = () => {
       </Box>
       <Box sx={{ bgcolor: '#dfdede', padding: '24px 20px', maxWidth: '100%', margin: '0 auto' }}>
         <Box sx={{ bgcolor: '#ffffff', padding: '24px 20px', maxWidth: '60%', margin: '0 auto' }}>
-        <Box className="finance-header">
-          <Typography variant="h5" sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#343a40' }}>
-            Document Management
-          </Typography>
-          <Typography className="subtitle">Upload documents and review submissions</Typography>
-        </Box>
-        <Card className="finance-panel" sx={{ backgroundColor: '#fff', padding: '24px 28px' }}>
-          <CardContent sx={{ padding: 0 }}>
-            <Tabs
-              value={activeTab}
-              onChange={handleTabChange}
-              sx={{
-                marginBottom: '28px',
-                '& .MuiTabs-indicator': {
-                  backgroundColor: '#007bff',
-                },
-              }}
-            >
-              <Tab label="Upload Document" />
-              <Tab label="Review" />
-            </Tabs>
-            <Box>
-              {activeTab === 0 && <UploadDocument />}
-              {activeTab === 1 && <Review />}
-            </Box>
-          </CardContent>
-        </Card>
-        <Box className="finance-footer">
-          <Typography variant="caption">Document Management Portal</Typography>
-        </Box>
+          <Box className="finance-header">
+            <Typography variant="h5" sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#343a40' }}>
+              Document Management
+            </Typography>
+            <Typography className="subtitle">Upload documents and review submissions</Typography>
+          </Box>
+          <Card className="finance-panel" sx={{ backgroundColor: '#fff', padding: '24px 28px' }}>
+            <CardContent sx={{ padding: 0 }}>
+              <Tabs
+                value={activeTab}
+                onChange={handleTabChange}
+                sx={{
+                  marginBottom: '28px',
+                  '& .MuiTabs-indicator': {
+                    backgroundColor: '#007bff',
+                  },
+                }}
+              >
+                <Tab label="Upload Document" />
+                <Tab label="Review" />
+              </Tabs>
+              <Box>
+                {activeTab === 0 && <UploadDocument />}
+                {activeTab === 1 && <Review />}
+              </Box>
+            </CardContent>
+          </Card>
+          <Box className="finance-footer">
+            <Typography variant="caption">Document Management Portal</Typography>
+          </Box>
         </Box>
       </Box>
     </Box>
