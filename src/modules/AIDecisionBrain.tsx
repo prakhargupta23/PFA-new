@@ -3,6 +3,7 @@ import { Box, Typography, Chip, Button, TextField } from "@mui/material";
 import BoltIcon from "@mui/icons-material/Bolt";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import VoiceRecorder from "../components/voicecapturing";
 
 const riskRows = [
   {
@@ -72,32 +73,8 @@ export default function AIDecisionBrain() {
           </Box>
         </Box>
 
-        <Box sx={{ bgcolor: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: 1.4, p: 1.4, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-          <Box>
-            <Box sx={{ border: "1px solid #E2E8F0", borderRadius: 6, px: 1.5, py: 1.1, maxWidth: "62%", bgcolor: "#FAFBFD" }}>
-              <Typography sx={{ fontSize: "10.5px", color: "#334155" }}>
-                Deep-reasoning complete. I've detected utilization decoupling in Bikaner Track Renewals. Shall I draft a directive or start a briefing?
-              </Typography>
-            </Box>
-          </Box>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 2 }}>
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Type or use quick actions..."
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  fontSize: "11px",
-                  borderRadius: 4,
-                  bgcolor: "#F1F5F9",
-                },
-              }}
-            />
-            <Button variant="contained" sx={{ height: 40, px: 2.6, borderRadius: 2, fontSize: "11px", fontWeight: 700, bgcolor: "#3B63E2" }}>
-              SEND
-            </Button>
-          </Box>
+        <Box sx={{ bgcolor: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: 1.4, p: 1.4, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <VoiceRecorder />
         </Box>
       </Box>
     </Box>
