@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 
 import { Box, Typography, Chip } from "@mui/material";
 import { Public as GlobeIcon, Bolt as BoltIcon, Chat as EscalateIcon } from "@mui/icons-material";
@@ -10,36 +10,36 @@ import { getDashboardData } from "../services/dashboardService";
 const escalateDivisions = ["JODHPUR", "BIKANER", "AJMER", "JAIPUR"];
 
 export default function ExecutiveSummary({ month, year }: { month: number; year: number }) {
-const [utilization, setUtilization] = useState(0);
-const [earningsGrowth, setEarningsGrowth] = useState<number>(0);
-const [divisionData, setDivisionData] = useState([]);
-const maxGraphValue = Math.max(200, ...divisionData.map((item: any) => Number(item.utilization) || 0));
-const yAxisMax = Math.ceil(maxGraphValue / 50) * 50;
-const yAxisTicks = Array.from({ length: yAxisMax / 50 + 1 }, (_, i) => i * 50);
-useEffect(() => {
-  if (month && year) {
-    fetchDashboard();
-  }
-}, [month, year]);
-
-
-  
-  const fetchDashboard = async () => {
+  const [utilization, setUtilization] = useState(0);
+  const [earningsGrowth, setEarningsGrowth] = useState<number>(0);
+  const [divisionData, setDivisionData] = useState([]);
+  const maxGraphValue = Math.max(200, ...divisionData.map((item: any) => Number(item.utilization) || 0));
+  const yAxisMax = Math.ceil(maxGraphValue / 50) * 50;
+  const yAxisTicks = Array.from({ length: yAxisMax / 50 + 1 }, (_, i) => i * 50);
+  const fetchDashboard = useCallback(async () => {
     try {
       const data = await getDashboardData(month, year);
       setUtilization(data.utilization || 0);
       setEarningsGrowth(Number(data.earningsGrowth) || 0);
       setDivisionData(
-  data.graphData?.map((item: any, index: number) => ({
-    name: escalateDivisions[index],   // JAIPUR, AJMER etc
-    utilization: Number(item.value)
-  })) || []
-);
-
+        data.graphData?.map((item: any, index: number) => ({
+          name: escalateDivisions[index], // JAIPUR, AJMER etc
+          utilization: Number(item.value)
+        })) || []
+      );
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [month, year]);
+
+  useEffect(() => {
+    if (month && year) {
+      fetchDashboard();
+    }
+  }, [month, year, fetchDashboard]);
+
+
+
   const formatGrowth = (value: number) => {
     const absValue = Math.abs(value);
     const twoDecimals = absValue.toFixed(2);
@@ -89,7 +89,7 @@ useEffect(() => {
           >
             <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>UTILIZATION</Typography>
             <Typography sx={{ fontSize: "38px", color: "white", fontWeight: 700 }}>{utilizationText}%
-</Typography>
+            </Typography>
           </Box>
           <Box sx={{
             bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
