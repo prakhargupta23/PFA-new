@@ -17,9 +17,8 @@ async function getAllTasks() {
     }
 }
 
-async function updateTaskStatus(taskId: string, status: string) {
-    return fetchWrapper.post(`${config.apiUrl}/api/update-task-status`, {
+async function updateTaskStatus(taskId: string) {
+    return fetchWrapper.post(`${config.apiUrl}/api/update-task`, {
         taskId,
-        status,
     });
 }
