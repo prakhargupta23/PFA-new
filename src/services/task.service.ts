@@ -8,6 +8,7 @@ export const taskService = {
 
 async function getAllTasks() {
     try {
+        console.log("task fetching request", config.apiUrl);
         const response = await fetchWrapper.get(`${config.apiUrl}/api/get-task-data`);
         console.log("task fetching response", response);
         return response;
