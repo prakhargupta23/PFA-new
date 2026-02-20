@@ -7,8 +7,8 @@ import { taskService } from "../services/task.service";
 import { useCallback } from "react";
 
 interface Task {
-    _id: string;
-    createdBy: string;
+    taskId: string;
+    createdby: string;
     status: string;
     taskHeading: string;
     content: string;
@@ -16,8 +16,16 @@ interface Task {
     division: string;
     type: string;
     msgId: string;
+    assignedTo: string;
     createdAt?: string;
 }
+
+const formatPhone = (raw: string | null | undefined): string => {
+    if (!raw) return "—";
+    // Remove @c.us / @g.us suffix, then strip leading country code "91"
+    const withoutSuffix = raw.replace(/@[cg]\.us$/, "");
+    return withoutSuffix.startsWith("91") ? withoutSuffix.slice(2) : withoutSuffix;
+};
 
 export default function TaskManagement() {
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -27,6 +35,7 @@ export default function TaskManagement() {
         try {
             setLoading(true);
             const response = await taskService.getAllTasks();
+            console.log("response of tasks fetching", response);
             setTasks(response || []);
         } catch (error) {
             console.error("Error fetching tasks:", error);
@@ -35,10 +44,11 @@ export default function TaskManagement() {
         }
     }, []);
 
-    const handleStatusUpdate = async (taskId: string, newStatus: string) => {
+    const handleStatusUpdate = async (taskId: string) => {
         try {
-            await taskService.updateTaskStatus(taskId, newStatus);
+            await taskService.updateTaskStatus(taskId);
             // Refresh tasks after updating status
+            const updateTaskStatus = await taskService.updateTaskStatus(taskId);
             fetchTasks();
         } catch (error) {
             console.error("Error updating task status:", error);
@@ -64,14 +74,15 @@ export default function TaskManagement() {
             <Box>
                 <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "#1E293B", mb: 1 }}>All Tasks</Typography>
                 <Box sx={{ borderRadius: 1.2, overflow: "hidden", border: "1px solid #E2E8F0" }}>
-                    <Box sx={{ display: "grid", gridTemplateColumns: "0.8fr 1.5fr 2fr 0.8fr 0.8fr 0.8fr 0.7fr", px: 1.2, py: 1, bgcolor: "#F1F5F9", alignItems: "center" }}>
+                    <Box sx={{ display: "grid", gridTemplateColumns: "0.8fr 1.5fr 0.8fr 1fr 0.8fr 0.7fr", px: 1.2, py: 1, bgcolor: "#F1F5F9", alignItems: "center" }}>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>CREATED BY</Typography>
-                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>HEADING</Typography>
+                        {/* <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>CREATED AT</Typography> */}
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>CONTENT</Typography>
-                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>DIVISION</Typography>
+                        {/* <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>DIVISION</Typography> */}
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>TYPE</Typography>
+                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>ASSIGNED TO</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>STATUS</Typography>
-                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B", textAlign: "center" }}>ACTION</Typography>
+                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B", textAlign: "center" }}>TASK ID</Typography>
                     </Box>
 
                     {loading ? (
@@ -87,10 +98,10 @@ export default function TaskManagement() {
                             const isPending = task.status === "pending";
                             return (
                                 <Box
-                                    key={task._id}
+                                    key={task.taskId}
                                     sx={{
                                         display: "grid",
-                                        gridTemplateColumns: "0.8fr 1.5fr 2fr 0.8fr 0.8fr 0.8fr 0.7fr",
+                                        gridTemplateColumns: "0.8fr 1.5fr 0.8fr 1fr 0.8fr 0.7fr",
                                         alignItems: "center",
                                         px: 1.2,
                                         py: 1.1,
@@ -98,13 +109,22 @@ export default function TaskManagement() {
                                         bgcolor: "#F8FAFC",
                                     }}
                                 >
-                                    <Typography sx={{ fontSize: "12px", color: "#334155", fontWeight: 600 }}>{task.createdBy}</Typography>
-                                    <Typography sx={{ fontSize: "12px", color: "#64748B" }}>{task.taskHeading}</Typography>
-                                    <Typography sx={{ fontSize: "11px", color: "#64748B", whiteSpace: "pre-wrap" }}>
-                                        {task.content.length > 100 ? task.content.substring(0, 100) + "..." : task.content}
+                                    {/* Col 1 – CREATED BY */}
+                                    <Typography sx={{ fontSize: "11px", color: "#334155", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        {formatPhone(task.createdby)}
                                     </Typography>
-                                    <Typography sx={{ fontSize: "12px", color: "#334155" }}>{task.division}</Typography>
-                                    <Typography sx={{ fontSize: "12px", color: "#334155" }}>{task.type}</Typography>
+                                    {/* Col 2 – CONTENT */}
+                                    <Typography sx={{ fontSize: "11px", color: "#64748B", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        {task.content.length > 80 ? task.content.substring(0, 80) + "…" : task.content}
+                                    </Typography>
+                                    {/* Col 3 – TYPE */}
+                                    <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        {task.type}
+                                    </Typography>
+                                    {/* Col 4 – ASSIGNED TO */}
+                                    <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        {formatPhone(task.assignedTo)}
+                                    </Typography>
                                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.4 }}>
                                         {isPending ? (
                                             <PendingIcon sx={{ fontSize: 14, color: "#F59E0B" }} />
@@ -122,7 +142,10 @@ export default function TaskManagement() {
                                             {task.status}
                                         </Typography>
                                     </Box>
-                                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                                    <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        {task.taskId}
+                                    </Typography>
+                                    {/* <Box sx={{ display: "flex", justifyContent: "center" }}>
                                         {isPending && (
                                             <Button
                                                 size="small"
@@ -136,12 +159,12 @@ export default function TaskManagement() {
                                                     color: "#16A34A",
                                                     "&:hover": { borderColor: "#16A34A", bgcolor: "#F0FDF4" },
                                                 }}
-                                                onClick={() => handleStatusUpdate(task._id, "completed")}
+                                                onClick={() => handleStatusUpdate(task._id)}
                                             >
                                                 Complete
                                             </Button>
                                         )}
-                                    </Box>
+                                    </Box> */}
                                 </Box>
                             );
                         })

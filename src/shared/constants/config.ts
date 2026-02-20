@@ -1,9 +1,9 @@
 /** @format */
 
 const dev = Object.freeze({
-  //apiUrl: "https://backendnwr.azurewebsites.net",
-  apiUrl: "http://localhost:7071",
-  // apiUrl: "https://pfanewbackend-agesbpekdae0d3cs.centralindia-01.azurewebsites.net",
+
+  //apiUrl: "http://localhost:7071",
+  apiUrl: "https://pfanewbackend-agesbpekdae0d3cs.centralindia-01.azurewebsites.net",
 });
 
 
