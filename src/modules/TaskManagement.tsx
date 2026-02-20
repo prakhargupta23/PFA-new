@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Chip, Button, IconButton } from "@mui/material";
+import { Box, Typography, Chip, IconButton } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PendingIcon from "@mui/icons-material/Pending";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -44,16 +44,16 @@ export default function TaskManagement() {
         }
     }, []);
 
-    const handleStatusUpdate = async (taskId: string) => {
-        try {
-            await taskService.updateTaskStatus(taskId);
-            // Refresh tasks after updating status
-            const updateTaskStatus = await taskService.updateTaskStatus(taskId);
-            fetchTasks();
-        } catch (error) {
-            console.error("Error updating task status:", error);
-        }
-    };
+    // const handleStatusUpdate = async (taskId: string) => {
+    //     try {
+    //         await taskService.updateTaskStatus(taskId);
+    //         // Refresh tasks after updating status
+    //         const updateTaskStatus = await taskService.updateTaskStatus(taskId);
+    //         fetchTasks();
+    //     } catch (error) {
+    //         console.error("Error updating task status:", error);
+    //     }
+    // };
 
     useEffect(() => {
         fetchTasks();
