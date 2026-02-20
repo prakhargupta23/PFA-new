@@ -98,7 +98,7 @@ export default function TaskManagement() {
                             const isPending = task.status === "pending";
                             return (
                                 <Box
-                                    key={task._id}
+                                    key={task.taskId}
                                     sx={{
                                         display: "grid",
                                         gridTemplateColumns: "0.8fr 1.5fr 0.8fr 1fr 0.8fr 0.7fr",
