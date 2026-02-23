@@ -2,7 +2,7 @@
 
 const dev = Object.freeze({
 
-  //apiUrl: "http://localhost:7071",
+  // apiUrl: "http://localhost:7071",
   apiUrl: "https://pfanewportalbackend-fegwfzdphyhbb2g2.centralindia-01.azurewebsites.net",
 });
 

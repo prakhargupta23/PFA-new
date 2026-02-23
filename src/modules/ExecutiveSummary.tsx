@@ -4,7 +4,7 @@ import { Box, Typography, Chip } from "@mui/material";
 import { Public as GlobeIcon, Bolt as BoltIcon, Chat as EscalateIcon } from "@mui/icons-material";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { callToAction } from "../services/whatsapp.service";
-import { getDashboardData } from "../services/dashboardService";
+import { dashboardService } from "../services/dashboardService";
 
 
 const escalateDivisions = ["JODHPUR", "BIKANER", "AJMER", "JAIPUR"];
@@ -18,7 +18,7 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
   const yAxisTicks = Array.from({ length: yAxisMax / 50 + 1 }, (_, i) => i * 50);
   const fetchDashboard = useCallback(async () => {
     try {
-      const data = await getDashboardData(month, year);
+      const data = await dashboardService.getDashboardData(month, year);
       setUtilization(data.utilization || 0);
       setEarningsGrowth(Number(data.earningsGrowth) || 0);
       setDivisionData(
