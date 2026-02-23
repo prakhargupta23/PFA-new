@@ -8,6 +8,7 @@ export const taskService = {
 
 async function getAllTasks() {
     try {
+        console.log("task fetching request", config.apiUrl);
         const response = await fetchWrapper.get(`${config.apiUrl}/api/get-task-data`);
         console.log("task fetching response", response);
         return response;
@@ -17,9 +18,8 @@ async function getAllTasks() {
     }
 }
 
-async function updateTaskStatus(taskId: string, status: string) {
-    return fetchWrapper.post(`${config.apiUrl}/api/update-task-status`, {
+async function updateTaskStatus(taskId: string) {
+    return fetchWrapper.post(`${config.apiUrl}/api/update-task`, {
         taskId,
-        status,
     });
 }

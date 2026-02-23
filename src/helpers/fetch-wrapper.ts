@@ -20,10 +20,7 @@ function get(url: string) {
   const requestOptions: RequestInit = {
     method: "GET",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeader(url),
-    },
+    headers: { "Content-Type": "application/json", ...authHeader(url) },
   };
 
   return fetch(url, requestOptions)

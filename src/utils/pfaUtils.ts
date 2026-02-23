@@ -34,22 +34,22 @@ export const allMonths = [
 
 
 export const parseExcelFile = async (
-    buffer: ArrayBuffer,
-    division: string,
-    month: string,
-    year: string,
-    data: any[]
-  ) => {
-    try {
-      // load workbook & pick the sheets
-      const workbook: any = XLSX.read(new Uint8Array(buffer), { type: "array" });
-      console.log("gggg",workbook.Sheets);
-  
-      // Define the expected sheet names
-      const sheetNames: { [key: string]: string } = {
-        Zonaldata: "Zonal data",
-        Unitdata: "Unit data",
-      };
+  buffer: ArrayBuffer,
+  division: string,
+  month: string,
+  year: string,
+  data: any[]
+) => {
+  try {
+    // load workbook & pick the sheets
+    const workbook: any = XLSX.read(new Uint8Array(buffer), { type: "array" });
+    console.log("gggg", workbook.Sheets);
+
+    // Define the expected sheet names
+    const sheetNames: { [key: string]: string } = {
+      Zonaldata: "Zonal data",
+      Unitdata: "Unit data",
+    };
 
     // const sheetNames: { [key: string]: string} = {
 
@@ -175,53 +175,53 @@ export const parseExcelFile = async (
           actualforthemonthconst: row.n,
           actualforthemonthtotal: row.o,
 
-                actualforthemonthlastyearopenline: row.p,
-                actualforthemonthlastyearconst: row.q,
-                actualforthemonthlastyeartotal: row.r,
-//   missing s,t,u in the above, added below
-                actualuptothemonthopenline: row.s,
-                actualuptothemonthconst: row.t,
-                actualuptothemonthtotal: row.u,
+          actualforthemonthlastyearopenline: row.p,
+          actualforthemonthlastyearconst: row.q,
+          actualforthemonthlastyeartotal: row.r,
+          //   missing s,t,u in the above, added below
+          actualuptothemonthopenline: row.s,
+          actualuptothemonthconst: row.t,
+          actualuptothemonthtotal: row.u,
 
-                utilizationofopenline: row.v,
-                utilizationofconst: row.w,
-                utilizationoftotal: row.x,
-                
-            })): [],
-        unitdata: sheets.Unitdata
-            ? parseSheetWithAlphaKeys(sheets.Unitdata).map((row) => ({
-                division,
-                date: formattedDate,
-                figure: detectFigureUnit(sheets.Unitdata),
-                index: row.a,
-                au: row.b,
-                planheadname: row.c,
-                rglastyear: row.d,
-                actualtotheendoflastyear: row.e,
-                actualforthemonthlastyear: row.f,
-                actualforthemonth: row.g,
-                percentageutilization: row.h,
-            })): [],
+          utilizationofopenline: row.v,
+          utilizationofconst: row.w,
+          utilizationoftotal: row.x,
 
-        
-  
-        selectedMonthYear,
-        division,
-      };
-      console.log("excel extracted data",finalData)
-  
-      const enrichedData = data.map((item) => ({
-        ...item,
-        date: selectedMonthYear,
-        division,
-      }));
-  
-      return { finalData };
-    } catch (error: any) {
-      console.error("Error parsing Excel file:", error.message);
-      return { finalData: {}, enrichedData: [] };
-    }
-  };
+        })) : [],
+      unitdata: sheets.Unitdata
+        ? parseSheetWithAlphaKeys(sheets.Unitdata).map((row) => ({
+          division,
+          date: formattedDate,
+          figure: detectFigureUnit(sheets.Unitdata),
+          index: row.a,
+          au: row.b,
+          planheadname: row.c,
+          rglastyear: row.d,
+          actualtotheendoflastyear: row.e,
+          actualforthemonthlastyear: row.f,
+          actualforthemonth: row.g,
+          percentageutilization: row.h,
+        })) : [],
+
+
+
+      selectedMonthYear,
+      division,
+    };
+    console.log("excel extracted data", finalData)
+
+    // const enrichedData = data.map((item) => ({
+    //   ...item,
+    //   date: selectedMonthYear,
+    //   division,
+    // }));
+
+    return { finalData };
+  } catch (error: any) {
+    console.error("Error parsing Excel file:", error.message);
+    return { finalData: {} };
+  }
+};
 
 
 

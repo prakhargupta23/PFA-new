@@ -5,7 +5,7 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { callToAction } from "../services/whatsapp.service";
-import { getOweData } from "../services/owedashboard.service";
+import { oweService } from "../services/owedashboard.service";
 
 type OweRow = {
   smh: string;
@@ -74,7 +74,7 @@ export default function OweManagement({ month, year }: { month?: number; year?: 
   useEffect(() => {
     const loadRows = async () => {
       try {
-        const response = await getOweData(selectedMonth, selectedYear);
+        const response = await oweService.getOweData(selectedMonth, selectedYear);
         const rawRows = extractRows(response);
 
         const mappedRows: OweRow[] = rawRows.map((row: any) => {
