@@ -19,7 +19,7 @@ function get(url: string) {
 
   const requestOptions: RequestInit = {
     method: "GET",
-    credentials: "include",
+    credentials: "true",
     headers: {
       "Content-Type": "application/json",
       ...authHeader(url),
@@ -42,7 +42,7 @@ function get(url: string) {
 function download(url: string) {
   const requestOptions: RequestInit = {
     method: "GET",
-    credentials: "include",
+    credentials: "true",
     headers: { "Content-Type": "application/json", ...authHeader(url) },
   };
   return fetch(url, requestOptions);
@@ -52,7 +52,7 @@ function postFormData(url: string, body: any) {
   const requestOptions: RequestInit = {
     method: "POST",
     headers: { ...authHeader(url) },
-    credentials: "include",
+    credentials: "true",
     body: body,
   };
   return fetch(url, requestOptions).then(handleResponse);
@@ -63,7 +63,7 @@ async function post(url: string, body: any) {
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeader(url) },
 
-    credentials: "include",
+    credentials: "true",
     body: JSON.stringify(body),
   };
 
@@ -76,7 +76,7 @@ async function postZip(url: string, body: any) {
   const requestOptions: RequestInit = {
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeader(url) },
-    credentials: "include",
+    credentials: "true",
     body: JSON.stringify(body),
   };
 
@@ -114,7 +114,7 @@ function put(url: string, body: any) {
   const requestOptions: RequestInit = {
     method: "PUT",
     headers: { "Content-Type": "application/json", ...authHeader(url) },
-    credentials: "include",
+    credentials: "true",
     body: JSON.stringify(body),
   };
   return fetch(url, requestOptions).then(handleResponse);
@@ -124,7 +124,7 @@ function put(url: string, body: any) {
 function _delete(url: string) {
   const requestOptions: RequestInit = {
     method: "DELETE",
-    credentials: "include",
+    credentials: "true",
     headers: { ...authHeader(url) },
   };
   return fetch(url, requestOptions).then(handleResponse);
