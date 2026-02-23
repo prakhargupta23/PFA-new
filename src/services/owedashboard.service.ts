@@ -1,3 +1,5 @@
+import { fetchWrapper } from "../helpers/fetch-wrapper";
+import { config } from "../shared/constants/config";
 import axios from "axios";
 
 const toSelectedMonthYear = (month: number, year: number): string => {
@@ -11,7 +13,7 @@ export const getOweData = async (
   division = "North Western Railway"
 ) => {
   const response = await axios.post(
-    "http://localhost:7071/api/get-owe-data",
+    `${config.apiUrl}/api/get-owe-data`,
     {
       month,
       year,
