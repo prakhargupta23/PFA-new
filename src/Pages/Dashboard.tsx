@@ -47,8 +47,8 @@ export default function Dashboard() {
   const now = new Date();
   const [activeNav, setActiveNav] = useState<NavKey>("executive-summary");
   const [uploadLoading, setUploadLoading] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState<string>(allMonths[now.getMonth()]);
-  const [selectedYear, setSelectedYear] = useState<string>(String(now.getFullYear()));
+  const [selectedMonth, setSelectedMonth] = useState<string>("December");
+  const [selectedYear, setSelectedYear] = useState<string>("2025");
   const [uploadMenuAnchor, setUploadMenuAnchor] = useState<null | HTMLElement>(null);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: SnackbarSeverity }>({
     open: false,

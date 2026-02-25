@@ -140,11 +140,19 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
                 <YAxis
                   domain={[0, yAxisMax]}
                   ticks={yAxisTicks}
-                  tick={{ fontSize: 10 }}
+                  tick={false}
                   stroke="#94A3B8"
-                  label={{ value: "fig. in crores", angle: -90, position: "insideLeft", style: { fill: "#64748B", fontSize: 10 } }}
+                  axisLine={{ stroke: "#94A3B8" }}
                 />
-                <Tooltip />
+                <Tooltip
+                  formatter={(value: number | string) => {
+                    const numericValue = Number(value);
+                    if (Number.isNaN(numericValue)) {
+                      return value;
+                    }
+                    return `${numericValue.toFixed(2)}%`;
+                  }}
+                />
                 <Bar dataKey="utilization" fill="#3B63E2" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="timeLapse" fill="#CBD5E1" radius={[3, 3, 0, 0]} />
               </BarChart>
