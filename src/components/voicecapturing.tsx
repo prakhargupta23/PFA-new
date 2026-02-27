@@ -33,7 +33,7 @@ const VoiceRecorder: React.FC = () => {
                 reader.onloadend = async () => {
                     const base64cleanedAudio = (reader.result as string).split(",")[1];
                     try {
-                        const response = await fetch("https://nwrsarvam-azd2h8dvb2dsb7d2.centralindia-01.azurewebsites.net/transcribe", {
+                        const response = await fetch("https://pricilla-sloughy-fumblingly.ngrok-free.dev/transcribe", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
