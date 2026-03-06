@@ -1,10 +1,13 @@
 import axios from "axios";
+import { config } from "../shared/constants/config";
 export const getDashboardData = async (month: number, year: number) => {
-  const response = await axios.post(
-    "http://localhost:7071/api/get-dashboard-data",
+  const response = await axios.get(
+    `${config.apiUrl}/get-dashboard-data`,
     {
-      month,
-      year
+      params: {
+        month,
+        year
+      }
     }
   );
 
