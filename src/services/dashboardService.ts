@@ -1,25 +1,42 @@
-import { fetchWrapper } from "../helpers/fetch-wrapper";
-import { config } from "../shared/constants/config";
-export const dashboardService = {
-  getDashboardData,
-};
 
-async function getDashboardData(month: number, year: number) {
-  return fetchWrapper.post(`${config.apiUrl}/api/get-dashboard-data`, {
-    month,
-    year,
-  });
+import axios from "axios";
+import { config } from "../shared/constants/config";
+
+export const dashboardService = {
+  getUploadDashboardData,
+  getOweUploadDashboardData,
+  getDashboardData
 }
 
-// import axios from "axios";
-// export const getDashboardData = async (month: number, year: number) => {
-//   const response = await axios.post(
-//     "http://localhost:7071/api/get-dashboard-data",
-//     {
-//       month,
-//       year
-//     }
-//   );
+async function getUploadDashboardData() {
+  const response = await axios.get(
+    `${config.apiUrl}/api/get-zonal-months`,
+    // {
+    //   params: { month, year }
+    // }
+  );
+  console.log("dashboard data", response.data);
+  return response.data;
+};
 
-//   return response.data;
-// };
+async function getOweUploadDashboardData() {
+  const response = await axios.get(
+    `${config.apiUrl}/api/get-gross-earnings-months`,
+  );
+  console.log("owe dashboard data", response.data);
+  return response.data;
+};
+
+
+// import axios from "axios";
+async function getDashboardData(month: number, year: number) {
+  const response = await axios.post(
+    `${config.apiUrl}/api/get-dashboard-data`,
+    {
+      month,
+      year
+    }
+  );
+
+  return response.data;
+};
