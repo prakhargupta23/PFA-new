@@ -14,7 +14,7 @@ import {
   Person as PersonIcon,
   CalendarToday as CalendarIcon,
   NotificationsNone as NotificationsIcon,
-  Upload as UploadIcon,
+  // Upload as UploadIcon,
 } from "@mui/icons-material";
 import ExecutiveSummary from "../modules/ExecutiveSummary";
 import CapexAnalysis from "../modules/CapexAnalysis";
@@ -113,9 +113,9 @@ export default function Dashboard() {
   const shouldUseUploadMenu = activeNav === "executive-summary" || activeNav === "owe";
   const isUploadMenuOpen = Boolean(uploadMenuAnchor);
 
-  const handleUploadMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setUploadMenuAnchor(event.currentTarget);
-  };
+  // const handleUploadMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  //   setUploadMenuAnchor(event.currentTarget);
+  // };
 
   const handleUploadMenuClose = () => {
     setUploadMenuAnchor(null);

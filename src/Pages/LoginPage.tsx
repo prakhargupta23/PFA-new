@@ -102,13 +102,13 @@ function LoginPage() {
                     localStorage.setItem("role", role);
                     setSnackbarOpen(true);
                     setSnackbarMessage("Login successfully");
-                    if (role == "PFA") {
+                    if (role === "PFA") {
                       navigate("/Dashboard");
                     }
-                    else if (role == "CAPEX") {
+                    else if (role === "CAPEX") {
                       navigate("/Capex");
                     }
-                    else if (role == "OWE") {
+                    else if (role === "OWE") {
                       navigate("/OWE");
                     }
                   } else {
