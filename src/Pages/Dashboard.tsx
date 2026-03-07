@@ -78,12 +78,12 @@ export default function Dashboard() {
       // case "executive-summary":
       //   return <ExecutiveSummary />;
       case "executive-summary":
-  return (
-    <ExecutiveSummary
-      month={monthNumber}
-      year={Number(selectedYear)}
-    />
-  );
+        return (
+          <ExecutiveSummary
+            month={monthNumber}
+            year={Number(selectedYear)}
+          />
+        );
 
       case "capex":
         return <CapexAnalysis />;
@@ -139,7 +139,7 @@ export default function Dashboard() {
       const { finalData } = await parseOweExcelFile(buffer, DEFAULT_DIVISION, month, year);
       console.log("Parsed OWE Excel Data:", finalData);
       await submitOweData(finalData);
-    } else {
+    } else if (nav === "executive-summary") {
       const { finalData } = await parseExcelFile(buffer, DEFAULT_DIVISION, month, year, []);
       console.log("Parsed Excel Data:", finalData);
       await submitPfaData({
@@ -258,53 +258,53 @@ export default function Dashboard() {
         <Typography variant="body2" fontWeight={600}>
           RailGuard PFA - Financial Governance Agent
         </Typography>
-        
 
-     
-<FormControl size="small" sx={{ mr:5 }}>
-  <Select
-    value={selectedMonth}
-    onChange={(e) => setSelectedMonth(e.target.value)}
-    sx={{
-      height: 32,
-      fontSize: "12px",
-      bgcolor: "#a2bbdb",
-      borderRadius: 1,
-      mr: -3
-      
-    }}
-  >
-    {allMonths.map((month) => (
-      <MenuItem key={month} value={month}>
-        {month}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl>
 
-<FormControl size="small" sx={{ mr: 3 }}>
-  <Select
-    value={selectedYear}
-    onChange={(e) => setSelectedYear(e.target.value)}
-    sx={{
-      height: 32,
-      fontSize: "12px",
-      bgcolor: "#a2bbdb",
-      borderRadius: 1,
-      mr: 3
-    }}
-  >
-    {yearOptions.map((year) => (
-      <MenuItem key={year} value={year}>
-        {year}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl>
 
-{/* ended here  */}
+        <FormControl size="small" sx={{ mr: 5 }}>
+          <Select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            sx={{
+              height: 32,
+              fontSize: "12px",
+              bgcolor: "#a2bbdb",
+              borderRadius: 1,
+              mr: -3
+
+            }}
+          >
+            {allMonths.map((month) => (
+              <MenuItem key={month} value={month}>
+                {month}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl size="small" sx={{ mr: 3 }}>
+          <Select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            sx={{
+              height: 32,
+              fontSize: "12px",
+              bgcolor: "#a2bbdb",
+              borderRadius: 1,
+              mr: 3
+            }}
+          >
+            {yearOptions.map((year) => (
+              <MenuItem key={year} value={year}>
+                {year}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* ended here  */}
         <Box sx={{ position: "absolute", right: 8, display: "flex", alignItems: "center", gap: 0.3 }}>
-        {/* <Box sx={{ ml: "auto", display: "flex", alignItems: "center", gap: 1 }}> */}
+          {/* <Box sx={{ ml: "auto", display: "flex", alignItems: "center", gap: 1 }}> */}
 
           <input
             type="file"
@@ -313,7 +313,7 @@ export default function Dashboard() {
             accept={activeUploadConfig.accept}
             style={{ display: "none" }}
           />
-          <Button
+          {/* <Button
             size="small"
             variant="contained"
             onClick={(event) => {
@@ -337,7 +337,7 @@ export default function Dashboard() {
             }}
           >
             {uploadLoading ? "Uploading..." : activeUploadConfig.label}
-          </Button>
+          </Button> */}
           <Menu
             anchorEl={uploadMenuAnchor}
             open={shouldUseUploadMenu && isUploadMenuOpen}
@@ -360,7 +360,7 @@ export default function Dashboard() {
                   ))}
                 </Select>
               </FormControl>
-              <FormControl size="small" fullWidth>
+              {/* <FormControl size="small" fullWidth>
                 <Select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(e.target.value)}
@@ -372,7 +372,7 @@ export default function Dashboard() {
                     </MenuItem>
                   ))}
                 </Select>
-              </FormControl>
+              </FormControl> */}
               <Button
                 size="small"
                 variant="contained"

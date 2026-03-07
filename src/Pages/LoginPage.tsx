@@ -41,7 +41,7 @@ function LoginPage() {
         alignItems: "stretch",
       }}
     >
-      <Box sx={{ mr: '0%',position: 'absolute', left: 450, right: 0, bottom: 0, display: 'flex', justifyContent: 'center', zIndex: 2, pointerEvents: 'none' }}>
+      <Box sx={{ mr: '0%', position: 'absolute', left: 450, right: 0, bottom: 0, display: 'flex', justifyContent: 'center', zIndex: 2, pointerEvents: 'none' }}>
         <img src={train} alt="train" style={{ width: 700, opacity: 0.1, color: '#fff', filter: 'brightness(1) invert(1)', transform: 'scaleX(-1)' }} />
       </Box>
       <Grid container sx={{ minHeight: "100vh" }}>
@@ -102,7 +102,15 @@ function LoginPage() {
                     localStorage.setItem("role", role);
                     setSnackbarOpen(true);
                     setSnackbarMessage("Login successfully");
-                    navigate("/Expenditure");
+                    if (role == "PFA") {
+                      navigate("/Dashboard");
+                    }
+                    else if (role == "CAPEX") {
+                      navigate("/Capex");
+                    }
+                    else if (role == "OWE") {
+                      navigate("/OWE");
+                    }
                   } else {
                     setSnackbarOpen(true);
                     setSnackbarMessage(`Login unsuccessfull ${response.message}`);
