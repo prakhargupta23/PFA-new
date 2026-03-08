@@ -71,21 +71,35 @@ function LoginPage() {
         >
 
           <Paper
-            elevation={6}
+            elevation={0}
             sx={{
-              p: 4,
-              width: 350,
+              p: 5,
+              width: { xs: "90%", sm: 400 },
               textAlign: "center",
-              borderRadius: 3,
-              backgroundColor: "rgba(255,255,255,0.2)",
+              borderRadius: 4,
+              backgroundColor: "rgba(255, 255, 255, 0.15)",
+              backdropFilter: "blur(12px)",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+              boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.3)",
             }}
           >
             <Typography
-              variant="h3"
+              variant="h4"
               gutterBottom
-              sx={{ fontWeight: "bold", color: "#fff" }}
+              sx={{
+                fontWeight: 800,
+                color: "#fff",
+                textShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                mb: 1
+              }}
             >
-              Hello, Welcome
+              Welcome Back
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: "rgba(255, 255, 255, 0.8)", mb: 4, fontWeight: 500 }}
+            >
+              Sign in to access the RailGuard PFA Portal
             </Typography>
             <Formik
               initialValues={{ username: "", password: "" }}
@@ -133,7 +147,7 @@ function LoginPage() {
                 handleSubmit,
               }) => (
                 <Form onSubmit={handleSubmit}>
-                  <Box mb={4} border={'#fff'}>
+                  <Box mb={3}>
                     <TextField
                       fullWidth
                       id="username"
@@ -147,23 +161,26 @@ function LoginPage() {
                       helperText={touched.username && errors.username}
                       sx={{
                         '& .MuiOutlinedInput-root': {
+                          backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                          borderRadius: 2,
                           '& fieldset': {
-                            borderColor: '#fff',
-                            borderWidth: 2,
+                            borderColor: 'rgba(255,255,255,0.4)',
+                            borderWidth: 1.5,
                           },
                           '&:hover fieldset': {
                             borderColor: '#fff',
                           },
                           '&.Mui-focused fieldset': {
                             borderColor: '#fff',
+                            borderWidth: 2,
                           },
                         },
-                        input: { color: '#000' },
-                        label: { color: '#000', fontWeight: 700, },
+                        input: { color: '#fff' },
+                        label: { color: 'rgba(255,255,255,0.8)', fontWeight: 500 },
                       }}
                     />
                   </Box>
-                  <Box mb={5}>
+                  <Box mb={4}>
                     <TextField
                       fullWidth
                       id="password"
@@ -178,45 +195,51 @@ function LoginPage() {
                       helperText={touched.password && errors.password}
                       sx={{
                         '& .MuiOutlinedInput-root': {
+                          backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                          borderRadius: 2,
                           '& fieldset': {
-                            borderColor: '#fff',
-                            borderWidth: 2,
+                            borderColor: 'rgba(255,255,255,0.4)',
+                            borderWidth: 1.5,
                           },
                           '&:hover fieldset': {
                             borderColor: '#fff',
                           },
                           '&.Mui-focused fieldset': {
                             borderColor: '#fff',
+                            borderWidth: 2,
                           },
                         },
-                        input: { color: '#000' },
-                        label: { color: '#000', fontWeight: 700, },
+                        input: { color: '#fff' },
+                        label: { color: 'rgba(255,255,255,0.8)', fontWeight: 500 },
                       }}
                     />
                   </Box>
                   <Button
                     type="submit"
                     variant="contained"
+                    fullWidth
                     disabled={loading}
                     sx={{
-                      height: '3rem',
+                      height: '3.2rem',
                       fontSize: '1rem',
-                      backgroundColor: '#1976d2',
+                      background: 'linear-gradient(90deg, #1976d2 0%, #4791db 100%)',
                       color: '#fff',
                       fontWeight: 700,
-                      width: 180,
-                      mx: 'auto',
-                      display: 'block',
-                      transition: 'background 0.2s',
+                      borderRadius: 2,
+                      boxShadow: '0 4px 14px 0 rgba(25, 118, 210, 0.39)',
+                      textTransform: 'none',
+                      transition: 'all 0.3s ease-in-out',
                       '&:hover': {
-                        backgroundColor: '#4791db',
+                        background: 'linear-gradient(90deg, #1565c0 0%, #1976d2 100%)',
+                        boxShadow: '0 6px 20px rgba(25, 118, 210, 0.23)',
+                        transform: 'translateY(-2px)'
                       },
                     }}
                   >
                     {loading ? (
                       <CircularProgress size={24} color="inherit" />
                     ) : (
-                      "Login"
+                      "Sign In"
                     )}
                   </Button>
                 </Form>

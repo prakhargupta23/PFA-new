@@ -1,9 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Typography, IconButton, Button, Snackbar, Alert, FormControl, Select, MenuItem, Menu } from "@mui/material";
 import {
-  Devices as DeviceIcon,
-  Refresh as RefreshIcon,
-  OpenInFull as FullscreenIcon,
   ShowChart as SummaryIcon,
   Business as CapexIcon,
   AttachMoney as OweIcon,
@@ -14,7 +11,6 @@ import {
   Person as PersonIcon,
   CalendarToday as CalendarIcon,
   NotificationsNone as NotificationsIcon,
-  // Upload as UploadIcon,
 } from "@mui/icons-material";
 import ExecutiveSummary from "../modules/ExecutiveSummary";
 import CapexAnalysis from "../modules/CapexAnalysis";
@@ -258,53 +254,44 @@ export default function Dashboard() {
         <Typography variant="body2" fontWeight={600}>
           RailGuard PFA - Financial Governance Agent
         </Typography>
+        <Box sx={{ position: "absolute", right: 24, display: "flex", alignItems: "center", gap: 2 }}>
+          <FormControl size="small">
+            <Select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              sx={{
+                height: 32,
+                fontSize: "12px",
+                bgcolor: "#a2bbdb",
+                borderRadius: 1,
+              }}
+            >
+              {allMonths.map((month) => (
+                <MenuItem key={month} value={month}>
+                  {month}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-
-
-        <FormControl size="small" sx={{ mr: 5 }}>
-          <Select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            sx={{
-              height: 32,
-              fontSize: "12px",
-              bgcolor: "#a2bbdb",
-              borderRadius: 1,
-              mr: -3
-
-            }}
-          >
-            {allMonths.map((month) => (
-              <MenuItem key={month} value={month}>
-                {month}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl size="small" sx={{ mr: 3 }}>
-          <Select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-            sx={{
-              height: 32,
-              fontSize: "12px",
-              bgcolor: "#a2bbdb",
-              borderRadius: 1,
-              mr: 3
-            }}
-          >
-            {yearOptions.map((year) => (
-              <MenuItem key={year} value={year}>
-                {year}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {/* ended here  */}
-        <Box sx={{ position: "absolute", right: 8, display: "flex", alignItems: "center", gap: 0.3 }}>
-          {/* <Box sx={{ ml: "auto", display: "flex", alignItems: "center", gap: 1 }}> */}
+          <FormControl size="small">
+            <Select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              sx={{
+                height: 32,
+                fontSize: "12px",
+                bgcolor: "#a2bbdb",
+                borderRadius: 1,
+              }}
+            >
+              {yearOptions.map((year) => (
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           <input
             type="file"
@@ -313,31 +300,6 @@ export default function Dashboard() {
             accept={activeUploadConfig.accept}
             style={{ display: "none" }}
           />
-          {/* <Button
-            size="small"
-            variant="contained"
-            onClick={(event) => {
-              if (shouldUseUploadMenu) {
-                handleUploadMenuOpen(event);
-                return;
-              }
-              handleUploadClick();
-            }}
-            disabled={uploadLoading}
-            startIcon={<UploadIcon sx={{ fontSize: 14 }} />}
-            sx={{
-              minWidth: 120,
-              height: 28,
-              borderRadius: 1.4,
-              fontSize: "10px",
-              textTransform: "none",
-              bgcolor: activeUploadConfig.color,
-              color: activeUploadConfig.textColor,
-              "&:hover": { bgcolor: activeUploadConfig.hoverColor },
-            }}
-          >
-            {uploadLoading ? "Uploading..." : activeUploadConfig.label}
-          </Button> */}
           <Menu
             anchorEl={uploadMenuAnchor}
             open={shouldUseUploadMenu && isUploadMenuOpen}
@@ -360,19 +322,6 @@ export default function Dashboard() {
                   ))}
                 </Select>
               </FormControl>
-              {/* <FormControl size="small" fullWidth>
-                <Select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
-                  sx={{ fontSize: "11px", height: 32 }}
-                >
-                  {yearOptions.map((year) => (
-                    <MenuItem key={year} value={year} sx={{ fontSize: "11px" }}>
-                      {year}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl> */}
               <Button
                 size="small"
                 variant="contained"
@@ -390,16 +339,6 @@ export default function Dashboard() {
               </Button>
             </Box>
           </Menu>
-          <IconButton size="small" sx={{ color: "#334155" }}>
-            <DeviceIcon sx={{ fontSize: 16 }} />
-            <Typography sx={{ fontSize: "11px", ml: 0.4 }}>Device</Typography>
-          </IconButton>
-          <IconButton size="small" sx={{ color: "#334155" }}>
-            <RefreshIcon sx={{ fontSize: 16 }} />
-          </IconButton>
-          <IconButton size="small" sx={{ color: "#334155" }}>
-            <FullscreenIcon sx={{ fontSize: 16 }} />
-          </IconButton>
         </Box>
       </Box>
       <Snackbar

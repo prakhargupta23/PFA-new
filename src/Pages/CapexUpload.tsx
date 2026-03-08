@@ -107,8 +107,8 @@ const CapexUpload: React.FC = () => {
 
             await submitPfaData({
                 ...finalData,
-                sourceModule: "capex",
-                sourceLabel: "CAPEX",
+                sourceModule: "executive-summary",
+                sourceLabel: "Executive Summary",
             });
 
             showSnackbar(`${isReplace ? 'Replacement' : 'Upload'} for ${selectedMonth} ${selectedYear} completed.`, "success");
@@ -246,8 +246,9 @@ const CapexUpload: React.FC = () => {
                     disabled={uploading}
                     onClick={e => { e.stopPropagation(); fileInputRef.current?.click(); }}
                     sx={{
-                        bgcolor: '#3B63E2',
-                        '&:hover': { bgcolor: '#2A4FCC' },
+                        bgcolor: '#2eeee4',
+                        color: '#FFFFFF',
+                        '&:hover': { bgcolor: '#d01e98' },
                         borderRadius: 1.5,
                         textTransform: 'none',
                         fontWeight: 600,
@@ -376,7 +377,7 @@ const CapexUpload: React.FC = () => {
                                             </Button>
 
                                             {/* Replace */}
-                                            <>
+                                            {/* <>
                                                 <input
                                                     ref={(el) => (replaceInputRefs.current[rec.monthNum] = el)}
                                                     type="file"
@@ -401,7 +402,7 @@ const CapexUpload: React.FC = () => {
                                                 >
                                                     Replace
                                                 </Button>
-                                            </>
+                                            </> */}
                                         </Stack>
                                     </TableCell>
                                 </TableRow>
