@@ -21,12 +21,13 @@ import {
 import {
     CloudUpload as CloudUploadIcon,
     Visibility as VisibilityIcon,
-    SwapHoriz as ReplaceIcon,
+    // SwapHoriz as ReplaceIcon,
     CheckCircle as CheckCircleIcon,
     // CalendarToday as CalendarIcon,
 } from '@mui/icons-material';
-import { parseExcelFile, allMonths } from "../utils/pfaUtils";
-import { submitPfaData } from "../services/pfa.service";
+import { allMonths } from "../utils/pfaUtils";
+import { parseOweExcelFile } from "../utils/owe.Utils";
+import { submitOweData } from "../services/owe.service";
 import { dashboardService } from "../services/dashboardService";
 
 const DEFAULT_DIVISION = "North Western Railway";
@@ -103,13 +104,9 @@ const OweUpload: React.FC = () => {
         setUploading(true);
         try {
             const buffer = await file.arrayBuffer();
-            const { finalData } = await parseExcelFile(buffer, DEFAULT_DIVISION, selectedMonth, selectedYear, []);
-
-            await submitPfaData({
-                ...finalData,
-                sourceModule: "owe",
-                sourceLabel: "OWE",
-            });
+            const { finalData } = await parseOweExcelFile(buffer, DEFAULT_DIVISION, selectedMonth, selectedYear);
+            console.log("Parsed OWE Excel Data:", finalData);
+            await submitOweData(finalData);
 
             showSnackbar(`${isReplace ? 'Replacement' : 'Upload'} for ${selectedMonth} ${selectedYear} completed.`, "success");
             fetchUploadHistory();
@@ -216,7 +213,7 @@ const OweUpload: React.FC = () => {
                 <input
                     ref={fileInputRef}
                     type="file"
-                    accept=".xlsx,.xls"
+                    accept=".xlsx,.xls,.csv"
                     style={{ display: 'none' }}
                     onChange={onFileSelected}
                 />
@@ -237,7 +234,7 @@ const OweUpload: React.FC = () => {
                     {uploading ? 'Uploading…' : 'Drag & drop your file here'}
                 </Typography>
                 <Typography sx={{ fontSize: '13px', color: '#94A3B8', mb: 2.5 }}>
-                    Supported formats: Excel (.xlsx, .xls) &nbsp;·&nbsp; Max size: 20 MB
+                    Supported formats: Excel & CSV (.xlsx, .xls, .csv) &nbsp;·&nbsp; Max size: 20 MB
                 </Typography>
 
                 <Button
@@ -246,8 +243,9 @@ const OweUpload: React.FC = () => {
                     disabled={uploading}
                     onClick={e => { e.stopPropagation(); fileInputRef.current?.click(); }}
                     sx={{
-                        bgcolor: '#3B63E2',
-                        '&:hover': { bgcolor: '#2A4FCC' },
+                        bgcolor: '#0EA5A4',
+                        color: '#FFFFFF',
+                        '&:hover': { bgcolor: '#0B8685' },
                         borderRadius: 1.5,
                         textTransform: 'none',
                         fontWeight: 600,
@@ -376,11 +374,11 @@ const OweUpload: React.FC = () => {
                                             </Button>
 
                                             {/* Replace */}
-                                            <>
+                                            {/* <>
                                                 <input
                                                     ref={(el) => (replaceInputRefs.current[rec.monthNum] = el)}
                                                     type="file"
-                                                    accept=".xlsx,.xls"
+                                                    accept=".xlsx,.xls,.csv"
                                                     style={{ display: 'none' }}
                                                     onChange={e => onReplaceSelected(rec.monthName, rec.monthNum, rec.year, e)}
                                                 />
@@ -401,7 +399,7 @@ const OweUpload: React.FC = () => {
                                                 >
                                                     Replace
                                                 </Button>
-                                            </>
+                                            </> */}
                                         </Stack>
                                     </TableCell>
                                 </TableRow>
