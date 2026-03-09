@@ -25,10 +25,11 @@ import {
     CheckCircle as CheckCircleIcon,
     // CalendarToday as CalendarIcon,
 } from '@mui/icons-material';
-import { allMonths } from "../utils/pfaUtils";
+import { allMonths, fileToBase64 } from "../utils/pfaUtils";
 import { parseOweExcelFile } from "../utils/owe.Utils";
 import { submitOweData } from "../services/owe.service";
 import { dashboardService } from "../services/dashboardService";
+import { blobService } from "../services/blob.service";
 
 const DEFAULT_DIVISION = "North Western Railway";
 const BASE_YEAR = 2017;
@@ -103,6 +104,12 @@ const OweUpload: React.FC = () => {
     const handleFinancialUpload = async (file: File, isReplace: boolean = false) => {
         setUploading(true);
         try {
+            // 1. Upload to Blob first
+            const base64 = await fileToBase64(file);
+            const dateStr = `${selectedMonth}_${selectedYear}`;
+            await blobService.uploadExcelToBlob("Owe", dateStr, base64);
+
+            // 2. Process locally and submit
             const buffer = await file.arrayBuffer();
             const { finalData } = await parseOweExcelFile(buffer, DEFAULT_DIVISION, selectedMonth, selectedYear);
             console.log("Parsed OWE Excel Data:", finalData);
@@ -146,6 +153,16 @@ const OweUpload: React.FC = () => {
         setDragOver(false);
         const file = e.dataTransfer.files?.[0];
         if (file) handleNewUpload(file);
+    };
+
+    const handleDownload = async (rec: UploadRecord) => {
+        try {
+            const dateStr = `${rec.monthName}_${rec.year}`;
+            await blobService.downloadFileFromBlob("Owe", dateStr);
+            showSnackbar("Download started.", "success");
+        } catch (error: any) {
+            showSnackbar(error.message || "Download failed.", "error");
+        }
     };
 
     return (
@@ -359,7 +376,7 @@ const OweUpload: React.FC = () => {
                                                 variant="outlined"
                                                 size="small"
                                                 startIcon={<VisibilityIcon />}
-                                                onClick={() => window.open(`/?month=${rec.monthName}&year=${rec.year}`, '_blank')}
+                                                onClick={() => handleDownload(rec)}
                                                 sx={{
                                                     textTransform: 'none',
                                                     fontWeight: 600,

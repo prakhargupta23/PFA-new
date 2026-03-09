@@ -6,16 +6,15 @@ import {
   Button,
   CircularProgress,
   Snackbar,
-  Grid,
   Box,
 } from "@mui/material";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { userService } from "../services/user.service";
 import { useNavigate } from "react-router-dom";
-import bg3 from '../assets/bg3.png';
-import loginleft from '../assets/loginleft.png';
-import train from '../assets/Train.png';
+import { motion } from "framer-motion";
+import bg3 from '../assets/railway_modern_bg.png';
+import TrainIcon from "@mui/icons-material/Train";
 
 const LoginSchema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
@@ -35,71 +34,87 @@ function LoginPage() {
       sx={{
         minHeight: "100vh",
         width: "100vw",
-        background: `url(${bg3}) center center no-repeat`,
-        backgroundSize: `${100}% ${100}%`,
+        background: `url(${bg3}) center center/cover no-repeat`,
         display: "flex",
-        alignItems: "stretch",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
       }}
     >
-      <Box sx={{ mr: '0%', position: 'absolute', left: 450, right: 0, bottom: 0, display: 'flex', justifyContent: 'center', zIndex: 2, pointerEvents: 'none' }}>
-        <img src={train} alt="train" style={{ width: 700, opacity: 0.1, color: '#fff', filter: 'brightness(1) invert(1)', transform: 'scaleX(-1)' }} />
-      </Box>
-      <Grid container sx={{ minHeight: "100vh" }}>
-        {/* Left half with image */}
-        <Grid
-          item
-          xs={12}
-          md={6}
-          sx={{
-            display: { xs: "none", md: "block" },
-            background: `url(${loginleft}) center center no-repeat`,
-            backgroundSize: `${100}% ${100}%`,
-            minHeight: "100vh",
-          }}
-        />
-        {/* Right half with login card */}
-        <Grid
-          item
-          xs={12}
-          md={6}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            minHeight: "100vh",
-          }}
-        >
+      {/* Dark overlay for better text readability */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.4)",
+          zIndex: 1,
+        }}
+      />
 
+      <Box sx={{ zIndex: 2, width: "100%", display: "flex", justifyContent: "center", px: 2 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
           <Paper
-            elevation={0}
+            elevation={24}
             sx={{
-              p: 5,
-              width: { xs: "90%", sm: 400 },
+              p: { xs: 4, md: 6 },
+              width: { xs: "100%", sm: 450 },
               textAlign: "center",
               borderRadius: 4,
-              backgroundColor: "rgba(255, 255, 255, 0.15)",
-              backdropFilter: "blur(12px)",
-              border: "1px solid rgba(255, 255, 255, 0.3)",
-              boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.3)",
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
             }}
           >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+            >
+              <Box
+                sx={{
+                  width: 70,
+                  height: 70,
+                  borderRadius: "50%",
+                  backgroundColor: "rgba(25, 118, 210, 0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto",
+                  mb: 3,
+                  border: "2px solid rgba(25, 118, 210, 0.5)",
+                  boxShadow: "0 0 20px rgba(25, 118, 210, 0.4)",
+                }}
+              >
+                <TrainIcon sx={{ fontSize: 40, color: "#60a5fa" }} />
+              </Box>
+            </motion.div>
+
             <Typography
               variant="h4"
               gutterBottom
               sx={{
                 fontWeight: 800,
                 color: "#fff",
-                textShadow: "0 2px 4px rgba(0,0,0,0.3)",
-                mb: 1
+                letterSpacing: "0.5px",
+                mb: 1,
+                fontFamily: "'Inter', sans-serif",
               }}
             >
-              Welcome Back
+              RailGuard PFA Dashboard
             </Typography>
             <Typography
-              variant="body2"
-              sx={{ color: "rgba(255, 255, 255, 0.8)", mb: 4, fontWeight: 500 }}
+              variant="body1"
+              sx={{ color: "rgba(255, 255, 255, 0.7)", mb: 4, fontWeight: 400 }}
             >
-              Sign in to access the RailGuard PFA Portal
+              Sign in to access the portal
             </Typography>
             <Formik
               initialValues={{ username: "", password: "" }}
@@ -246,21 +261,25 @@ function LoginPage() {
               )}
             </Formik>
           </Paper>
-          <Snackbar
-            open={snackbarOpen}
-            autoHideDuration={5000}
-            onClose={handleCloseSnackbar}
-            message={snackbarMessage}
-            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-            sx={{
-              "& .MuiSnackbarContent-root": {
-                backgroundColor: "#1976d2",
-                color: "white",
-              },
-            }}
-          />
-        </Grid>
-      </Grid>
+        </motion.div>
+      </Box>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
+        message={snackbarMessage}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        sx={{
+          "& .MuiSnackbarContent-root": {
+            backgroundColor: snackbarMessage.includes("success") ? "#059669" : "#dc2626",
+            color: "white",
+            fontWeight: 600,
+            borderRadius: 2,
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.3)",
+          },
+        }}
+      />
     </Box>
   );
 }

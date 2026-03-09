@@ -82,7 +82,7 @@ export default function Dashboard() {
         );
 
       case "capex":
-        return <CapexAnalysis />;
+        return <CapexAnalysis month={monthNumber} year={Number(selectedYear)} />;
       case "owe":
         return <OweManagement month={monthNumber} year={Number(selectedYear)} />;
       case "audit":

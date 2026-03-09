@@ -1,11 +1,13 @@
 
 import axios from "axios";
 import { config } from "../shared/constants/config";
+import { fetchWrapper } from "../helpers/fetch-wrapper";
 
 export const dashboardService = {
   getUploadDashboardData,
   getOweUploadDashboardData,
-  getDashboardData
+  getDashboardData,
+  getCapexData
 }
 
 async function getUploadDashboardData() {
@@ -30,6 +32,7 @@ async function getOweUploadDashboardData() {
 
 // import axios from "axios";
 async function getDashboardData(month: number, year: number) {
+  console.log("getting dashboard data")
   const response = await axios.post(
     `${config.apiUrl}/api/get-dashboard-data`,
     {
@@ -37,6 +40,16 @@ async function getDashboardData(month: number, year: number) {
       year
     }
   );
+  console.log("get dashboard data response", response.data);
 
   return response.data;
 };
+
+async function getCapexData() {
+  console.log("getting capex data")
+  const response = await fetchWrapper.get(
+    `${config.apiUrl}/api/get-capex-data`
+  );
+  console.log("get capex data response", response.data);
+  return response.data;
+}

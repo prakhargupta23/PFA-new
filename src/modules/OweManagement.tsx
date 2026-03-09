@@ -27,16 +27,14 @@ const toNumber = (value: unknown): number => {
   return Number.isFinite(parsed) ? parsed : 0;
 };
 
-const toCurrency = (value: unknown): string => `${toNumber(value)} crore`;
-
-const toVarianceString = (value: unknown): string => {
-  if (typeof value === "string" && value.trim()) {
-    const trimmed = value.trim();
-    return trimmed.endsWith("%") ? trimmed : `${trimmed}%`;
-  }
-
+const toCurrency = (value: unknown): string => {
   const n = toNumber(value);
-  return n > 0 ? `+${n}%` : `${n}%`;
+  return `${n.toFixed(2)} crore`;
+};
+const toVarianceString = (value: unknown): string => {
+  const n = toNumber(value);
+  const formatted = n.toFixed(2);
+  return n > 0 ? `+${formatted}%` : `${formatted}%`;
 };
 
 const toTrend = (value: unknown): "UP" | "DOWN" => {
@@ -49,6 +47,7 @@ const toTrend = (value: unknown): "UP" | "DOWN" => {
 };
 
 const extractRows = (payload: any): any[] => {
+  console.log("payload", payload);
   if (Array.isArray(payload)) return payload;
 
   if (Array.isArray(payload?.rows)) return payload.rows;
@@ -60,8 +59,10 @@ const extractRows = (payload: any): any[] => {
 };
 
 const getSmhOrder = (smh: string): number => {
+  const upper = smh.toUpperCase();
+  if (upper === 'TOTAL' || upper === 'TOTAL OWE') return 999;
   const match = smh.match(/SMH-(\d+)/i);
-  if (!match) return Number.MAX_SAFE_INTEGER;
+  if (!match) return 888;
   return Number(match[1]);
 };
 
@@ -74,32 +75,47 @@ export default function OweManagement({ month, year }: { month?: number; year?: 
   useEffect(() => {
     const loadRows = async () => {
       try {
-        const response = await oweService.getOweData(selectedMonth, selectedYear);
-        const rawRows = extractRows(response);
+        const response = await oweService.getOweData();
+        const rawRows = extractRows(response.oweData);
+        console.log("rawRows", rawRows);
+        const mappedRows: OweRow[] = rawRows
+          .filter((row: any) => {
+            const cat = (row.category || "").toUpperCase();
+            return cat.startsWith("SMH-") || cat === "TOTAL" || cat === "TOTAL OWE";
+          })
+          .map((row: any) => {
+            // Use percentVariationBP if available (scaled to 100 for display)
+            // otherwise fallback to diffActualVsBP or other fields
+            const varianceRaw =
+              row.percentVariationBP !== undefined
+                ? Number(row.percentVariationBP) * 100
+                : (row.variance ?? row.diffActualVsBP ?? row.var ?? row.difference ?? 0);
 
-        const mappedRows: OweRow[] = rawRows.map((row: any) => {
-          const varianceRaw =
-            row.variance ?? row.var ?? row.diffActualVsBP ?? row.difference ?? 0;
-          const trendRaw = row.trend ?? varianceRaw;
+            // Prioritize cumulative actual (ToEndCurrentYear) over monthly actual
+            const actualRaw =
+              row.actualToEndCurrentYear ??
+              row.actual ??
+              row.actualForMonth ??
+              0;
 
-          return {
-            smh:
-              row.smh ??
-              row.smhDescription ??
-              row.category ??
-              row.description ??
-              row.head ??
-              "-",
-            div: "NWR",
-            grant: toCurrency(row.grant ?? row.obg ?? row.rbg ?? 0),
-            actual: toCurrency(
-              row.actual ?? row.actualForMonth ?? row.actualToEndCurrentYear ?? 0
-            ),
-            variance: toVarianceString(varianceRaw),
-            trend: toTrend(trendRaw),
-            whatsapp: row.whatsapp ?? DEFAULT_WHATSAPP_TARGET,
-          };
-        });
+            const trendRaw = row.trend ?? varianceRaw;
+
+            return {
+              smh:
+                row.category ??
+                row.smh ??
+                row.smhDescription ??
+                row.description ??
+                row.head ??
+                "-",
+              div: "NWR",
+              grant: toCurrency(row.obg ?? row.rbg ?? row.grant ?? 0),
+              actual: toCurrency(actualRaw),
+              variance: toVarianceString(varianceRaw),
+              trend: toTrend(trendRaw),
+              whatsapp: row.whatsapp ?? DEFAULT_WHATSAPP_TARGET,
+            };
+          });
 
         const sortedRows = [...mappedRows].sort((a, b) => getSmhOrder(a.smh) - getSmhOrder(b.smh));
         setTableRows(sortedRows);
