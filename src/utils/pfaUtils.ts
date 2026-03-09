@@ -1,5 +1,19 @@
 import * as XLSX from "xlsx";
 
+export const fileToBase64 = (file: File): Promise<string> => {
+  console.log("fileToBase64 converting");
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const result = reader.result as string;
+      const base64 = result.split(",")[1];
+      resolve(base64);
+    };
+    reader.onerror = (error) => reject(error);
+  });
+};
+
 
 export const monthMap: any = {
   January: "01",

@@ -25,9 +25,10 @@ import {
   CheckCircle as CheckCircleIcon,
   // CalendarToday as CalendarIcon,
 } from '@mui/icons-material';
-import { parseExcelFile, allMonths } from "../utils/pfaUtils";
+import { parseExcelFile, allMonths, fileToBase64 } from "../utils/pfaUtils";
 import { submitPfaData } from "../services/pfa.service";
 import { dashboardService } from "../services/dashboardService";
+import { blobService } from "../services/blob.service";
 
 const DEFAULT_DIVISION = "North Western Railway";
 const BASE_YEAR = 2017;
@@ -102,6 +103,12 @@ const ExecutiveSummaryUpload: React.FC = () => {
   const handleFinancialUpload = async (file: File, isReplace: boolean = false) => {
     setUploading(true);
     try {
+      // 1. Upload to Blob first
+      const base64 = await fileToBase64(file);
+      const dateStr = `${selectedMonth}_${selectedYear}`;
+      await blobService.uploadExcelToBlob("ExecutiveSummary", dateStr, base64);
+
+      // 2. Process locally and submit
       const buffer = await file.arrayBuffer();
       const { finalData } = await parseExcelFile(buffer, DEFAULT_DIVISION, selectedMonth, selectedYear, []);
 
@@ -149,6 +156,16 @@ const ExecutiveSummaryUpload: React.FC = () => {
     setDragOver(false);
     const file = e.dataTransfer.files?.[0];
     if (file) handleNewUpload(file);
+  };
+
+  const handleDownload = async (rec: UploadRecord) => {
+    try {
+      const dateStr = `${rec.monthName}_${rec.year}`;
+      await blobService.downloadFileFromBlob("ExecutiveSummary", dateStr);
+      showSnackbar("Download started.", "success");
+    } catch (error: any) {
+      showSnackbar(error.message || "Download failed.", "error");
+    }
   };
 
   return (
@@ -361,7 +378,7 @@ const ExecutiveSummaryUpload: React.FC = () => {
                         variant="outlined"
                         size="small"
                         startIcon={<VisibilityIcon />}
-                        onClick={() => window.open(`/?month=${rec.monthName}&year=${rec.year}`, '_blank')}
+                        onClick={() => handleDownload(rec)}
                         sx={{
                           textTransform: 'none',
                           fontWeight: 600,
