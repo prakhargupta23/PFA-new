@@ -1,10 +1,10 @@
 import { fetchWrapper } from "../helpers/fetch-wrapper";
 import { config } from "../shared/constants/config";
 
-const toSelectedMonthYear = (month: number, year: number): string => {
-  const mm = String(month).padStart(2, "0");
-  return `${mm}/${year}`;
-};
+// const toSelectedMonthYear = (month: number, year: number): string => {
+//   const mm = String(month).padStart(2, "0");
+//   return `${mm}/${year}`;
+// };
 
 export const oweService = {
   getOweData,
