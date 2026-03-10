@@ -3,7 +3,6 @@ import {
   Box,
   Typography,
   Chip,
-  LinearProgress,
   CircularProgress,
   ToggleButton,
   ToggleButtonGroup,
@@ -77,7 +76,7 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
             <Typography sx={{ fontSize: "30px", fontWeight: 700, color: "#111827" }}>CAPEX Analysis</Typography>
             <Chip label="Zone: North Western Railway" size="small" sx={{ height: 20, fontSize: "10px", bgcolor: "#DBE8FF", color: "#2F5FE3" }} />
           </Box>
-          
+
           {viewType === 'unit' && (
             <FormControl size="small" sx={{ minWidth: 200 }}>
               <InputLabel id="division-select-label" sx={{ fontSize: '13px' }}>Select Division</InputLabel>
@@ -87,7 +86,7 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
                 value={selectedDivision}
                 label="Select Division"
                 onChange={(e) => setSelectedDivision(e.target.value)}
-                sx={{ 
+                sx={{
                   fontSize: '13px',
                   borderRadius: '8px',
                   bgcolor: 'white'
@@ -134,7 +133,7 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
               {zonalData.length === 0 ? (
                 <TableRow><TableCell colSpan={6} align="center" sx={{ py: 3 }}>No zonal data available</TableCell></TableRow>
               ) : zonalData.map((row, idx) => (
-                <TableRow key={row.uuid || idx} hover sx={{ 
+                <TableRow key={row.uuid || idx} hover sx={{
                   bgcolor: (row.planheadname === 'Total' || row.planheadname === 'TOTAL' || row.planheadname === 'Grand Total') ? '#F1F5F9' : 'inherit'
                 }}>
                   <TableCell sx={{ fontSize: '11px' }}>{idx + 1}</TableCell>

@@ -21,7 +21,7 @@ import {
 import {
     CloudUpload as CloudUploadIcon,
     Visibility as VisibilityIcon,
-    SwapHoriz as ReplaceIcon,
+    // SwapHoriz as ReplaceIcon,
     CheckCircle as CheckCircleIcon,
     // CalendarToday as CalendarIcon,
 } from '@mui/icons-material';
@@ -49,7 +49,7 @@ interface UploadRecord {
 const CapexUpload: React.FC = () => {
     const now = new Date();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const replaceInputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
+    //const replaceInputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
 
     const [records, setRecords] = useState<UploadRecord[]>([]);
     const [uploadedCount, setUploadedCount] = useState(0);
@@ -138,17 +138,17 @@ const CapexUpload: React.FC = () => {
     };
 
     // ── Replace ─────────────────────────────────────────────────────────────────
-    const onReplaceSelected = (month: string, monthNum: number, year: number, e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    // const onReplaceSelected = (month: string, monthNum: number, year: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const file = e.target.files?.[0];
+    //     if (!file) return;
 
-        // Set temp month/year for the upload context
-        setSelectedMonth(month);
-        setSelectedYear(String(year));
+    //     // Set temp month/year for the upload context
+    //     setSelectedMonth(month);
+    //     setSelectedYear(String(year));
 
-        handleFinancialUpload(file, true);
-        e.target.value = '';
-    };
+    //     handleFinancialUpload(file, true);
+    //     e.target.value = '';
+    // };
 
     // ── Drag-and-drop ────────────────────────────────────────────────────────────
     const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
