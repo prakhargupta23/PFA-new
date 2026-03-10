@@ -140,6 +140,9 @@ function LoginPage() {
                     else if (role === "OWE") {
                       navigate("/OWE");
                     }
+                    else if (role === "AUDIT") {
+                      navigate("/Audit");
+                    }
                   } else {
                     setSnackbarOpen(true);
                     setSnackbarMessage(`Login unsuccessfull ${response.message}`);

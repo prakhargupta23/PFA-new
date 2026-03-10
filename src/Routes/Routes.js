@@ -6,6 +6,7 @@ import DocumentUpload from "../Pages/DocumentUpload";
 import VoiceInput from "../components/voicecapturing";
 import CapexUpload from "../Pages/CapexUpload";
 import OweUpload from "../Pages/OweUpload";
+import AuditUpload from "../Pages/AuditUpload";
 import LoginPage from "../Pages/LoginPage";
 import PrivateRoute from "./PrivateRoute";
 
@@ -56,12 +57,20 @@ export const routes = createBrowserRouter([
       </PrivateRoute>
     ),
   },
-  // {
-  //   path: "/pfa",
-  //   element: (
-  //     <PrivateRoute>
-  //       <PFAPage />
-  //     </PrivateRoute>
-  //   ),
-  // },
+  {
+    path: "/Audit",
+    element: (
+      <PrivateRoute>
+        <AuditUpload />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/Audit",
+    element: (
+      <PrivateRoute>
+        <AuditUpload />
+      </PrivateRoute>
+    ),
+  },
 ]);
