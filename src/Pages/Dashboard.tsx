@@ -22,6 +22,8 @@ import { parseExcelFile, allMonths } from "../utils/pfaUtils";
 import { submitPfaData } from "../services/pfa.service";
 import { parseOweExcelFile } from "../utils/owe.Utils";
 import { submitOweData } from "../services/owe.service";
+import { parseAuditExcelFile } from "../utils/auditUtils";
+import { submitAuditData } from "../services/audit.service";
 
 const SIDEBAR_WIDTH = 190;
 const TOP_BAR_HEIGHT = 46;
@@ -139,6 +141,14 @@ export default function Dashboard() {
       const { finalData } = await parseExcelFile(buffer, DEFAULT_DIVISION, month, year, []);
       console.log("Parsed Excel Data:", finalData);
       await submitPfaData({
+        ...finalData,
+        sourceModule: nav,
+        sourceLabel: contextLabel,
+      });
+    } else if (nav === "audit") {
+      const { finalData } = await parseAuditExcelFile(buffer, DEFAULT_DIVISION, month, year, []);
+      console.log("Parsed Audit Excel Data:", finalData);
+      await submitAuditData({
         ...finalData,
         sourceModule: nav,
         sourceLabel: contextLabel,
