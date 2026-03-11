@@ -24,7 +24,7 @@ import {
     CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import { allMonths, fileToBase64, parseAuditExcelFile } from "../utils/auditUtils";
-import { submitAuditData, getAuditData } from "../services/audit.service";
+import { submitAuditData, getAuditMonths } from "../services/audit.service";
 //import { dashboardService } from "../services/dashboardService";
 import { blobService } from "../services/blob.service";
 
@@ -68,7 +68,7 @@ const AuditUpload: React.FC = () => {
         try {
             // Note: Currently using the same dashboard data as Capex for historical record placeholders
             // If backend provides a specific history for audit, this should be updated.
-            const data = await getAuditData();
+            const data = await getAuditMonths();
             console.log("Fetched audit data:", data);
             // Handle both { months: [...] } and [...] formats
             const uploadedMonths: string[] = Array.isArray(data) ? data : (data?.months ?? []);

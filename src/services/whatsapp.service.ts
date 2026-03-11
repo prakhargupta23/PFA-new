@@ -2,26 +2,28 @@ import { config } from "../shared/constants/config";
 import { fetchWrapper } from "../helpers/fetch-wrapper";
 
 
-export const callToAction = async (title: string, value: string) => {
+export const callToAction = async (roles: string[], title: string, message: string) => {
     try {
-        const response = await fetch("https://nwrwhatsappapi-a3f6f0dfd5hbdka3.centralindia-01.azurewebsites.net/send-hi", {
+        console.log("call to action reached")
+        const response = await fetch("https://pricilla-sloughy-fumblingly.ngrok-free.dev/message-from-pfa-portal", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                to: ["+917800752003@c.us", "120363407012014309@g.us"],
-                data: `Task Created: \n${title}: ${value}\n`,
-                mentions: ["7800752003"],
+                roles: roles,
+                body: message,
             }),
 
         });
+        console.log("response", response)
         const data = await response.json();
+        console.log("data", data)
         const dbdata = {
             createdBy: "PFA",
             status: "pending",
             taskHeading: title,
-            content: value,
+            content: message,
             segment: "NWR",
             division: "NWR",
             type: "PFA",

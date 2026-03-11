@@ -54,9 +54,10 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
   const earningsGrowthText = formatGrowth(earningsGrowth);
   const earningsGrowthColor = earningsGrowth < 0 ? "#EF4444" : "#22C55E";
   const utilizationText = Number(utilization).toFixed(2).replace(/\.?0+$/, "");
+
   const handleCardClick = async (title: string, value: string) => {
     try {
-      const data = await callToAction(title, value);
+      const data = await callToAction(["FA/G"], title, value);
       console.log("Data sent successfully:", data);
       alert(`Task created successfully!`);
     } catch (error) {
@@ -82,42 +83,77 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
         <Typography sx={{ fontSize: "42px", fontWeight: 700, color: "white", mb: 0.2 }}>The PFA Command Scorecard</Typography>
         <Typography sx={{ fontSize: "12px", color: "#A5B4FC", mb: 1.5 }}>Zone: North Western Railway</Typography>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 1 }}>
-          <Box sx={{
-            bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
-          }}
-          >
-            <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>UTILIZATION</Typography>
-            <Typography sx={{ fontSize: "38px", color: "white", fontWeight: 700 }}>{utilizationText}%
-            </Typography>
-          </Box>
-          <Box sx={{
-            bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
-          }} onClick={() => { }}>
-            <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>EARNINGS GROWTH</Typography>
-            <Typography sx={{ fontSize: "38px", color: earningsGrowthColor, fontWeight: 700 }}>{earningsGrowthText}</Typography>
-          </Box>
-          <Box sx={{
-            bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
-          }} onClick={() => { }}>
-            <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>CRITICAL AUDIT</Typography>
-            <Typography sx={{ fontSize: "38px", color: "#FACC15", fontWeight: 700 }}>2</Typography>
-          </Box>
-          <Box sx={{
-            bgcolor: "rgba(255,255,255,0.06)", borderRadius: 1, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
-          }} onClick={() => { }}>
-            <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>GOVERNANCE SCORE</Typography>
-            <Typography sx={{ fontSize: "38px", color: "#93C5FD", fontWeight: 700 }}>88</Typography>
-          </Box>
-          <Box sx={{
-            bgcolor: "rgba(255,255,255,0.08)", borderRadius: 1.2, p: 1.1, cursor: "pointer", transition: "0.2s", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }
-          }} onClick={() => { }}>
-            <Box sx={{ display: "flex", gap: 0.6, alignItems: "center", mb: 0.5 }}>
-              <BoltIcon sx={{ color: "#93C5FD", fontSize: 14 }} />
-              <Typography sx={{ fontSize: "10px", color: "#CBD5E1", fontWeight: 700 }}>YEAR-END FORESIGHT</Typography>
+        <Box sx={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 1.5 }}>
+          {[
+            { label: "UTILIZATION", value: `${utilizationText}%`, color: "white" },
+            { label: "EARNINGS GROWTH", value: earningsGrowthText, color: earningsGrowthColor },
+            { label: "CRITICAL AUDIT", value: "2", color: "#FACC15" },
+            { label: "GOVERNANCE SCORE", value: "88", color: "#93C5FD" },
+            { label: "YEAR-END FORESIGHT", value: "Wait...", color: "#94A3B8", icon: <BoltIcon sx={{ color: "#93C5FD", fontSize: 14 }} /> }
+          ].map((card, idx) => (
+            <Box
+              key={idx}
+              sx={{
+                bgcolor: "rgba(255,255,255,0.06)",
+                borderRadius: 1.5,
+                p: 1.5,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                minHeight: 120,
+                border: "1px solid rgba(255,255,255,0.08)",
+                transition: "0.2s all ease-in-out",
+                "&:hover": {
+                  bgcolor: "rgba(255,255,255,0.1)",
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.2)"
+                }
+              }}
+            >
+              <Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, mb: 0.5 }}>
+                  {card.icon}
+                  <Typography sx={{ fontSize: "10px", color: "#94A3B8", fontWeight: 700, letterSpacing: "0.5px" }}>
+                    {card.label}
+                  </Typography>
+                </Box>
+                <Typography sx={{ fontSize: "32px", color: card.color, fontWeight: 800, lineHeight: 1.2 }}>
+                  {card.value}
+                </Typography>
+              </Box>
+
+              <Box
+                onClick={(e) => { e.stopPropagation(); handleCardClick(card.label, card.value); }}
+                sx={{
+                  mt: 1.5,
+                  py: 0.6,
+                  px: 1,
+                  borderRadius: "6px",
+                  bgcolor: "rgba(255, 255, 255, 0.1)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 0.8,
+                  transition: "all 0.2s ease",
+                  cursor: "pointer",
+                  "&:hover": {
+                    bgcolor: "#FACC15",
+                    color: "#0F172A",
+                    borderColor: "#FACC15",
+                    boxShadow: "0 4px 12px rgba(250, 204, 21, 0.3)"
+                  },
+                  "&:active": { transform: "translateY(1px)" }
+                }}
+              >
+                <EscalateIcon sx={{ fontSize: 13 }} />
+                <Typography sx={{ fontSize: "9px", fontWeight: 800, letterSpacing: "0.4px" }}>
+                  ESCALATE NOW
+                </Typography>
+              </Box>
             </Box>
-            <Typography sx={{ fontSize: "10px", color: "#94A3B8", fontStyle: "italic" }}>Wait...</Typography>
-          </Box>
+          ))}
         </Box>
       </Box>
 
@@ -171,7 +207,7 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
         </Box>
       </Box>
 
-      <Box sx={{ bgcolor: "#F8FAFC", borderRadius: 1.2, p: 1.3, border: "1px solid #E2E8F0" }}>
+      {/* <Box sx={{ bgcolor: "#F8FAFC", borderRadius: 1.2, p: 1.3, border: "1px solid #E2E8F0" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, mb: 1.2 }}>
           <EscalateIcon sx={{ color: "#22C55E", fontSize: 14 }} />
           <Typography sx={{ fontSize: "13px", fontWeight: 700, color: "#0F172A" }}>ESCALATE DIRECTIVES TO SR. DFMS</Typography>
@@ -186,7 +222,7 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
             </Box>
           ))}
         </Box>
-      </Box>
+      </Box> */}
     </Box>
   );
 }

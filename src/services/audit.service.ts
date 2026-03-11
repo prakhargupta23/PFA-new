@@ -61,6 +61,15 @@ export const submitAuditData = async (finalData: AuditFinalData) => {
   }
 };
 
+export const getAuditMonths = async () => {
+  console.log("getAuditMonths called");
+  const response = await fetchWrapper.get(
+    `${config.apiUrl}/api/get-audit-months`);
+  // If response contains a data property (legacy or wrapper), return it, otherwise return response
+  return response?.data ?? response;
+}
+
+
 export const getAuditData = async () => {
   console.log("getAuditData called");
   const response = await fetchWrapper.get(
@@ -71,5 +80,6 @@ export const getAuditData = async () => {
 
 export const auditService = {
   submitAuditData,
+  getAuditMonths,
   getAuditData,
 };
