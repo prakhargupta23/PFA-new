@@ -35,10 +35,10 @@ async function getDashboardData(month: number, year: number) {
   console.log("getting dashboard data")
   const response = await axios.post(
     `${config.apiUrl}/api/get-dashboard-data`,
-    {
-      month,
-      year
-    }
+    // {
+    //   month,
+    //   year
+    // }
   );
   console.log("get dashboard data response", response.data);
 
