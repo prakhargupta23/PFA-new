@@ -164,19 +164,6 @@ export const parseAuditExcelFile = async (
           moreThanOneYearOld: row.j,
           total: row.k,
         })) : [],
-      // auditsummary: sheets.AuditSummary
-      //   ? parseSheetWithAlphaKeys(sheets.AuditSummary).map((row) => ({
-      //     division,
-      //     date: formattedDate,
-      //     figure: detectFigureUnit(sheets.AuditSummary),
-      //     colA: row.a,
-      //     colB: row.b,
-      //     colC: row.c,
-      //     colD: row.d,
-      //     colE: row.e,
-      //     colF: row.f,
-      //     colG: row.h,
-      //   })) : [],
       selectedMonthYear,
       division,
     };

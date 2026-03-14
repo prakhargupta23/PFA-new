@@ -132,7 +132,7 @@ export default function OweManagement({ month, year }: { month?: number; year?: 
 
   const createtask = async (title: string, value: string) => {
     try {
-      const data = await callToAction(title, value);
+      const data = await callToAction(["FA/G"], title, value);
       console.log("Data sent successfully:", data);
       alert(`Task created successfully!`);
     } catch (error) {
