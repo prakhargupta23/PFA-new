@@ -52,9 +52,9 @@ export default function AuditInspection() {
     row.unit?.toLowerCase() !== 'total'
   );
 
-  const totalActiveParas = filteredData.reduce((sum, row) => sum + (Number(row.closingBalance) || 0), 0);
-  const moreThanOneYear = filteredData.reduce((sum, row) => sum + (Number(row.moreThanOneYearOld) || 0), 0);
-  const lessThanOneYear = filteredData.reduce((sum, row) => sum + (Number(row.lessThanOneYearOld) || 0), 0);
+  // const totalActiveParas = filteredData.reduce((sum, row) => sum + (Number(row.closingBalance) || 0), 0);
+  // const moreThanOneYear = filteredData.reduce((sum, row) => sum + (Number(row.moreThanOneYearOld) || 0), 0);
+  // const lessThanOneYear = filteredData.reduce((sum, row) => sum + (Number(row.lessThanOneYearOld) || 0), 0);
 
   const handleNudge = async (row: AuditDataRow) => {
     try {
@@ -82,7 +82,7 @@ export default function AuditInspection() {
         <Chip label="Zone: North Western Railway" size="small" sx={{ height: 20, fontSize: "10px", bgcolor: "#DBE8FF", color: "#2F5FE3" }} />
       </Box>
 
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 1.2, mb: 1.5 }}>
+      {/* <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 1.2, mb: 1.5 }}>
         <Box sx={{ bgcolor: "#F8FAFC", borderRadius: 1.2, p: 1.8, textAlign: "center", border: "1px solid #E2E8F0" }}>
           <Typography sx={{ fontSize: "42px", fontWeight: 700, color: "#1E293B", lineHeight: 1 }}>{totalActiveParas}</Typography>
           <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>TOTAL ACTIVE PARAS</Typography>
@@ -95,7 +95,7 @@ export default function AuditInspection() {
           <Typography sx={{ fontSize: "42px", fontWeight: 700, color: "#F59E0B", lineHeight: 1 }}>{lessThanOneYear}</Typography>
           <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>AGEING &lt; 1 YEAR</Typography>
         </Box>
-      </Box>
+      </Box> */}
 
       <Box sx={{ border: "1px solid #E2E8F0", borderRadius: 1.2, overflowX: "auto", mb: 1.5 }}>
         <Box sx={{ minWidth: "1000px" }}>

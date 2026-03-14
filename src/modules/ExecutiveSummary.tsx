@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 
 import { Box, Typography, Chip } from "@mui/material";
-import { Public as GlobeIcon, Bolt as BoltIcon, Chat as EscalateIcon } from "@mui/icons-material";
+import { Public as GlobeIcon, Chat as EscalateIcon } from "@mui/icons-material";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { callToAction } from "../services/whatsapp.service";
 import { dashboardService } from "../services/dashboardService";
@@ -58,7 +58,7 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
   };
 
   const dashboardCards = [
-    { label: "OPERATING RATIO", value: dashboardData.operatingRatio.toFixed(2), color: "#93C5FD" },
+    { label: "OPERATING RATIO", value: Number(dashboardData.operatingRatio || 0).toFixed(2), color: "#93C5FD" },
     { label: "EARNINGS", value: formatPercentage(dashboardData.Earnings), color: dashboardData.Earnings < 0 ? "#EF4444" : "#22C55E" },
     { label: "OWE", value: formatPercentage(dashboardData.workingExpenses), color: dashboardData.workingExpenses > 0 ? "#EF4444" : "#22C55E" },
     { label: "CAPEX UTILIZATION", value: Number(dashboardData.capex).toLocaleString('en-IN'), color: "white" },
