@@ -130,9 +130,11 @@ export default function OweManagement({ month, year }: { month?: number; year?: 
 
   const hasRows = useMemo(() => tableRows.length > 0, [tableRows]);
 
-  const createtask = async (title: string, value: string) => {
+  const handleWhatsappClick = async (row: OweRow) => {
     try {
-      const data = await callToAction(["FA/G"], title, value);
+      const title = `⚠️ OWE Analysis Portal Alert`;
+      const message = `Expenditure Review – ${row.smh}\nExpenditure under ${row.smh} is above the Budget Proportion (BP).\nKindly prepare an action plan to control expenditure under ${row.smh} and bring it in line with the budget proportion.\n\nDetails:\nDiv: ${row.div}\nGrant: ${row.grant}\nActual: ${row.actual}\nVariance: ${row.variance}\nTrend: ${row.trend}\nTo: ${row.whatsapp}`;
+      const data = await callToAction(["FA/T"], title, message);
       console.log("Data sent successfully:", data);
       alert(`Task created successfully!`);
     } catch (error) {
@@ -174,8 +176,8 @@ export default function OweManagement({ month, year }: { month?: number; year?: 
                     {up ? <TrendingUpIcon sx={{ fontSize: 13, color: "#DC2626" }} /> : <TrendingDownIcon sx={{ fontSize: 13, color: "#16A34A" }} />}
                     <Typography sx={{ fontSize: "11px", color: up ? "#DC2626" : "#16A34A", fontWeight: 700 }}>{row.trend}</Typography>
                   </Box>
-                  <IconButton size="small" sx={{ color: "#25D366" }}>
-                    <WhatsAppIcon fontSize="small" onClick={() => createtask(row.div, `\nTo:${row.whatsapp}\nSMH: ${row.smh}\nGrant: ${row.grant}\nActual: ${row.actual}\nVariance: ${row.variance}\nTrend: ${row.trend}`)} />
+                  <IconButton size="small" sx={{ color: "#25D366" }} onClick={() => handleWhatsappClick(row)}>
+                    <WhatsAppIcon fontSize="small" />
                   </IconButton>
                 </Box>
               );

@@ -87,9 +87,10 @@ const VoiceRecorder: React.FC = () => {
                     0%   { transform: scale(1);   opacity: 0.6; }
                     100% { transform: scale(2.2); opacity: 0; }
                 }
-                /* Loading: spinning arc */
-                @keyframes spin-arc {
-                    to { transform: rotate(360deg); }
+                /* Loading: bouncing dots */
+                @keyframes bounce-dot {
+                    0%, 100% { transform: translateY(0); opacity: 0.5; }
+                    50%      { transform: translateY(-8px); opacity: 1; }
                 }
                 /* Playing: waveform bars */
                 @keyframes wave-bar {
@@ -172,16 +173,17 @@ const VoiceRecorder: React.FC = () => {
                     >
                         {/* Loading spinner */}
                         {state === "loading" && (
-                            <span style={{
-                                position: "absolute",
-                                inset: 8,
-                                borderRadius: "50%",
-                                border: "4px solid rgba(255,255,255,0.25)",
-                                borderTopColor: "#fff",
-                                borderRightColor: "#fff",
-                                animation: "spin-arc 0.85s linear infinite",
-                                pointerEvents: "none",
-                            }} />
+                            <div style={{ display: "flex", gap: "6px" }}>
+                                {[0, 1, 2].map((i) => (
+                                    <span key={i} style={{
+                                        width: 12,
+                                        height: 12,
+                                        borderRadius: "50%",
+                                        backgroundColor: "#fff",
+                                        animation: `bounce-dot 1s ease-in-out ${i * 0.16}s infinite`,
+                                    }} />
+                                ))}
+                            </div>
                         )}
 
                         {/* Playing: animated waveform bars */}

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Box, Typography, Chip, IconButton } from "@mui/material";
+import React, { useEffect, useState, useCallback } from "react";
+import { Box, Typography, Chip, IconButton, Dialog, DialogTitle, DialogContent } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PendingIcon from "@mui/icons-material/Pending";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import CloseIcon from "@mui/icons-material/Close";
 import { taskService } from "../services/task.service";
-import { useCallback } from "react";
 
 interface Task {
     taskId: string;
@@ -27,9 +27,28 @@ const formatPhone = (raw: string | null | undefined): string => {
     return withoutSuffix.startsWith("91") ? withoutSuffix.slice(2) : withoutSuffix;
 };
 
+const formatToIST = (dateString: string | undefined): string => {
+    if (!dateString) return "—";
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleString("en-IN", {
+            timeZone: "Asia/Kolkata",
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        });
+    } catch {
+        return "—";
+    }
+};
+
 export default function TaskManagement() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(false);
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
     const fetchTasks = useCallback(async () => {
         try {
@@ -74,11 +93,10 @@ export default function TaskManagement() {
             <Box>
                 <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "#1E293B", mb: 1 }}>All Tasks</Typography>
                 <Box sx={{ borderRadius: 1.2, overflow: "hidden", border: "1px solid #E2E8F0" }}>
-                    <Box sx={{ display: "grid", gridTemplateColumns: "0.8fr 1.5fr 0.8fr 1fr 0.8fr 0.7fr", px: 1.2, py: 1, bgcolor: "#F1F5F9", alignItems: "center" }}>
+                    <Box sx={{ display: "grid", gridTemplateColumns: "0.8fr 1fr 1.5fr 0.8fr 1fr 0.8fr 0.7fr", px: 1.2, py: 1, bgcolor: "#F1F5F9", alignItems: "center" }}>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>CREATED BY</Typography>
-                        {/* <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>CREATED AT</Typography> */}
+                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>CREATED AT</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>CONTENT</Typography>
-                        {/* <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>DIVISION</Typography> */}
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>TYPE</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>ASSIGNED TO</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>STATUS</Typography>
@@ -99,21 +117,28 @@ export default function TaskManagement() {
                             return (
                                 <Box
                                     key={task.taskId}
+                                    onClick={() => setSelectedTask(task)}
                                     sx={{
                                         display: "grid",
-                                        gridTemplateColumns: "0.8fr 1.5fr 0.8fr 1fr 0.8fr 0.7fr",
+                                        gridTemplateColumns: "0.8fr 1fr 1.5fr 0.8fr 1fr 0.8fr 0.7fr",
                                         alignItems: "center",
                                         px: 1.2,
                                         py: 1.1,
                                         borderTop: "1px solid #EDF2F7",
                                         bgcolor: "#F8FAFC",
+                                        cursor: "pointer",
+                                        "&:hover": { bgcolor: "#EDF2F7" },
                                     }}
                                 >
                                     {/* Col 1 – CREATED BY */}
                                     <Typography sx={{ fontSize: "11px", color: "#334155", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                         {formatPhone(task.createdby)}
                                     </Typography>
-                                    {/* Col 2 – CONTENT */}
+                                    {/* Col 2 – CREATED AT */}
+                                    <Typography sx={{ fontSize: "11px", color: "#64748B", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        {formatToIST(task.createdAt)}
+                                    </Typography>
+                                    {/* Col 3 – CONTENT */}
                                     <Typography sx={{ fontSize: "11px", color: "#64748B", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                         {task.content.length > 80 ? task.content.substring(0, 80) + "…" : task.content}
                                     </Typography>
@@ -171,6 +196,158 @@ export default function TaskManagement() {
                     )}
                 </Box>
             </Box>
+
+            {/* Task Details Dialog */}
+            <Dialog 
+                open={Boolean(selectedTask)} 
+                onClose={() => setSelectedTask(null)}
+                maxWidth="md"
+                fullWidth
+                PaperProps={{
+                    sx: { 
+                        borderRadius: 3, 
+                        overflow: 'hidden',
+                        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+                    }
+                }}
+            >
+                {selectedTask && (
+                    <>
+                        <DialogTitle sx={{ 
+                            m: 0, 
+                            px: 3, 
+                            py: 2.5, 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center',
+                            bgcolor: "#F8FAFC",
+                            borderBottom: "1px solid #E2E8F0"
+                        }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                <Box sx={{ 
+                                    width: 8, 
+                                    height: 24, 
+                                    bgcolor: "#2E63EE", 
+                                    borderRadius: 4 
+                                }} />
+                                <Typography sx={{ fontSize: "22px", fontWeight: 800, color: "#0F172A", letterSpacing: "-0.02em" }}>
+                                    Task Details
+                                </Typography>
+                            </Box>
+                            <IconButton
+                                aria-label="close"
+                                onClick={() => setSelectedTask(null)}
+                                sx={{
+                                    color: "#64748B",
+                                    bgcolor: "#F1F5F9",
+                                    "&:hover": { bgcolor: "#E2E8F0", color: "#0F172A" }
+                                }}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </DialogTitle>
+                        <DialogContent sx={{ p: 4, bgcolor: "#FFFFFF" }}>
+                            <Box sx={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.2fr)', gap: 4 }}>
+                                {/* Left Column: Meta Info */}
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                    <Box sx={{ p: 2.5, bgcolor: "#F8FAFC", borderRadius: 2, border: "1px solid #F1F5F9" }}>
+                                        <Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#64748B", mb: 0.5, letterSpacing: "0.05em" }}>TASK ID</Typography>
+                                        <Typography sx={{ fontSize: "16px", color: "#0F172A", fontWeight: 600, wordBreak: "break-all" }}>{selectedTask.taskId}</Typography>
+                                    </Box>
+
+                                    <Box sx={{ p: 2.5, bgcolor: "#F8FAFC", borderRadius: 2, border: "1px solid #F1F5F9" }}>
+                                        <Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#64748B", mb: 0.5, letterSpacing: "0.05em" }}>CREATED AT (IST)</Typography>
+                                        <Typography sx={{ fontSize: "16px", color: "#0F172A", fontWeight: 600 }}>{formatToIST(selectedTask.createdAt)}</Typography>
+                                    </Box>
+
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                                        <Box sx={{ p: 2, bgcolor: "#F8FAFC", borderRadius: 2, border: "1px solid #F1F5F9" }}>
+                                            <Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#64748B", mb: 0.5 }}>STATUS</Typography>
+                                            <Box sx={{ mt: 0.5 }}>
+                                                <Chip 
+                                                    icon={selectedTask.status === "pending" ? <PendingIcon sx={{ fontSize: 16 }}/> : <CheckCircleIcon sx={{ fontSize: 16 }}/>}
+                                                    label={selectedTask.status} 
+                                                    sx={{ 
+                                                        height: 28, 
+                                                        fontSize: "13px", 
+                                                        fontWeight: 700,
+                                                        textTransform: "capitalize",
+                                                        px: 0.5,
+                                                        bgcolor: selectedTask.status === "pending" ? "#FEF3C7" : "#DCFCE7", 
+                                                        color: selectedTask.status === "pending" ? "#D97706" : "#16A34A",
+                                                        "& .MuiChip-icon": { color: "inherit" }
+                                                    }} 
+                                                />
+                                            </Box>
+                                        </Box>
+                                        <Box sx={{ p: 2, bgcolor: "#F8FAFC", borderRadius: 2, border: "1px solid #F1F5F9" }}>
+                                            <Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#64748B", mb: 0.5 }}>TYPE</Typography>
+                                            <Typography sx={{ fontSize: "15px", color: "#0F172A", fontWeight: 600, textTransform: "capitalize" }}>{selectedTask.type}</Typography>
+                                        </Box>
+                                    </Box>
+
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                                        <Box sx={{ p: 2, bgcolor: "#F8FAFC", borderRadius: 2, border: "1px solid #F1F5F9" }}>
+                                            <Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#64748B", mb: 0.5 }}>CREATED BY</Typography>
+                                            <Typography sx={{ fontSize: "15px", color: "#2E63EE", fontWeight: 600 }}>{formatPhone(selectedTask.createdby)}</Typography>
+                                        </Box>
+                                        <Box sx={{ p: 2, bgcolor: "#F8FAFC", borderRadius: 2, border: "1px solid #F1F5F9" }}>
+                                            <Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#64748B", mb: 0.5 }}>ASSIGNED TO</Typography>
+                                            <Typography sx={{ fontSize: "15px", color: "#2E63EE", fontWeight: 600 }}>{formatPhone(selectedTask.assignedTo)}</Typography>
+                                        </Box>
+                                    </Box>
+
+                                    {selectedTask.type !== "GENERAL" && selectedTask.segment && (
+                                        <Box sx={{ p: 2.5, bgcolor: "#F8FAFC", borderRadius: 2, border: "1px solid #F1F5F9" }}>
+                                            <Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#64748B", mb: 0.5 }}>SEGMENT</Typography>
+                                            <Typography sx={{ fontSize: "15px", color: "#0F172A", fontWeight: 600 }}>{selectedTask.segment}</Typography>
+                                        </Box>
+                                    )}
+                                </Box>
+
+                                {/* Right Column: Content */}
+                                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                    <Box sx={{ 
+                                        flex: 1,
+                                        p: 3, 
+                                        bgcolor: "#F1F5F9", 
+                                        borderRadius: 3, 
+                                        border: "1px solid #E2E8F0",
+                                        display: 'flex',
+                                        flexDirection: 'column'
+                                    }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                                            <Box sx={{ width: 32, height: 32, borderRadius: "50%", bgcolor: "#E2E8F0", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <Typography sx={{ fontSize: "16px" }}>📝</Typography>
+                                            </Box>
+                                            <Typography sx={{ fontSize: "14px", fontWeight: 800, color: "#475569", letterSpacing: "0.05em" }}>TASK CONTENT</Typography>
+                                        </Box>
+                                        <Box sx={{ 
+                                            p: 3, 
+                                            bgcolor: "#FFFFFF", 
+                                            borderRadius: 2, 
+                                            flex: 1,
+                                            boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+                                            overflowY: 'auto',
+                                            maxHeight: '400px'
+                                        }}>
+                                            <Typography sx={{ 
+                                                fontSize: "15px", 
+                                                color: "#1E293B", 
+                                                lineHeight: 1.8,
+                                                whiteSpace: "pre-wrap",
+                                                fontWeight: 500
+                                            }}>
+                                                {selectedTask.content}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            </Box>
+                        </DialogContent>
+                    </>
+                )}
+            </Dialog>
         </Box>
     );
 }

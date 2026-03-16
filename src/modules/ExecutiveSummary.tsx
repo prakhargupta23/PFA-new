@@ -58,16 +58,45 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
   };
 
   const dashboardCards = [
-    { label: "OPERATING RATIO", value: dashboardData.operatingRatio.toFixed(2), color: "#93C5FD" },
+    { label: "OPERATING RATIO", value: dashboardData.operatingRatio, color: "#93C5FD" },
     { label: "EARNINGS", value: formatPercentage(dashboardData.Earnings), color: dashboardData.Earnings < 0 ? "#EF4444" : "#22C55E" },
     { label: "OWE", value: formatPercentage(dashboardData.workingExpenses), color: dashboardData.workingExpenses > 0 ? "#EF4444" : "#22C55E" },
     { label: "CAPEX UTILIZATION", value: Number(dashboardData.capex).toLocaleString('en-IN'), color: "white" },
     { label: "CRITICAL AUDIT", value: dashboardData.audit.toString(), color: "#FACC15" }
   ];
 
-  const handleCardClick = async (title: string, value: string) => {
+  const handleCardClick = async (label: string, _value: string) => {
     try {
-      const data = await callToAction(["FA/G"], title, value);
+      let title = "";
+      let message = "";
+
+      switch (label) {
+        case "OPERATING RATIO":
+          title = "🚨 PFA Portal Alert – Operating Ratio";
+          message = "FA F&B\nOperating Ratio is above the target level.\nPlease submit a brief strategy note outlining measures to bring the Operating Ratio closer to the target.";
+          break;
+        case "EARNINGS":
+          title = "📊 PFA Portal Alert – Earnings";
+          message = "FA/T\nOverall Earnings are below the target level.\nKindly submit a brief report suggesting measures to enhance earnings and achieve the target.";
+          break;
+        case "OWE":
+          title = "⚠️ PFA Portal Alert – OWE";
+          message = "FA F&B\nOverall Ordinary Working Expenses (OWE) are above the budget proportion.\nPlease submit a brief report on measures to control OWE and keep expenditure within the target.";
+          break;
+        case "CAPEX UTILIZATION":
+          title = "📉 PFA Portal Alert – CAPEX Utilization";
+          message = "FA F&B\nOverall CAPEX utilization is below the internal target.\nKindly submit a brief report outlining steps to improve CAPEX utilization.";
+          break;
+        case "CRITICAL AUDIT":
+          title = "📑 PFA Portal Alert – Audit";
+          message = "A large number of audit cases are pending for closure. Please submit an action plan for early disposal of pending audit objections.";
+          break;
+        default:
+          title = `💬 PFA Portal Alert – ${label}`;
+          message = `Please review the current status for ${label}.`;
+      }
+
+      const data = await callToAction(["FA/T"], title, message);
       console.log("Data sent successfully:", data);
       alert(`Task created successfully!`);
     } catch (error) {

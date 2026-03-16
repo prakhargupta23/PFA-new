@@ -14,13 +14,14 @@ import {
   TableRow,
   Paper,
   FormControl,
-  InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  IconButton,
+  InputLabel
 } from "@mui/material";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { dashboardService } from "../services/dashboardService";
-
-
+import { callToAction } from "../services/whatsapp.service";
 
 export default function CapexAnalysis({ month, year }: { month: number; year: number }) {
   const [loading, setLoading] = useState(false);
@@ -46,9 +47,40 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
     setLoading(true);
     try {
       const response = await dashboardService.getCapexData();
+
+      // Custom alphanumeric sorter logic
+      const sortByIndex = (a: any, b: any) => {
+        const indexA = a.index;
+        const indexB = b.index;
+
+        // Push missing/falsy indexes to the bottom
+        if (!indexA && !indexB) return 0;
+        if (!indexA) return 1;
+        if (!indexB) return -1;
+
+        // If they're numbers, sort them numerically rather than alphabetically
+        const numA = parseInt(String(indexA), 10);
+        const numB = parseInt(String(indexB), 10);
+
+        if (!isNaN(numA) && !isNaN(numB)) {
+          return numA - numB;
+        }
+
+        // Fallback to string behavior if neither are numeric, taking case into account
+        return String(indexA).localeCompare(String(indexB), undefined, { numeric: true, sensitivity: 'base' });
+      };
+
+      const zonalData = response.zonalData || [];
+      zonalData.sort(sortByIndex);
+      console.log("zonalData", zonalData);
+
+      const unitData = response.unitData || [];
+      unitData.sort(sortByIndex);
+      console.log("unitData", unitData);
+
       if (response) {
-        setZonalData(response.zonalData || []);
-        setUnitData(response.unitData || []);
+        setZonalData(zonalData);
+        setUnitData(unitData);
       }
     } catch (error) {
       console.error(`Failed to fetch capex data:`, error);
@@ -68,6 +100,29 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
       </Box>
     );
   }
+
+  const handleZonalWhatsappClick = async (row: any) => {
+    try {
+      const title = `📉 PFA Portal Alert – CAPEX Utilization (Zonal)`;
+      const message = `Utilization in ${row.planheadname} is below the internal target.\nKindly prepare an action plan to improve CAPEX utilization under ${row.planheadname} and ensure progress towards the target.\n\nDetails:\nPH No: ${row.planheadno || '-'}\nRBG Total: ${Number(row.rgbtotal || 0).toFixed(2)}\nActual Upto Month: ${Number(row.actualforthemonthlastyeartotal || 0).toFixed(2)}\nUtilization: ${Number(row.actualuptothemonthtotal || 0).toFixed(2)}%`;
+      await callToAction(["FA/T"], title, message);
+      alert(`Task created successfully for ${row.planheadname}!`);
+    } catch (error) {
+      console.error("Error sending data:", error);
+    }
+  };
+
+  const handleUnitWhatsappClick = async (row: any) => {
+    try {
+      const title = `📉 PFA Portal Alert – CAPEX Utilization (Unit)`;
+      const message = `Utilization in ${row.planheadname} is below the internal target.\nPlease prepare an action plan to increase CAPEX utilization under ${row.planheadname} and improve expenditure progress.\n\nDetails:\nUnit: ${row.au || 'Zonal Total'}\nGrant (RG): ${row.rglastyear}\nActual For Month: ${row.actualforthemonth}\n% Utilization: ${Number(row.percentageutilization).toFixed(2)}%`;
+      await callToAction(["FA/T"], title, message);
+      alert(`Task created successfully for ${row.planheadname}!`);
+    } catch (error) {
+      console.error("Error sending data:", error);
+    }
+  };
+
   return (
     <Box>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
@@ -121,22 +176,24 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
           <Table stickyHeader size="small">
             <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>#</TableCell>
+                {/* <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>#</TableCell> */}
                 <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>PH No</TableCell>
                 <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>Planhead Name</TableCell>
                 <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>RBG Total</TableCell>
                 <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>Actual Upto Month Total</TableCell>
                 <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>Utilization Total</TableCell>
+                <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px', width: '40px' }}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {zonalData.length === 0 ? (
-                <TableRow><TableCell colSpan={6} align="center" sx={{ py: 3 }}>No zonal data available</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} align="center" sx={{ py: 3 }}>No zonal data available</TableCell></TableRow>
               ) : zonalData.map((row, idx) => (
+
                 <TableRow key={row.uuid || idx} hover sx={{
                   bgcolor: (row.planheadname === 'Total' || row.planheadname === 'TOTAL' || row.planheadname === 'Grand Total') ? '#F1F5F9' : 'inherit'
                 }}>
-                  <TableCell sx={{ fontSize: '11px' }}>{idx + 1}</TableCell>
+                  {/* <TableCell sx={{ fontSize: '11px' }}>{row.index}</TableCell> */}
                   <TableCell sx={{ fontSize: '11px' }}>{row.planheadno || '-'}</TableCell>
                   <TableCell sx={{ fontSize: '11px', fontWeight: (row.planheadname === 'Total' || row.planheadname === 'TOTAL' || row.planheadname === 'Grand Total') ? 700 : 600 }}>
                     {row.planheadname}
@@ -156,6 +213,11 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
                       }}
                     />
                   </TableCell>
+                  <TableCell sx={{ fontSize: '11px' }} align="center">
+                    <IconButton size="small" sx={{ color: "#25D366" }} onClick={() => handleZonalWhatsappClick(row)}>
+                      <WhatsAppIcon fontSize="small" />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -166,23 +228,24 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
           <Table stickyHeader size="small">
             <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>#</TableCell>
+                {/* <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>#</TableCell> */}
                 <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>Unit (AU)</TableCell>
                 <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>PlanHead Name</TableCell>
                 <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>Grant (RG)</TableCell>
                 <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>Actual For Month</TableCell>
                 <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>Actual To End (LY)</TableCell>
                 <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px' }}>% Utilization</TableCell>
+                <TableCell sx={{ fontWeight: 700, bgcolor: '#F8FAFC', fontSize: '11px', width: '40px' }}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {filteredUnitData.length === 0 ? (
-                <TableRow><TableCell colSpan={7} align="center" sx={{ py: 3 }}>No unit data available</TableCell></TableRow>
+                <TableRow><TableCell colSpan={8} align="center" sx={{ py: 3 }}>No unit data available</TableCell></TableRow>
               ) : filteredUnitData.map((row, idx) => (
                 <TableRow key={row.uuid || idx} hover sx={{
                   bgcolor: (!row.au && (row.planheadname === 'TOTAL' || row.planheadname === 'Total')) ? '#F8FAFC' : 'inherit'
                 }}>
-                  <TableCell sx={{ fontSize: '11px' }}>{idx + 1}</TableCell>
+                  {/* <TableCell sx={{ fontSize: '11px' }}>{row.index}</TableCell> */}
                   <TableCell sx={{ fontSize: '11px' }}>{row.au || 'Zonal Total'}</TableCell>
                   <TableCell sx={{ fontSize: '11px', fontWeight: 600 }}>{row.planheadname}</TableCell>
                   <TableCell sx={{ fontSize: '11px' }}>{row.rglastyear}</TableCell>
@@ -199,6 +262,11 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
                         color: Number(row.percentageutilization) < 60 ? '#991B1B' : '#166534'
                       }}
                     />
+                  </TableCell>
+                  <TableCell sx={{ fontSize: '11px' }} align="center">
+                    <IconButton size="small" sx={{ color: "#25D366" }} onClick={() => handleUnitWhatsappClick(row)}>
+                      <WhatsAppIcon fontSize="small" />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}

@@ -265,43 +265,7 @@ export default function Dashboard() {
           RailGuard PFA - Financial Governance Agent
         </Typography>
         <Box sx={{ position: "absolute", right: 24, display: "flex", alignItems: "center", gap: 2 }}>
-          <FormControl size="small">
-            <Select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              sx={{
-                height: 32,
-                fontSize: "12px",
-                bgcolor: "#a2bbdb",
-                borderRadius: 1,
-              }}
-            >
-              {allMonths.map((month) => (
-                <MenuItem key={month} value={month}>
-                  {month}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
 
-          <FormControl size="small">
-            <Select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-              sx={{
-                height: 32,
-                fontSize: "12px",
-                bgcolor: "#a2bbdb",
-                borderRadius: 1,
-              }}
-            >
-              {yearOptions.map((year) => (
-                <MenuItem key={year} value={year}>
-                  {year}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
 
           <input
             type="file"

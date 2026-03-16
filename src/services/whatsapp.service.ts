@@ -5,7 +5,7 @@ import { fetchWrapper } from "../helpers/fetch-wrapper";
 export const callToAction = async (roles: string[], title: string, message: string) => {
     try {
         console.log("call to action reached")
-        const response = await fetch("https://pricilla-sloughy-fumblingly.ngrok-free.dev/message-from-pfa-portal", {
+        const response = await fetch("https://nwr-whatsapp-api-bqfadsfzc2ergzcx.canadacentral-01.azurewebsites.net/message-from-pfa-portal", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
