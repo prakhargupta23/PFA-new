@@ -1,36 +1,76 @@
 /** @format */
 
 import { createBrowserRouter } from "react-router-dom";
-
-import LoginPage from "../Pages/LoginPage";
-import PrivateRoute from "./PrivateRoute";
 import Dashboard from "../Pages/Dashboard";
 import DocumentUpload from "../Pages/DocumentUpload";
-import ExecutiveSummary from "../modules/ExecutiveSummary";
+import VoiceInput from "../components/voicecapturing";
+import CapexUpload from "../Pages/CapexUpload";
+import OweUpload from "../Pages/OweUpload";
+import AuditUpload from "../Pages/AuditUpload";
+import LoginPage from "../Pages/LoginPage";
+import PrivateRoute from "./PrivateRoute";
 
 export const routes = createBrowserRouter([
-  // {
-  //   path: "/Expenditure",
-  //   element: (
-  //     <PrivateRoute>
-  //       <Expenditure />
-  //     </PrivateRoute>
-  //   ),
-  // },
+
   {
     path: "/*",
-    element: <Dashboard />,
+    element: <LoginPage />,
   },
   {
-    path: "/Upload",
-    element: <DocumentUpload />,
+    path: "/Dashboard",
+    element: (
+      <PrivateRoute>
+        <Dashboard />
+      </PrivateRoute>
+    ),
   },
-  // {
-  //   path: "/pfa",
-  //   element: (
-  //     <PrivateRoute>
-  //       <PFAPage />
-  //     </PrivateRoute>
-  //   ),
-  // },
+  {
+    path: "/voice",
+    element: (
+      <PrivateRoute>
+        <VoiceInput />
+      </PrivateRoute>
+    ),
+  },
+
+  {
+    path: "/Upload",
+    element: (
+      <PrivateRoute>
+        <DocumentUpload />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/Capex",
+    element: (
+      <PrivateRoute>
+        <CapexUpload />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/OWE",
+    element: (
+      <PrivateRoute>
+        <OweUpload />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/Audit",
+    element: (
+      <PrivateRoute>
+        <AuditUpload />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/Audit",
+    element: (
+      <PrivateRoute>
+        <AuditUpload />
+      </PrivateRoute>
+    ),
+  },
 ]);
