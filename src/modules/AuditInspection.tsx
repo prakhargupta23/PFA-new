@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Chip } from "@mui/material";
-import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
+// import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { callToAction } from "../services/whatsapp.service";
 import { auditService } from "../services/audit.service";
@@ -20,11 +20,11 @@ interface AuditDataRow {
   date?: string;
 }
 
-const getAgingColor = (closingBalance: number) => {
-  if (closingBalance > 10) return "#EF4444"; // High pendency
-  if (closingBalance > 5) return "#F59E0B";  // Medium pendency
-  return "#22C55E"; // Low pendency
-};
+// const getAgingColor = (closingBalance: number) => {
+//   if (closingBalance > 10) return "#EF4444"; // High pendency
+//   if (closingBalance > 5) return "#F59E0B";  // Medium pendency
+//   return "#22C55E"; // Low pendency
+// };
 
 export default function AuditInspection() {
   const [data, setData] = useState<AuditDataRow[]>([]);

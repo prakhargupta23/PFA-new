@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
 
 import { Box, Typography, Chip } from "@mui/material";
-import { Public as GlobeIcon, Bolt as BoltIcon, Chat as EscalateIcon } from "@mui/icons-material";
+import { Public as GlobeIcon, Chat as EscalateIcon } from "@mui/icons-material";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { callToAction } from "../services/whatsapp.service";
 import { dashboardService } from "../services/dashboardService";
 
 
-const escalateDivisions = ["JODHPUR", "BIKANER", "AJMER", "JAIPUR"];
+// const escalateDivisions = ["JODHPUR", "BIKANER", "AJMER", "JAIPUR"];
 
 export default function ExecutiveSummary({ month, year }: { month: number; year: number }) {
   const [dashboardData, setDashboardData] = useState({
