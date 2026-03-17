@@ -451,11 +451,11 @@ export default function Dashboard() {
               <CalendarIcon sx={{ color: "#64748B", fontSize: 14 }} />
               <Typography sx={{ fontSize: "11px", color: "#64748B" }}>Wk 1, Feb 2026</Typography>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
+            {/* <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
               <NotificationsIcon sx={{ color: "#64748B", fontSize: 14 }} />
               <Typography sx={{ fontSize: "11px", color: "#64748B" }}>Notifications</Typography>
               <Typography sx={{ fontSize: "11px", color: "#EF4444" }}>*</Typography>
-            </Box>
+            </Box> */}
           </Box>
           {renderMainContent()}
         </Box>

@@ -6,14 +6,28 @@ const VoiceRecorder: React.FC = () => {
     const [state, setState] = useState<State>("idle");
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    const handleStop = () => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+            audioRef.current = null;
+        }
+        setState("idle");
+    };
 
     const handleToggle = async () => {
+        if (state === "playing") {
+            handleStop();
+            return;
+        }
         if (state === "recording") {
             mediaRecorderRef.current?.stop();
             setState("loading");
             return;
         }
-        if (state === "loading" || state === "playing") return;
+        if (state === "loading") return;
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -48,9 +62,14 @@ const VoiceRecorder: React.FC = () => {
                             setState("playing");
                             const audioSrc = `data:audio/wav;base64,${data.audio_base64}`;
                             const audio = new Audio(audioSrc);
-                            audio.onended = () => setState("idle");
+                            audioRef.current = audio;
+                            audio.onended = () => {
+                                audioRef.current = null;
+                                setState("idle");
+                            };
                             audio.play().catch((err) => {
                                 console.error("Audio playback failed:", err);
+                                audioRef.current = null;
                                 setState("idle");
                             });
                         } else {
@@ -141,14 +160,14 @@ const VoiceRecorder: React.FC = () => {
                     {/* Main button */}
                     <button
                         onClick={handleToggle}
-                        disabled={state === "loading" || state === "playing"}
+                        disabled={state === "loading"}
                         title={label}
                         style={{
                             width: 120,
                             height: 120,
                             borderRadius: "50%",
                             border: "none",
-                            cursor: (state === "loading" || state === "playing") ? "not-allowed" : "pointer",
+                            cursor: state === "loading" ? "not-allowed" : "pointer",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -221,6 +240,41 @@ const VoiceRecorder: React.FC = () => {
                         )}
                     </button>
                 </div>
+
+                {/* Stop button — visible during loading or playing */}
+                {(state === "loading" || state === "playing") && (
+                    <button
+                        onClick={handleStop}
+                        disabled={state === "loading"}
+                        title="Stop"
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                            padding: "8px 22px",
+                            borderRadius: 999,
+                            border: "none",
+                            cursor: state === "loading" ? "not-allowed" : "pointer",
+                            background: state === "loading"
+                                ? "#E2E8F0"
+                                : "linear-gradient(135deg, #EF4444 0%, #F87171 100%)",
+                            color: state === "loading" ? "#94A3B8" : "#fff",
+                            fontWeight: 700,
+                            fontSize: 13,
+                            letterSpacing: "0.04em",
+                            boxShadow: state === "playing"
+                                ? "0 4px 16px rgba(239,68,68,0.35)"
+                                : "none",
+                            transition: "all 0.2s ease",
+                        }}
+                    >
+                        {/* Stop square icon */}
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                            <rect width="12" height="12" rx="2" fill="currentColor" />
+                        </svg>
+                        Stop
+                    </button>
+                )}
 
                 {/* Status label */}
                 <span style={{

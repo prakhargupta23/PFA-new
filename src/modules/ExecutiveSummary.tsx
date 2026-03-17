@@ -17,14 +17,12 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
     capex: 0,
     audit: 0
   });
-  const [divisionData, setDivisionData] = useState([]);
-  const maxGraphValue = Math.max(200, ...divisionData.map((item: any) => Number(item.utilization) || 0));
-  const yAxisMax = Math.ceil(maxGraphValue / 50) * 50;
-  const yAxisTicks = Array.from({ length: yAxisMax / 50 + 1 }, (_, i) => i * 50);
+  const [divisionData, setDivisionData] = useState<any[]>([]);
 
   const fetchDashboard = useCallback(async () => {
     try {
       const data = await dashboardService.getDashboardData(month, year);
+
       setDashboardData({
         operatingRatio: data.operatingRatio || 0,
         Earnings: data.Earnings || 0,
@@ -33,15 +31,17 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
         audit: data.audit || 0
       });
 
-      // Maintain graph data if it still arrives in data.graphData
-      if (data.graphData) {
+      if (data.graphData?.operatingRatioLast6Months && Array.isArray(data.graphData.operatingRatioLast6Months)) {
         setDivisionData(
-          data.graphData.map((item: any, index: number) => ({
-            name: escalateDivisions[index] || `Div ${index + 1}`,
-            utilization: Number(item.value)
+          data.graphData.operatingRatioLast6Months.map((item: any) => ({
+            name: item.date || item.selectedMonthYear || item.division || `Item`,
+            percentVariationBP: item.percentVariationBP !== null ? Number(item.percentVariationBP) : null,
+            actualForMonth: item.actualForMonth !== null ? Number(item.actualForMonth) : null,
+            bpToEndMonth: item.bpToEndMonth !== null ? Number(item.bpToEndMonth) : null,
           }))
         );
       }
+      console.log("divisionData", divisionData);
     } catch (error) {
       console.error(error);
     }
@@ -192,7 +192,7 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
 
       <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 1.2, mb: 1.2 }}>
         <Box sx={{ bgcolor: "#F8FAFC", borderRadius: 1.2, p: 1.3, border: "1px solid #E2E8F0" }}>
-          <Typography sx={{ fontSize: "22px", fontWeight: 700, color: "#111827", mb: 1 }}>Division Efficiency Matrix</Typography>
+          <Typography sx={{ fontSize: "22px", fontWeight: 700, color: "#111827", mb: 1 }}>Performance Matrix</Typography>
           <Box sx={{ height: 320 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={divisionData} margin={{ top: 10, right: 10, left: 8, bottom: 20 }}>
@@ -207,9 +207,7 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
                   stroke="#94A3B8"
                 />
                 <YAxis
-                  domain={[0, yAxisMax]}
-                  ticks={yAxisTicks}
-                  tick={false}
+                  tick={{ fontSize: 10, fill: "#64748B" }}
                   stroke="#94A3B8"
                   axisLine={{ stroke: "#94A3B8" }}
                 />
@@ -222,8 +220,9 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
                     return `${numericValue.toFixed(2)}%`;
                   }}
                 />
-                <Bar dataKey="utilization" fill="#3B63E2" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="timeLapse" fill="#CBD5E1" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="actualForMonth" fill="#3B63E2" radius={[3, 3, 0, 0]} name="Actual For Month" />
+                <Bar dataKey="bpToEndMonth" fill="#CBD5E1" radius={[3, 3, 0, 0]} name="BP To End Month" />
+                <Bar dataKey="percentVariationBP" fill="#22C55E" radius={[3, 3, 0, 0]} name="% Variation vs BP" />
               </BarChart>
             </ResponsiveContainer>
           </Box>
