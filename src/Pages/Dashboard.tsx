@@ -252,69 +252,117 @@ export default function Dashboard() {
           color: "#0F172A",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          px: 1,
+          justifyContent: "space-between",
+          px: 2,
           position: "fixed",
           top: 0,
           left: 0,
           right: 0,
           zIndex: 1100,
+          borderBottom: "1px solid #E2E8F0",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
         }}
       >
-        <Typography variant="body2" fontWeight={600}>
-          RailGuard PFA - Financial Governance Agent
-        </Typography>
-        <Box sx={{ position: "absolute", right: 24, display: "flex", alignItems: "center", gap: 2 }}>
+        {/* Left: Branding */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
+          <Box sx={{ width: 26, height: 26, borderRadius: "6px", bgcolor: "#2D66F5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <SummaryIcon sx={{ color: "#fff", fontSize: 15 }} />
+          </Box>
+          <Box>
+            <Typography sx={{ fontSize: "13px", fontWeight: 700, lineHeight: 1.1, color: "#0F172A" }}>RailGuard PFA</Typography>
+            <Typography sx={{ fontSize: "9px", color: "#94A3B8", lineHeight: 1.1, letterSpacing: "0.04em" }}>FINANCIAL GOVERNANCE PORTAL</Typography>
+          </Box>
+        </Box>
+
+        {/* Right: Controls */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.4 }}>
+          {/* Month selector */}
+          {/* <FormControl size="small">
+            <Select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              sx={{ fontSize: "11px", height: 30, minWidth: 110, bgcolor: "#F8FAFC", "& .MuiOutlinedInput-notchedOutline": { borderColor: "#E2E8F0" }, "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#CBD5E1" } }}
+            >
+              {allMonths.map((month) => (
+                <MenuItem key={month} value={month} sx={{ fontSize: "11px" }}>{month}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
 
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept={activeUploadConfig.accept}
-            style={{ display: "none" }}
-          />
-          <Menu
-            anchorEl={uploadMenuAnchor}
-            open={shouldUseUploadMenu && isUploadMenuOpen}
-            onClose={handleUploadMenuClose}
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            transformOrigin={{ vertical: "top", horizontal: "right" }}
-            PaperProps={{ sx: { p: 1.2, mt: 0.6, minWidth: 210 } }}
-          >
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              <FormControl size="small" fullWidth>
-                <Select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  sx={{ fontSize: "11px", height: 32 }}
-                >
-                  {allMonths.map((month) => (
-                    <MenuItem key={month} value={month} sx={{ fontSize: "11px" }}>
-                      {month}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+          <FormControl size="small">
+            <Select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              sx={{ fontSize: "11px", height: 30, minWidth: 76, bgcolor: "#F8FAFC", "& .MuiOutlinedInput-notchedOutline": { borderColor: "#E2E8F0" }, "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#CBD5E1" } }}
+            >
+              {yearOptions.map((y) => (
+                <MenuItem key={y} value={y} sx={{ fontSize: "11px" }}>{y}</MenuItem>
+              ))}
+            </Select>
+          </FormControl> */}
+
+          {/* Upload button */}
+          {/* {activeNav !== "ai-brain" && activeNav !== "tasks" && (
+
+
+            <>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept={activeUploadConfig.accept}
+                style={{ display: "none" }}
+              />
               <Button
                 size="small"
                 variant="contained"
-                onClick={handleMenuUploadClick}
+                onClick={handleUploadClick}
                 disabled={uploadLoading}
                 sx={{
-                  height: 32,
+                  height: 30,
                   fontSize: "11px",
+                  fontWeight: 600,
                   textTransform: "none",
+                  px: 1.8,
                   bgcolor: "#2E63EE",
-                  "&:hover": { bgcolor: "#1E4FD0" },
+                  boxShadow: "none",
+                  borderRadius: "6px",
+                  "&:hover": { bgcolor: "#1E4FD0", boxShadow: "none" },
+                  "&.Mui-disabled": { bgcolor: "#CBD5E1", color: "#94A3B8" },
                 }}
               >
-                Upload Excel
+                {uploadLoading ? "Uploading…" : activeUploadConfig.label}
               </Button>
-            </Box>
-          </Menu>
+            </>
+          )} */}
+
+          {/* Divider */}
+          <Box sx={{ width: "1px", height: 22, bgcolor: "#E2E8F0" }} />
+
+          {/* Notifications */}
+          <Box sx={{ cursor: "pointer", color: "#64748B", "&:hover": { color: "#0F172A" }, display: "flex", alignItems: "center" }}>
+            <NotificationsIcon sx={{ fontSize: 18 }} />
+          </Box>
+
+          {/* Avatar */}
+          <Box
+            sx={{
+              width: 28,
+              height: 28,
+              borderRadius: "50%",
+              bgcolor: "#2D66F5",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+            }}
+          >
+            <PersonIcon sx={{ color: "#fff", fontSize: 15 }} />
+          </Box>
         </Box>
       </Box>
+
       <Snackbar
         open={snackbar.open}
         autoHideDuration={5000}
@@ -326,6 +374,7 @@ export default function Dashboard() {
         </Alert>
       </Snackbar>
 
+      {/* ── Sidebar ── */}
       <Box
         className="dashboard-sidebar"
         sx={{
@@ -335,79 +384,70 @@ export default function Dashboard() {
           left: 0,
           bottom: 0,
           bgcolor: "#0B1635",
-          color: "#fff",
           display: "flex",
           flexDirection: "column",
           zIndex: 1000,
+          borderRight: "1px solid rgba(255,255,255,0.06)",
         }}
       >
-        <Box sx={{ p: 2, borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, mb: 0.3 }}>
-            <Box
-              sx={{
-                width: 28,
-                height: 28,
-                borderRadius: 1,
-                bgcolor: "#2D66F5",
-              }}
-            />
-            <Box>
-              <Typography sx={{ fontSize: "13px", fontWeight: 700, lineHeight: 1.2 }}>RailGuard</Typography>
-              <Typography sx={{ fontSize: "9px", color: "rgba(255,255,255,0.7)" }}>PFA PORTAL V_2.0</Typography>
-            </Box>
-          </Box>
-        </Box>
-
-        <Box sx={{ flex: 1, py: 1.5, overflow: "hidden" }}>
+        {/* Nav items */}
+        <Box sx={{ flex: 1, py: 1.5, overflowY: "auto" }}>
           {navItems.map((item) => {
             const isActive = activeNav === item.key;
             return (
               <Box
                 key={item.key}
-                className="nav-item"
                 onClick={() => setActiveNav(item.key)}
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 1,
-                  px: 1.5,
-                  py: 1,
+                  gap: 1.1,
+                  px: 1.6,
+                  py: 0.9,
                   mx: 1,
-                  mb: 0.7,
-                  borderRadius: 1.2,
-                  bgcolor: isActive ? "#2E63EE" : "transparent",
-                  color: "#fff",
+                  mb: 0.4,
+                  borderRadius: "8px",
+                  bgcolor: isActive ? "rgba(46,99,238,0.18)" : "transparent",
+                  color: isActive ? "#fff" : "rgba(255,255,255,0.6)",
                   cursor: "pointer",
-                  border: "1px solid",
-                  borderColor: isActive ? "transparent" : "rgba(255,255,255,0.06)",
-                  "&:hover": { bgcolor: isActive ? "#2E63EE" : "rgba(255,255,255,0.08)" },
+                  position: "relative",
+                  transition: "all 0.15s ease",
+                  borderLeft: isActive ? "3px solid #2E63EE" : "3px solid transparent",
+                  "&:hover": {
+                    bgcolor: isActive ? "rgba(46,99,238,0.18)" : "rgba(255,255,255,0.06)",
+                    color: "#fff",
+                  },
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center" }}>{item.icon}</Box>
-                <Typography sx={{ fontSize: "11px", fontWeight: 500 }}>{item.label}</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", "& svg": { fontSize: 17 } }}>{item.icon}</Box>
+                <Typography sx={{ fontSize: "11.5px", fontWeight: isActive ? 700 : 500, letterSpacing: "0.01em" }}>
+                  {item.label}
+                </Typography>
               </Box>
             );
           })}
         </Box>
 
-        <Box sx={{ p: 1.2, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.2, p: 1, borderRadius: 1.2, border: "1px solid rgba(255,255,255,0.12)" }}>
+        {/* Footer */}
+        <Box sx={{ p: 1.4, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.2, p: 0.9, borderRadius: "8px", bgcolor: "rgba(255,255,255,0.05)" }}>
             <Box
               sx={{
-                width: 28,
-                height: 28,
+                width: 26,
+                height: 26,
                 borderRadius: "50%",
                 bgcolor: "#19325A",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                flexShrink: 0,
               }}
             >
-              <PersonIcon sx={{ color: "#fff", fontSize: 16 }} />
+              <PersonIcon sx={{ color: "#fff", fontSize: 14 }} />
             </Box>
-            <Box>
-              <Typography sx={{ fontSize: "9px", fontWeight: 600, lineHeight: 1.2 }}>Username</Typography>
-              <Typography sx={{ fontSize: "8px", color: "rgba(255,255,255,0.7)", lineHeight: 1.2 }}>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography sx={{ fontSize: "10px", fontWeight: 600, lineHeight: 1.2, color: "#fff" }}>Username</Typography>
+              <Typography sx={{ fontSize: "8px", color: "rgba(255,255,255,0.5)", lineHeight: 1.2, letterSpacing: "0.03em" }}>
                 PRINCIPAL FINANCIAL ADVISER
               </Typography>
             </Box>
@@ -416,19 +456,23 @@ export default function Dashboard() {
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: 0.6,
+              gap: 0.7,
               cursor: "pointer",
-              color: "rgba(255,255,255,0.75)",
-              pl: 0.8,
+              color: "rgba(255,255,255,0.5)",
+              pl: 0.5,
+              borderRadius: "6px",
+              py: 0.4,
+              transition: "color 0.15s",
               "&:hover": { color: "#fff" },
             }}
           >
-            <LogoutIcon sx={{ fontSize: 12 }} />
-            <Typography sx={{ fontSize: "10px" }}>Logout</Typography>
+            <LogoutIcon sx={{ fontSize: 13 }} />
+            <Typography sx={{ fontSize: "10px", fontWeight: 500 }}>Sign out</Typography>
           </Box>
         </Box>
       </Box>
 
+      {/* ── Main Content ── */}
       <Box
         className="dashboard-main"
         ref={mainContentRef}
@@ -438,28 +482,64 @@ export default function Dashboard() {
           left: SIDEBAR_WIDTH,
           right: 0,
           bottom: 0,
-          bgcolor: "#EEF2F7",
-          p: 2,
+          bgcolor: "#F1F5F9",
+          p: 2.5,
           boxSizing: "border-box",
           overflowY: "auto",
           overflowX: "hidden",
         }}
       >
-        <Box sx={{ width: "100%" }}>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 2, mb: 1 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
-              <CalendarIcon sx={{ color: "#64748B", fontSize: 14 }} />
-              <Typography sx={{ fontSize: "11px", color: "#64748B" }}>Wk 1, Feb 2026</Typography>
-            </Box>
-            {/* <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
-              <NotificationsIcon sx={{ color: "#64748B", fontSize: 14 }} />
-              <Typography sx={{ fontSize: "11px", color: "#64748B" }}>Notifications</Typography>
-              <Typography sx={{ fontSize: "11px", color: "#EF4444" }}>*</Typography>
-            </Box> */}
+        {/* Page section label */}
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
+            <Box sx={{ width: 3, height: 16, borderRadius: 2, bgcolor: "#2E63EE" }} />
+            <Typography sx={{ fontSize: "11px", fontWeight: 700, color: "#64748B", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+              {navItems.find((n) => n.key === activeNav)?.label ?? "Dashboard"}
+            </Typography>
           </Box>
-          {renderMainContent()}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
+            <CalendarIcon sx={{ color: "#94A3B8", fontSize: 12 }} />
+            <Typography sx={{ fontSize: "10px", color: "#94A3B8" }}>
+              {selectedMonth} {selectedYear}
+            </Typography>
+          </Box>
         </Box>
+
+        {renderMainContent()}
       </Box>
+
+      {/* Hidden upload menu (kept for backward-compat, no longer used) */}
+      <Menu
+        anchorEl={uploadMenuAnchor}
+        open={shouldUseUploadMenu && isUploadMenuOpen}
+        onClose={handleUploadMenuClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        PaperProps={{ sx: { p: 1.2, mt: 0.6, minWidth: 210 } }}
+      >
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          <FormControl size="small" fullWidth>
+            <Select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              sx={{ fontSize: "11px", height: 32 }}
+            >
+              {allMonths.map((month) => (
+                <MenuItem key={month} value={month} sx={{ fontSize: "11px" }}>{month}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button
+            size="small"
+            variant="contained"
+            onClick={handleMenuUploadClick}
+            disabled={uploadLoading}
+            sx={{ height: 32, fontSize: "11px", textTransform: "none", bgcolor: "#2E63EE", "&:hover": { bgcolor: "#1E4FD0" } }}
+          >
+            Upload Excel
+          </Button>
+        </Box>
+      </Menu>
     </Box>
   );
 }

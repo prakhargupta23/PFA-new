@@ -107,7 +107,7 @@ Kindly prepare an action plan for early clearance of long-pending audit objectio
         <Box sx={{ minWidth: "1000px" }}>
           <Box sx={{ display: "grid", gridTemplateColumns: "1.8fr 1fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 1fr", p: 1.2, bgcolor: "#F1F5F9" }}>
             <Typography sx={{ fontSize: "10px", color: "#64748B", fontWeight: 700 }}>REF/PARA TYPE</Typography>
-            <Typography sx={{ fontSize: "10px", color: "#64748B", fontWeight: 700 }}>UNIT</Typography>
+            <Typography sx={{ fontSize: "10px", color: "#64748B", fontWeight: 700 }}>DIVISION</Typography>
             <Typography sx={{ fontSize: "10px", color: "#64748B", fontWeight: 700 }}>OPENING</Typography>
             <Typography sx={{ fontSize: "10px", color: "#64748B", fontWeight: 700 }}>ACCRETION</Typography>
             <Typography sx={{ fontSize: "10px", color: "#64748B", fontWeight: 700 }}>CLR(OLD)</Typography>
@@ -138,9 +138,9 @@ Kindly prepare an action plan for early clearance of long-pending audit objectio
                     px: 0.7,
                     py: 0.3,
                     borderRadius: 0.6,
-                    bgcolor: `${getAgingColor(Number(row.closingBalance))}22`,
-                    color: getAgingColor(Number(row.closingBalance)),
-                    fontWeight: 700
+                    // bgcolor: `${getAgingColor(Number(row.closingBalance))}22`,
+                    // color: getAgingColor(Number(row.closingBalance)),
+                    // fontWeight: 700
                   }}>
                     {row.closingBalance ?? 0}
                   </Typography>
@@ -188,7 +188,7 @@ Kindly prepare an action plan for early clearance of long-pending audit objectio
         </Box>
       </Box>
 
-      <Box sx={{ borderRadius: 1.2, border: "1px solid #F4D28A", bgcolor: "#FFF7E6", p: 1.4, display: "flex", gap: 0.8 }}>
+      {/* <Box sx={{ borderRadius: 1.2, border: "1px solid #F4D28A", bgcolor: "#FFF7E6", p: 1.4, display: "flex", gap: 0.8 }}>
         <WarningAmberRoundedIcon sx={{ fontSize: 16, color: "#B45309", mt: 0.1 }} />
         <Box>
           <Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#9A3412", mb: 0.4 }}>AI Governance Insight: Audit Loop Detected</Typography>
@@ -197,7 +197,7 @@ Kindly prepare an action plan for early clearance of long-pending audit objectio
             <strong> Recommendation:</strong> PFA may consider seeking a timeline for final disposal from Dy.FA&amp;CAO/G.
           </Typography>
         </Box>
-      </Box>
+      </Box> */}
     </Box>
   );
 }

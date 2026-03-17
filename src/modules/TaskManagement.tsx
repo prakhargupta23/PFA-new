@@ -63,16 +63,15 @@ export default function TaskManagement() {
         }
     }, []);
 
-    // const handleStatusUpdate = async (taskId: string) => {
-    //     try {
-    //         await taskService.updateTaskStatus(taskId);
-    //         // Refresh tasks after updating status
-    //         const updateTaskStatus = await taskService.updateTaskStatus(taskId);
-    //         fetchTasks();
-    //     } catch (error) {
-    //         console.error("Error updating task status:", error);
-    //     }
-    // };
+    const handleStatusUpdate = async (taskId: any) => {
+        try {
+            console.log("taskId", taskId);
+            await taskService.updateTaskStatus(taskId);
+            await fetchTasks();
+        } catch (error) {
+            console.error("Error updating task status:", error);
+        }
+    };
 
     useEffect(() => {
         fetchTasks();
@@ -93,14 +92,15 @@ export default function TaskManagement() {
             <Box>
                 <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "#1E293B", mb: 1 }}>All Tasks</Typography>
                 <Box sx={{ borderRadius: 1.2, overflow: "hidden", border: "1px solid #E2E8F0" }}>
-                    <Box sx={{ display: "grid", gridTemplateColumns: "0.8fr 1fr 1.5fr 0.8fr 1fr 0.8fr 0.7fr", px: 1.2, py: 1, bgcolor: "#F1F5F9", alignItems: "center" }}>
+                    <Box sx={{ display: "grid", gridTemplateColumns: "0.8fr 1fr 1.5fr 0.8fr 1fr 0.8fr 0.7fr 0.7fr", px: 1.2, py: 1, bgcolor: "#F1F5F9", alignItems: "center" }}>
+                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>TASK ID</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>CREATED BY</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>CREATED AT</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>CONTENT</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>TYPE</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>ASSIGNED TO</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>STATUS</Typography>
-                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B", textAlign: "center" }}>TASK ID</Typography>
+                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>ACTION</Typography>
                     </Box>
 
                     {loading ? (
@@ -120,7 +120,7 @@ export default function TaskManagement() {
                                     onClick={() => setSelectedTask(task)}
                                     sx={{
                                         display: "grid",
-                                        gridTemplateColumns: "0.8fr 1fr 1.5fr 0.8fr 1fr 0.8fr 0.7fr",
+                                        gridTemplateColumns: "0.8fr 1fr 1.5fr 0.8fr 1fr 0.8fr 0.7fr 0.7fr",
                                         alignItems: "center",
                                         px: 1.2,
                                         py: 1.1,
@@ -130,6 +130,9 @@ export default function TaskManagement() {
                                         "&:hover": { bgcolor: "#EDF2F7" },
                                     }}
                                 >
+                                    <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        {task.taskId}
+                                    </Typography>
                                     {/* Col 1 – CREATED BY */}
                                     <Typography sx={{ fontSize: "11px", color: "#334155", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                         {formatPhone(task.createdby)}
@@ -167,29 +170,35 @@ export default function TaskManagement() {
                                             {task.status}
                                         </Typography>
                                     </Box>
-                                    <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                        {task.taskId}
-                                    </Typography>
-                                    {/* <Box sx={{ display: "flex", justifyContent: "center" }}>
-                                        {isPending && (
-                                            <Button
-                                                size="small"
-                                                variant="outlined"
+
+                                    {/* Col 6 – ACTION */}
+                                    <Box sx={{ display: "flex", alignItems: "center" }} onClick={(e) => e.stopPropagation()}>
+                                        {isPending ? (
+                                            <Box
+                                                onClick={() => handleStatusUpdate(task.taskId)}
                                                 sx={{
-                                                    textTransform: "none",
-                                                    fontSize: "9px",
-                                                    py: 0.4,
+                                                    display: "inline-flex",
+                                                    alignItems: "center",
+                                                    gap: 0.4,
                                                     px: 1,
-                                                    borderColor: "#16A34A",
+                                                    py: 0.4,
+                                                    borderRadius: "6px",
+                                                    border: "1px solid #16A34A",
                                                     color: "#16A34A",
-                                                    "&:hover": { borderColor: "#16A34A", bgcolor: "#F0FDF4" },
+                                                    cursor: "pointer",
+                                                    fontSize: "10px",
+                                                    fontWeight: 700,
+                                                    transition: "all 0.15s ease",
+                                                    "&:hover": { bgcolor: "#F0FDF4", boxShadow: "0 1px 4px rgba(22,163,74,0.2)" },
                                                 }}
-                                                onClick={() => handleStatusUpdate(task._id)}
                                             >
+                                                {/* <CheckCircleIcon sx={{ fontSize: 12 }} /> */}
                                                 Complete
-                                            </Button>
+                                            </Box>
+                                        ) : (
+                                            <Typography sx={{ fontSize: "10px", color: "#94A3B8", fontStyle: "italic" }}>Done</Typography>
                                         )}
-                                    </Box> */}
+                                    </Box>
                                 </Box>
                             );
                         })
@@ -198,14 +207,14 @@ export default function TaskManagement() {
             </Box>
 
             {/* Task Details Dialog */}
-            <Dialog 
-                open={Boolean(selectedTask)} 
+            <Dialog
+                open={Boolean(selectedTask)}
                 onClose={() => setSelectedTask(null)}
                 maxWidth="md"
                 fullWidth
                 PaperProps={{
-                    sx: { 
-                        borderRadius: 3, 
+                    sx: {
+                        borderRadius: 3,
                         overflow: 'hidden',
                         boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
                     }
@@ -213,22 +222,22 @@ export default function TaskManagement() {
             >
                 {selectedTask && (
                     <>
-                        <DialogTitle sx={{ 
-                            m: 0, 
-                            px: 3, 
-                            py: 2.5, 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
+                        <DialogTitle sx={{
+                            m: 0,
+                            px: 3,
+                            py: 2.5,
+                            display: 'flex',
+                            justifyContent: 'space-between',
                             alignItems: 'center',
                             bgcolor: "#F8FAFC",
                             borderBottom: "1px solid #E2E8F0"
                         }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                <Box sx={{ 
-                                    width: 8, 
-                                    height: 24, 
-                                    bgcolor: "#2E63EE", 
-                                    borderRadius: 4 
+                                <Box sx={{
+                                    width: 8,
+                                    height: 24,
+                                    bgcolor: "#2E63EE",
+                                    borderRadius: 4
                                 }} />
                                 <Typography sx={{ fontSize: "22px", fontWeight: 800, color: "#0F172A", letterSpacing: "-0.02em" }}>
                                     Task Details
@@ -264,19 +273,19 @@ export default function TaskManagement() {
                                         <Box sx={{ p: 2, bgcolor: "#F8FAFC", borderRadius: 2, border: "1px solid #F1F5F9" }}>
                                             <Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#64748B", mb: 0.5 }}>STATUS</Typography>
                                             <Box sx={{ mt: 0.5 }}>
-                                                <Chip 
-                                                    icon={selectedTask.status === "pending" ? <PendingIcon sx={{ fontSize: 16 }}/> : <CheckCircleIcon sx={{ fontSize: 16 }}/>}
-                                                    label={selectedTask.status} 
-                                                    sx={{ 
-                                                        height: 28, 
-                                                        fontSize: "13px", 
+                                                <Chip
+                                                    icon={selectedTask.status === "pending" ? <PendingIcon sx={{ fontSize: 16 }} /> : <CheckCircleIcon sx={{ fontSize: 16 }} />}
+                                                    label={selectedTask.status}
+                                                    sx={{
+                                                        height: 28,
+                                                        fontSize: "13px",
                                                         fontWeight: 700,
                                                         textTransform: "capitalize",
                                                         px: 0.5,
-                                                        bgcolor: selectedTask.status === "pending" ? "#FEF3C7" : "#DCFCE7", 
+                                                        bgcolor: selectedTask.status === "pending" ? "#FEF3C7" : "#DCFCE7",
                                                         color: selectedTask.status === "pending" ? "#D97706" : "#16A34A",
                                                         "& .MuiChip-icon": { color: "inherit" }
-                                                    }} 
+                                                    }}
                                                 />
                                             </Box>
                                         </Box>
@@ -307,11 +316,11 @@ export default function TaskManagement() {
 
                                 {/* Right Column: Content */}
                                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                    <Box sx={{ 
+                                    <Box sx={{
                                         flex: 1,
-                                        p: 3, 
-                                        bgcolor: "#F1F5F9", 
-                                        borderRadius: 3, 
+                                        p: 3,
+                                        bgcolor: "#F1F5F9",
+                                        borderRadius: 3,
                                         border: "1px solid #E2E8F0",
                                         display: 'flex',
                                         flexDirection: 'column'
@@ -322,18 +331,18 @@ export default function TaskManagement() {
                                             </Box>
                                             <Typography sx={{ fontSize: "14px", fontWeight: 800, color: "#475569", letterSpacing: "0.05em" }}>TASK CONTENT</Typography>
                                         </Box>
-                                        <Box sx={{ 
-                                            p: 3, 
-                                            bgcolor: "#FFFFFF", 
-                                            borderRadius: 2, 
+                                        <Box sx={{
+                                            p: 3,
+                                            bgcolor: "#FFFFFF",
+                                            borderRadius: 2,
                                             flex: 1,
                                             boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
                                             overflowY: 'auto',
                                             maxHeight: '400px'
                                         }}>
-                                            <Typography sx={{ 
-                                                fontSize: "15px", 
-                                                color: "#1E293B", 
+                                            <Typography sx={{
+                                                fontSize: "15px",
+                                                color: "#1E293B",
                                                 lineHeight: 1.8,
                                                 whiteSpace: "pre-wrap",
                                                 fontWeight: 500
