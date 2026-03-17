@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 
 import { Box, Typography, Chip } from "@mui/material";
-import { Public as GlobeIcon, Bolt as BoltIcon, Chat as EscalateIcon } from "@mui/icons-material";
+import { Public as GlobeIcon, Chat as EscalateIcon } from "@mui/icons-material";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { callToAction } from "../services/whatsapp.service";
 import { dashboardService } from "../services/dashboardService";
