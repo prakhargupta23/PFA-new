@@ -54,13 +54,21 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
   }, [month, year, fetchDashboard]);
 
   const formatPercentage = (value: number) => {
-    return `${Number(value).toFixed(2).replace(/\.?0+$/, "")}%`;
+    console.log(value);
+    console.log(Number(value).toFixed(2));
+    return `${Number(value).toFixed(2)}%`;
+  };
+
+  const formatValue = (value: number) => {
+    console.log(value);
+    console.log(Number(value).toFixed(2));
+    return `${Number(value).toFixed(2)}`;
   };
 
   const dashboardCards = [
     { label: "OPERATING RATIO", value: dashboardData.operatingRatio, color: "#93C5FD" },
     { label: "EARNINGS", value: formatPercentage(dashboardData.Earnings), color: dashboardData.Earnings < 0 ? "#EF4444" : "#22C55E" },
-    { label: "OWE", value: formatPercentage(dashboardData.workingExpenses), color: dashboardData.workingExpenses > 0 ? "#EF4444" : "#22C55E" },
+    { label: "OWE", value: formatValue(dashboardData.workingExpenses), color: dashboardData.workingExpenses > 0 ? "#EF4444" : "#22C55E" },
     { label: "CAPEX UTILIZATION", value: Number(dashboardData.capex).toLocaleString('en-IN'), color: "white" },
     { label: "CRITICAL AUDIT", value: dashboardData.audit.toString(), color: "#FACC15" }
   ];

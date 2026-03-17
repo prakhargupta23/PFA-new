@@ -29,7 +29,7 @@ const toNumber = (value: unknown): number => {
 
 const toCurrency = (value: unknown): string => {
   const n = toNumber(value);
-  return `${n.toFixed(2)} crore`;
+  return `${n.toFixed(2)} Cr`;
 };
 const toVarianceString = (value: unknown): string => {
   const n = toNumber(value);

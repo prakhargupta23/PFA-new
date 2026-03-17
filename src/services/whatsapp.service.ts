@@ -1,5 +1,8 @@
 import { config } from "../shared/constants/config";
 import { fetchWrapper } from "../helpers/fetch-wrapper";
+import axios from "axios";
+
+
 
 
 export const callToAction = async (roles: string[], title: string, message: string) => {
@@ -16,8 +19,21 @@ export const callToAction = async (roles: string[], title: string, message: stri
             }),
 
         });
+
+        const taskIDroute = await axios.get(
+            "https://nwr-whatsapp-api-bqfadsfzc2ergzcx.canadacentral-01.azurewebsites.net/generate_taskid",
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        const taskID = taskIDroute.data.task_id
+        console.log("taskID", taskID)
+        console.log("roles", roles)
         console.log("response", response)
         const data = await response.json();
+        console.log("data id", data.id)
         console.log("data", data)
         const dbdata = {
             createdBy: "PFA",
@@ -28,6 +44,7 @@ export const callToAction = async (roles: string[], title: string, message: stri
             division: "NWR",
             type: "PFA",
             msgId: data.id,
+            taskID: taskID,
         }
         console.log("hey", data);
         const insertionresponse = await fetchWrapper.post(`${config.apiUrl}/api/create-task`, dbdata);

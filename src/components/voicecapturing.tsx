@@ -1,11 +1,22 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
-type State = "idle" | "recording" | "loading" | "playing";
+type State = "idle" | "recording" | "loading" | "playing" | "paused";
 
 const VoiceRecorder: React.FC = () => {
     const [state, setState] = useState<State>("idle");
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Cleanup audio on unmount
+    useEffect(() => {
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
+            }
+        };
+    }, []);
 
     const handleToggle = async () => {
         if (state === "recording") {
@@ -13,7 +24,20 @@ const VoiceRecorder: React.FC = () => {
             setState("loading");
             return;
         }
-        if (state === "loading" || state === "playing") return;
+        
+        // If playing or paused, the main button acts as a play/pause toggle
+        if (state === "playing") {
+            audioRef.current?.pause();
+            setState("paused");
+            return;
+        }
+        if (state === "paused") {
+            audioRef.current?.play();
+            setState("playing");
+            return;
+        }
+
+        if (state === "loading") return;
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -48,7 +72,11 @@ const VoiceRecorder: React.FC = () => {
                             setState("playing");
                             const audioSrc = `data:audio/wav;base64,${data.audio_base64}`;
                             const audio = new Audio(audioSrc);
-                            audio.onended = () => setState("idle");
+                            audioRef.current = audio;
+                            audio.onended = () => {
+                                setState("idle");
+                                audioRef.current = null;
+                            };
                             audio.play().catch((err) => {
                                 console.error("Audio playback failed:", err);
                                 setState("idle");
@@ -73,11 +101,29 @@ const VoiceRecorder: React.FC = () => {
         }
     };
 
+    const handleStop = () => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+            audioRef.current = null;
+        }
+        setState("idle");
+    };
+
+    const handleReplay = () => {
+        if (audioRef.current) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play();
+            setState("playing");
+        }
+    };
+
     const label =
         state === "idle" ? "Tap to speak" :
             state === "recording" ? "Tap to send" :
                 state === "loading" ? "Processing…" :
-                    "Playing…";
+                    state === "playing" ? "Playing…" :
+                        "Paused";
 
     return (
         <>
@@ -110,7 +156,6 @@ const VoiceRecorder: React.FC = () => {
             `}</style>
 
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
-
                 {/* ── Button wrapper (holds ripple rings + button) ── */}
                 <div style={{ position: "relative", width: 120, height: 120, display: "flex", alignItems: "center", justifyContent: "center" }}>
 
@@ -141,14 +186,14 @@ const VoiceRecorder: React.FC = () => {
                     {/* Main button */}
                     <button
                         onClick={handleToggle}
-                        disabled={state === "loading" || state === "playing"}
+                        disabled={state === "loading"}
                         title={label}
                         style={{
                             width: 120,
                             height: 120,
                             borderRadius: "50%",
                             border: "none",
-                            cursor: (state === "loading" || state === "playing") ? "not-allowed" : "pointer",
+                            cursor: state === "loading" ? "not-allowed" : "pointer",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -161,7 +206,8 @@ const VoiceRecorder: React.FC = () => {
                                 state === "idle" ? "linear-gradient(135deg, #3B63E2 0%, #6366F1 100%)" :
                                     state === "recording" ? "linear-gradient(135deg, #EF4444 0%, #F87171 100%)" :
                                         state === "loading" ? "linear-gradient(135deg, #94A3B8 0%, #CBD5E1 100%)" :
-                                            "linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%)",
+                                            state === "playing" ? "linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%)" :
+                                                "linear-gradient(135deg, #6B7280 0%, #9CA3AF 100%)", // Gray for paused
                             boxShadow:
                                 state === "idle" ? "0 4px 24px rgba(59,99,226,0.35)" :
                                     state === "recording" ? "0 4px 32px rgba(239,68,68,0.45)" :
@@ -203,6 +249,13 @@ const VoiceRecorder: React.FC = () => {
                             </div>
                         )}
 
+                        {/* Paused: Pause icon (showing it's ready to resume) */}
+                        {state === "paused" && (
+                            <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
+                                <path d="M8 5v14l11-7z" fill="white" />
+                            </svg>
+                        )}
+
                         {/* Idle mic icon */}
                         {state === "idle" && (
                             <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
@@ -219,7 +272,73 @@ const VoiceRecorder: React.FC = () => {
                                 <rect x="6" y="6" width="12" height="12" rx="2.5" fill="white" />
                             </svg>
                         )}
+                        
+                        {/* Overlay Pause icon when playing */}
+                        {state === "playing" && (
+                             <div style={{ position: "absolute", bottom: 10, right: 10, opacity: 0.8 }}>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <rect x="6" y="4" width="4" height="16" fill="white" />
+                                    <rect x="14" y="4" width="4" height="16" fill="white" />
+                                </svg>
+                             </div>
+                        )}
                     </button>
+                    
+                    {/* Extra controls (Replay & Stop) */}
+                    {(state === "playing" || state === "paused") && (
+                        <>
+                            {/* Replay Button (Left) */}
+                            <button
+                                onClick={(e) => { e.stopPropagation(); handleReplay(); }}
+                                style={{
+                                    position: "absolute",
+                                    left: -50,
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: "50%",
+                                    border: "1px solid #E2E8F0",
+                                    background: "white",
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                                    zIndex: 2,
+                                }}
+                                title="Replay"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                                    <path d="M3 3v5h5" />
+                                </svg>
+                            </button>
+
+                            {/* Stop Button (Right) */}
+                            <button
+                                onClick={(e) => { e.stopPropagation(); handleStop(); }}
+                                style={{
+                                    position: "absolute",
+                                    right: -50,
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: "50%",
+                                    border: "1px solid #FEE2E2",
+                                    background: "#FEF2F2",
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                                    zIndex: 2,
+                                }}
+                                title="Stop"
+                            >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="#EF4444">
+                                    <rect x="6" y="6" width="12" height="12" rx="2" />
+                                </svg>
+                            </button>
+                        </>
+                    )}
                 </div>
 
                 {/* Status label */}
@@ -231,7 +350,7 @@ const VoiceRecorder: React.FC = () => {
                         state === "idle" ? "#64748B" :
                             state === "recording" ? "#EF4444" :
                                 state === "loading" ? "#94A3B8" :
-                                    "#7C3AED",
+                                    state === "playing" ? "#7C3AED" : "#6B7280",
                     transition: "color 0.3s",
                 }}>
                     {label}

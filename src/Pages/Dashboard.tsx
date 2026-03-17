@@ -57,7 +57,7 @@ export default function Dashboard() {
   const mainContentRef = useRef<HTMLDivElement>(null);
   const BASE_YEAR = 2017;
   const currentYear = now.getFullYear();
-  const yearOptions = Array.from({ length: currentYear - BASE_YEAR + 1 }, (_, i) => String(BASE_YEAR + i));
+  // const yearOptions = Array.from({ length: currentYear - BASE_YEAR + 1 }, (_, i) => String(BASE_YEAR + i));
 
   useEffect(() => {
     if (mainContentRef.current) {
