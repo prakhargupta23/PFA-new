@@ -44,7 +44,8 @@ export const callToAction = async (roles: string[], title: string, message: stri
             division: "NWR",
             type: "PFA",
             msgId: data.id,
-            taskID: taskID,
+            taskId: taskID,
+            assignedTo: roles.join(", "),
         }
         console.log("hey", data);
         const insertionresponse = await fetchWrapper.post(`${config.apiUrl}/api/create-task`, dbdata);

@@ -105,7 +105,7 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
     try {
       const title = `📉 PFA Portal Alert – CAPEX Utilization (Zonal)`;
       const message = `Utilization in ${row.planheadname} is below the internal target.\nKindly prepare an action plan to improve CAPEX utilization under ${row.planheadname} and ensure progress towards the target.\n\nDetails:\nPH No: ${row.planheadno || '-'}\nRBG Total: ${Number(row.rgbtotal || 0).toFixed(2)}\nActual Upto Month: ${Number(row.actualforthemonthlastyeartotal || 0).toFixed(2)}\nUtilization: ${Number(row.actualuptothemonthtotal || 0).toFixed(2)}%`;
-      await callToAction(["FA/T"], title, message);
+      await callToAction(["Dy. FA&CAO/B&B"], title, message);
       alert(`Task created successfully for ${row.planheadname}!`);
     } catch (error) {
       console.error("Error sending data:", error);
@@ -116,7 +116,7 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
     try {
       const title = `📉 PFA Portal Alert – CAPEX Utilization (Unit)`;
       const message = `Utilization in ${row.planheadname} is below the internal target.\nPlease prepare an action plan to increase CAPEX utilization under ${row.planheadname} and improve expenditure progress.\n\nDetails:\nUnit: ${row.au || 'Zonal Total'}\nGrant (RG): ${row.rglastyear}\nActual For Month: ${row.actualforthemonth}\n% Utilization: ${Number(row.percentageutilization).toFixed(2)}%`;
-      await callToAction(["FA/T"], title, message);
+      await callToAction(["Sr. DFM (Unit)"], title, message);
       alert(`Task created successfully for ${row.planheadname}!`);
     } catch (error) {
       console.error("Error sending data:", error);
@@ -198,17 +198,17 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
                   <TableCell sx={{ fontSize: '11px', fontWeight: (row.planheadname === 'Total' || row.planheadname === 'TOTAL' || row.planheadname === 'Grand Total') ? 700 : 600 }}>
                     {row.planheadname}
                   </TableCell>
-                  <TableCell sx={{ fontSize: '11px' }}>{Number(row.rgbtotal || 0).toFixed(2)}</TableCell>
-                  <TableCell sx={{ fontSize: '11px' }}>{Number(row.actualforthemonthlastyeartotal || 0).toFixed(2)}</TableCell>
+                  <TableCell sx={{ fontSize: '11px' }}>{`${Number(row.rgbtotal || 0).toFixed(2)}${row.figure}`}</TableCell>
+                  <TableCell sx={{ fontSize: '11px' }}>{`${Number(row.actualuptothemonthtotal || 0).toFixed(2)}${row.figure}`}</TableCell>
                   <TableCell sx={{ fontSize: '11px' }}>
                     <Chip
-                      label={`${Number(row.actualuptothemonthtotal || 0).toFixed(2)}%`}
+                      label={`${Number(row.utilizationoftotal || 0).toFixed(2)}%`}
                       size="small"
                       sx={{
                         fontSize: '10px',
                         height: 20,
-                        bgcolor: Number(row.actualuptothemonthtotal) < 60 ? '#FEF2F2' : '#F0FDF4',
-                        color: Number(row.actualuptothemonthtotal) < 60 ? '#991B1B' : '#166534',
+                        bgcolor: Number(row.utilizationoftotal) < 60 ? '#FEF2F2' : '#F0FDF4',
+                        color: Number(row.utilizationoftotal) < 60 ? '#991B1B' : '#166534',
                         fontWeight: 600
                       }}
                     />

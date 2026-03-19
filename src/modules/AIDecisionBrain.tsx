@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { Box, Typography, Chip, Button, Skeleton, Dialog, DialogTitle, DialogContent, IconButton } from "@mui/material";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { Box, Typography, Chip, Button, Skeleton, Dialog, DialogTitle, DialogContent, IconButton, CircularProgress } from "@mui/material";
 import BoltIcon from "@mui/icons-material/Bolt";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import StopCircleIcon from "@mui/icons-material/StopCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import VoiceRecorder from "../components/voicecapturing";
 import { dashboardService } from "../services/dashboardService";
@@ -12,6 +13,9 @@ export default function AIDecisionBrain() {
   const [summaries, setSummaries] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedSummary, setSelectedSummary] = useState<any>(null);
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [loadingSpeechId, setLoadingSpeechId] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const fetchBriefings = useCallback(async () => {
     try {
@@ -25,6 +29,65 @@ export default function AIDecisionBrain() {
       setLoading(false);
     }
   }, []);
+
+  const handleSpeak = async (text: string, id: string) => {
+    if (!text) return;
+
+    if (speakingId === id && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+      setSpeakingId(null);
+      return;
+    }
+
+    try {
+      setLoadingSpeechId(id);
+      const response = await fetch("http://127.0.0.1:5000/text-to-speech", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: text,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const audioBase64 = await response.text();
+      setLoadingSpeechId(null);
+      console.log("Audio received, length:", audioBase64.length);
+
+      if (audioBase64) {
+        setSpeakingId(id);
+        const audioSrc = `data:audio/wav;base64,${audioBase64}`;
+        const audio = new Audio(audioSrc);
+        audioRef.current = audio;
+
+        audio.onended = () => {
+          setSpeakingId(null);
+          audioRef.current = null;
+        };
+
+        audio.onerror = (e) => {
+          console.error("Audio playback error:", e);
+          setSpeakingId(null);
+          audioRef.current = null;
+        };
+
+        await audio.play();
+        return audioBase64;
+      }
+
+      setSpeakingId(null);
+      return null;
+    } catch (error) {
+      console.error("Error in text to speech:", error);
+      setLoadingSpeechId(null);
+      setSpeakingId(null);
+      return null;
+    }
+  };
 
   useEffect(() => {
     fetchBriefings();
@@ -45,7 +108,20 @@ export default function AIDecisionBrain() {
                 <BoltIcon sx={{ fontSize: 14, color: "#FACC15" }} />
                 <Typography sx={{ fontSize: "12px", color: "white", fontWeight: 700 }}>BRIEFING</Typography>
               </Box>
-              <VolumeUpIcon sx={{ fontSize: 15, color: "#A5B4FC" }} />
+               <IconButton
+                onClick={() => handleSpeak(summaries?.capex?.content, "briefing")}
+                disabled={(speakingId !== null && speakingId !== "briefing") || (loadingSpeechId !== null && loadingSpeechId !== "briefing")}
+                size="small"
+                sx={{ p: 0 }}
+              >
+                {loadingSpeechId === "briefing" ? (
+                  <CircularProgress size={16} sx={{ color: "#FACC15" }} />
+                ) : speakingId === "briefing" ? (
+                  <StopCircleIcon sx={{ fontSize: 18, color: "#FACC15" }} />
+                ) : (
+                  <VolumeUpIcon sx={{ fontSize: 14, color: (speakingId !== null || loadingSpeechId !== null) ? "#94A3B8" : "#A5B4FC" }} />
+                )}
+              </IconButton>
             </Box>
             {/* {loading ? (
               <Box sx={{ px: 1.3, pb: 1.3 }}>
@@ -69,7 +145,6 @@ export default function AIDecisionBrain() {
               Object.entries(summaries).map(([key, item]: [string, any]) => (
                 <Box
                   key={key}
-                  onClick={() => setSelectedSummary({ ...item, key })}
                   sx={{
                     mb: 0.9,
                     p: 0.8,
@@ -92,21 +167,44 @@ export default function AIDecisionBrain() {
                   <Typography sx={{ fontSize: "9.5px", color: "#64748B", mb: 0.7, fontStyle: "italic", lineHeight: 1.4 }}>
                     "{item.content.substring(0, 150)}{item.content.length > 150 ? "..." : ""}"
                   </Typography>
-                  <Box sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <Button
+                      onClick={() => setSelectedSummary({ key, ...item })}
                       size="small"
                       sx={{
                         fontSize: "9px",
                         px: 1,
                         minWidth: 85,
-                        bgcolor: "#EEF2F7",
+                        bgcolor: "#7394bdff",
                         color: "#0F172A",
                         fontWeight: 700,
                         "&:hover": { bgcolor: "#E2E8F0" }
+
                       }}
                     >
                       VIEW FULL REPORT
                     </Button>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSpeak(`${key} Report. ${item.content}`, key);
+                      }}
+                      disabled={(speakingId !== null && speakingId !== key) || (loadingSpeechId !== null && loadingSpeechId !== key)}
+                      size="small"
+                      sx={{
+                        color: speakingId === key || loadingSpeechId === key ? "#2F5FE3" : "#64748B",
+                        "&:hover": { color: "#2F5FE3" },
+                        opacity: (speakingId !== null && speakingId !== key) || (loadingSpeechId !== null && loadingSpeechId !== key) ? 0.4 : 1
+                      }}
+                    >
+                      {loadingSpeechId === key ? (
+                        <CircularProgress size={18} color="inherit" />
+                      ) : speakingId === key ? (
+                        <StopCircleIcon sx={{ fontSize: 20 }} />
+                      ) : (
+                        <VolumeUpIcon sx={{ fontSize: 16 }} />
+                      )}
+                    </IconButton>
                   </Box>
                 </Box>
               ))
@@ -136,9 +234,32 @@ export default function AIDecisionBrain() {
               {selectedSummary?.key} REPORT - {selectedSummary?.date}
             </Typography>
           </Box>
-          <IconButton onClick={() => setSelectedSummary(null)}>
-            <CloseIcon />
-          </IconButton>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <IconButton
+              onClick={() => handleSpeak(selectedSummary?.content, selectedSummary?.key)}
+              disabled={(speakingId !== null && speakingId !== selectedSummary?.key) || (loadingSpeechId !== null && loadingSpeechId !== selectedSummary?.key)}
+              sx={{ color: speakingId === selectedSummary?.key || loadingSpeechId === selectedSummary?.key ? "#2F5FE3" : "#64748B" }}
+            >
+              {loadingSpeechId === selectedSummary?.key ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : speakingId === selectedSummary?.key ? (
+                <StopCircleIcon />
+              ) : (
+                <VolumeUpIcon />
+              )}
+            </IconButton>
+            <IconButton onClick={() => {
+              window.speechSynthesis.cancel();
+              if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
+              }
+              setSpeakingId(null);
+              setSelectedSummary(null);
+            }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
         </DialogTitle>
         <DialogContent dividers>
           <Typography sx={{ fontSize: '15px', color: '#1E293B', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>

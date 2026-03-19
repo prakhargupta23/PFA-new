@@ -61,7 +61,7 @@ export default function AuditInspection() {
       const title = `📑 Audit Monitoring Portal Alert`;
       const message = `A large number of audit cases are pending for closure.
 Kindly prepare an action plan for early clearance of long-pending audit objections.\n\nDetails:\nUnit: ${row.unit}\nPara Type: ${row.typeOfAuditObj}\nClosing Balance: ${row.closingBalance}\nAgeing > 1 Year: ${row.moreThanOneYearOld}`;
-      await callToAction(["FA/T"], title, message);
+      await callToAction(["Dy. FA&CAO/G"], title, message);
       alert(`Task created successfully!`);
 
       // const title = `Audit Nudge: ${row.unit}`;

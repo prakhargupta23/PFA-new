@@ -16,7 +16,10 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
     Earnings: 0,
     EarningsAmt: 0,
     workingExpenses: 0,
-    capex: 0,
+    capex: {
+      utilizationoftotal: 0,
+      actualuptothemonthtotal: 0
+    },
     audit: 0
   });
   const [divisionData, setDivisionData] = useState([]);
@@ -35,10 +38,10 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
       const data = await dashboardService.getDashboardData(month, year);
       setDashboardData({
         operatingRatio: data.operatingRatio || 0,
-        Earnings: data.Earnings.percentvariationBP || 0,
-        EarningsAmt: data.Earnings.actualToEndCurrentYear || 0,
+        Earnings: data.Earnings?.percentvariationBP || 0,
+        EarningsAmt: data.Earnings?.actualToEndCurrentYear || 0,
         workingExpenses: data.workingExpenses || 0,
-        capex: data.capex || 0,
+        capex: data.capex || { utilizationoftotal: 0, actualuptothemonthtotal: 0 },
         audit: data.audit || 0
       });
 
@@ -50,7 +53,7 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
         setDivisionData(
           graphData.map((item: any) => ({
             name: item.date,
-            utilization: Number(item.actualToEndCurrentYear)
+            utilization: Number(item.actualToEndCurrentYear) * 100
           }))
         );
       }
@@ -65,13 +68,13 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
     }
   }, [month, year, fetchDashboard]);
 
-  const formatPercentage = (value: number) => {
+  const formatPercentage = (value: any) => {
     // console.log(value);
     // console.log(Number(value).toFixed(2));
     return `${Number(value).toFixed(2)}%`;
   };
 
-  const formatValue = (value: number) => {
+  const formatValue = (value: any) => {
     // console.log(value);
     // console.log(Number(value).toFixed(2));
     return `${Number(value).toFixed(2)}`;
@@ -99,7 +102,24 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
       color: "white"
     },
     { label: "OWE", value: formatValue(dashboardData.workingExpenses), stringValue: formatValue(dashboardData.workingExpenses), color: dashboardData.workingExpenses > 0 ? "#EF4444" : "#22C55E" },
-    { label: "CAPEX UTILIZATION", value: Number(dashboardData.capex).toLocaleString('en-IN'), stringValue: Number(dashboardData.capex).toLocaleString('en-IN'), color: "white" },
+    {
+      label: "CAPEX UTILIZATION", value: (
+        <Box sx={{ mt: 0.5 }}>
+          <Typography sx={{ fontSize: "9px", color: "#94A3B8", fontWeight: 700, letterSpacing: "0.5px" }}>PERCENTAGE</Typography>
+          <Typography sx={{ fontSize: "24px", color: dashboardData.capex.utilizationoftotal < 0 ? "#EF4444" : "#22C55E", fontWeight: 800, lineHeight: 1 }}>
+            {formatPercentage(dashboardData.capex.utilizationoftotal)}
+          </Typography>
+          <Box sx={{ mt: 1 }}>
+            <Typography sx={{ fontSize: "9px", color: "#94A3B8", fontWeight: 700, letterSpacing: "0.5px" }}>AMOUNT</Typography>
+            <Typography sx={{ fontSize: "24px", color: "#fff", fontWeight: 800, lineHeight: 1 }}>
+              {formatValue(dashboardData.capex.actualuptothemonthtotal)}
+            </Typography>
+          </Box>
+        </Box>
+      ),
+      stringValue: `${formatPercentage(dashboardData.capex.utilizationoftotal)} (Amt: ${formatValue(dashboardData.capex.actualuptothemonthtotal)})`,
+      color: "white"
+    },
     { label: "CRITICAL AUDIT", value: dashboardData.audit.toString(), stringValue: dashboardData.audit.toString(), color: "#FACC15" }
   ];
 
@@ -107,27 +127,33 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
     try {
       let title = "";
       let message = "";
+      let role = "";
 
       switch (label) {
         case "OPERATING RATIO":
           title = "🚨 PFA Portal Alert – Operating Ratio";
           message = "FA F&B\nOperating Ratio is above the target level.\nPlease submit a brief strategy note outlining measures to bring the Operating Ratio closer to the target.";
+          role = "FA F&B";
           break;
         case "EARNINGS":
           title = "📊 PFA Portal Alert – Earnings";
           message = "FA/T\nOverall Earnings are below the target level.\nKindly submit a brief report suggesting measures to enhance earnings and achieve the target.";
+          role = "FA/T"
           break;
         case "OWE":
           title = "⚠️ PFA Portal Alert – OWE";
           message = "FA F&B\nOverall Ordinary Working Expenses (OWE) are above the budget proportion.\nPlease submit a brief report on measures to control OWE and keep expenditure within the target.";
+          role = "FA F&B"
           break;
         case "CAPEX UTILIZATION":
           title = "📉 PFA Portal Alert – CAPEX Utilization";
           message = "FA F&B\nOverall CAPEX utilization is below the internal target.\nKindly submit a brief report outlining steps to improve CAPEX utilization.";
+          role = "FA F&B"
           break;
         case "CRITICAL AUDIT":
           title = "📑 PFA Portal Alert – Audit";
           message = "A large number of audit cases are pending for closure. Please submit an action plan for early disposal of pending audit objections.";
+          role = "FA/G"
           break;
         default:
           title = `💬 PFA Portal Alert – ${label}`;
@@ -152,7 +178,7 @@ ${message}
 
 ──────────────────────────`;
 
-      const data = await callToAction(["FA/T"], title, message.trim());
+      const data = await callToAction([role], title, message.trim());
       console.log("Data sent successfully:", data);
       alert(`Task created successfully!`);
     } catch (error) {
@@ -252,7 +278,7 @@ ${message}
 
       <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 1.2, mb: 1.2 }}>
         <Box sx={{ bgcolor: "#F8FAFC", borderRadius: 1.2, p: 1.3, border: "1px solid #E2E8F0" }}>
-          <Typography sx={{ fontSize: "22px", fontWeight: 700, color: "#111827", mb: 1 }}>Utilization Matrix</Typography>
+          <Typography sx={{ fontSize: "22px", fontWeight: 700, color: "#111827", mb: 1 }}>Operating Ratio Matrix</Typography>
           <Box sx={{ height: 320 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={divisionData} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
