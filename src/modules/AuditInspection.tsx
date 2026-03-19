@@ -123,10 +123,10 @@ Kindly prepare an action plan for early clearance of long-pending audit objectio
             filteredData.map((row, idx) => (
               <Box key={idx} sx={{ display: "grid", gridTemplateColumns: "1.8fr 1fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 1fr", p: 1.2, borderTop: "1px solid #EDF2F7", bgcolor: "#F8FAFC", alignItems: "center" }}>
                 <Box>
-                  <Typography sx={{ fontSize: "12px", color: "#334155", fontWeight: 700 }}>{row.typeOfAuditObj || "N/A"}</Typography>
+                  <Typography sx={{ fontSize: "12px", color: "#334155", fontWeight: 700 }}>{row.typeOfAuditObj || "-"}</Typography>
                   {/* <Typography sx={{ fontSize: "10px", color: "#94A3B8", fontStyle: "italic" }}>Audit reference data</Typography> */}
                 </Box>
-                <Typography sx={{ fontSize: "12px", color: "#334155" }}>{row.unit || "N/A"}</Typography>
+                <Typography sx={{ fontSize: "12px", color: "#334155" }}>{row.unit || "-"}</Typography>
                 <Typography sx={{ fontSize: "12px", color: "#334155" }}>{row.openingBalance ?? 0}</Typography>
                 <Typography sx={{ fontSize: "12px", color: "#334155" }}>{row.accretion ?? 0}</Typography>
                 <Typography sx={{ fontSize: "12px", color: "#334155" }}>{row.clearanceOld ?? 0}</Typography>
