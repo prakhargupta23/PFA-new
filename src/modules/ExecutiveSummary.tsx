@@ -53,7 +53,6 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
             utilization: Number(item.actualToEndCurrentYear)
           }))
         );
-        console.log("divisionData", divisionData);
       }
     } catch (error) {
       console.error(error);
