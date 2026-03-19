@@ -4,7 +4,6 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PendingIcon from "@mui/icons-material/Pending";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CloseIcon from "@mui/icons-material/Close";
-import StarIcon from "@mui/icons-material/Star";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import { taskService } from "../services/task.service";
@@ -227,9 +226,7 @@ export default function TaskManagement() {
                                         )}
                                     </Box>
 
-                                    {/* <Box sx={{ display: "flex", justifyContent: "center", color: "#FACC15" }}>
-                                        <StarIcon sx={{ fontSize: 16 }} />
-                                    </Box> */}
+
                                 </Box>
                             );
                         })
