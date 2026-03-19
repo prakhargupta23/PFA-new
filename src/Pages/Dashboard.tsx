@@ -57,7 +57,7 @@ export default function Dashboard() {
   const mainContentRef = useRef<HTMLDivElement>(null);
   const BASE_YEAR = 2017;
   const currentYear = now.getFullYear();
-  const yearOptions = Array.from({ length: currentYear - BASE_YEAR + 1 }, (_, i) => String(BASE_YEAR + i));
+  // const yearOptions = Array.from({ length: currentYear - BASE_YEAR + 1 }, (_, i) => String(BASE_YEAR + i));
 
   useEffect(() => {
     if (mainContentRef.current) {
@@ -447,7 +447,7 @@ export default function Dashboard() {
       >
         <Box sx={{ width: "100%" }}>
           <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 2, mb: 1 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
+            {/* <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
               <CalendarIcon sx={{ color: "#64748B", fontSize: 14 }} />
               <Typography sx={{ fontSize: "11px", color: "#64748B" }}>Wk 1, Feb 2026</Typography>
             </Box>
@@ -455,7 +455,7 @@ export default function Dashboard() {
               <NotificationsIcon sx={{ color: "#64748B", fontSize: 14 }} />
               <Typography sx={{ fontSize: "11px", color: "#64748B" }}>Notifications</Typography>
               <Typography sx={{ fontSize: "11px", color: "#EF4444" }}>*</Typography>
-            </Box>
+            </Box> */}
           </Box>
           {renderMainContent()}
         </Box>

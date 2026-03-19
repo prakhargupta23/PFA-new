@@ -7,40 +7,53 @@ import { callToAction } from "../services/whatsapp.service";
 import { dashboardService } from "../services/dashboardService";
 
 
-const escalateDivisions = ["JODHPUR", "BIKANER", "AJMER", "JAIPUR"];
+
+// const escalateDivisions = ["JODHPUR", "BIKANER", "AJMER", "JAIPUR"];
 
 export default function ExecutiveSummary({ month, year }: { month: number; year: number }) {
   const [dashboardData, setDashboardData] = useState({
     operatingRatio: 0,
     Earnings: 0,
+    EarningsAmt: 0,
     workingExpenses: 0,
     capex: 0,
     audit: 0
   });
   const [divisionData, setDivisionData] = useState([]);
-  const maxGraphValue = Math.max(200, ...divisionData.map((item: any) => Number(item.utilization) || 0));
-  const yAxisMax = Math.ceil(maxGraphValue / 50) * 50;
-  const yAxisTicks = Array.from({ length: yAxisMax / 50 + 1 }, (_, i) => i * 50);
+  const currentMax = divisionData.length > 0
+    ? Math.max(...divisionData.map((item: any) => Number(item.utilization) || 0))
+    : 0;
+
+  // Dynamic scaling: adjust based on currentMax with a small buffer
+  // If max is 0, default to 10
+  const yAxisMax = currentMax > 0
+    ? Math.ceil((currentMax * 1.15) / 10) * 10
+    : 10;
 
   const fetchDashboard = useCallback(async () => {
     try {
       const data = await dashboardService.getDashboardData(month, year);
       setDashboardData({
         operatingRatio: data.operatingRatio || 0,
-        Earnings: data.Earnings || 0,
+        Earnings: data.Earnings.percentvariationBP || 0,
+        EarningsAmt: data.Earnings.actualToEndCurrentYear || 0,
         workingExpenses: data.workingExpenses || 0,
         capex: data.capex || 0,
         audit: data.audit || 0
       });
 
       // Maintain graph data if it still arrives in data.graphData
-      if (data.graphData) {
+      if (data.graphData.operatingRatioLast6Months) {
+        // console.log("operatingRatioLast6Months", data.graphData.operatingRatioLast6Months);
+        const graphData = data.graphData.operatingRatioLast6Months;
+        // console.log("graphData", graphData);
         setDivisionData(
-          data.graphData.map((item: any, index: number) => ({
-            name: escalateDivisions[index] || `Div ${index + 1}`,
-            utilization: Number(item.value)
+          graphData.map((item: any) => ({
+            name: item.date,
+            utilization: Number(item.actualToEndCurrentYear)
           }))
         );
+        console.log("divisionData", divisionData);
       }
     } catch (error) {
       console.error(error);
@@ -54,15 +67,41 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
   }, [month, year, fetchDashboard]);
 
   const formatPercentage = (value: number) => {
-    return `${Number(value).toFixed(2).replace(/\.?0+$/, "")}%`;
+    // console.log(value);
+    // console.log(Number(value).toFixed(2));
+    return `${Number(value).toFixed(2)}%`;
+  };
+
+  const formatValue = (value: number) => {
+    // console.log(value);
+    // console.log(Number(value).toFixed(2));
+    return `${Number(value).toFixed(2)}`;
   };
 
   const dashboardCards = [
-    { label: "OPERATING RATIO", value: dashboardData.operatingRatio, color: "#93C5FD" },
-    { label: "EARNINGS", value: formatPercentage(dashboardData.Earnings), color: dashboardData.Earnings < 0 ? "#EF4444" : "#22C55E" },
-    { label: "OWE", value: formatPercentage(dashboardData.workingExpenses), color: dashboardData.workingExpenses > 0 ? "#EF4444" : "#22C55E" },
-    { label: "CAPEX UTILIZATION", value: Number(dashboardData.capex).toLocaleString('en-IN'), color: "white" },
-    { label: "CRITICAL AUDIT", value: dashboardData.audit.toString(), color: "#FACC15" }
+    { label: "OPERATING RATIO", value: formatValue(dashboardData.operatingRatio), stringValue: formatValue(dashboardData.operatingRatio), color: "#93C5FD" },
+    {
+      label: "EARNINGS",
+      value: (
+        <Box sx={{ mt: 0.5 }}>
+          <Typography sx={{ fontSize: "9px", color: "#94A3B8", fontWeight: 700, letterSpacing: "0.5px" }}>PERCENTAGE</Typography>
+          <Typography sx={{ fontSize: "24px", color: dashboardData.Earnings < 0 ? "#EF4444" : "#22C55E", fontWeight: 800, lineHeight: 1 }}>
+            {formatPercentage(dashboardData.Earnings)}
+          </Typography>
+          <Box sx={{ mt: 1 }}>
+            <Typography sx={{ fontSize: "9px", color: "#94A3B8", fontWeight: 700, letterSpacing: "0.5px" }}>AMOUNT</Typography>
+            <Typography sx={{ fontSize: "24px", color: "#fff", fontWeight: 800, lineHeight: 1 }}>
+              {formatValue(dashboardData.EarningsAmt)}
+            </Typography>
+          </Box>
+        </Box>
+      ),
+      stringValue: `${formatPercentage(dashboardData.Earnings)} (Amt: ${formatValue(dashboardData.EarningsAmt)})`,
+      color: "white"
+    },
+    { label: "OWE", value: formatValue(dashboardData.workingExpenses), stringValue: formatValue(dashboardData.workingExpenses), color: dashboardData.workingExpenses > 0 ? "#EF4444" : "#22C55E" },
+    { label: "CAPEX UTILIZATION", value: Number(dashboardData.capex).toLocaleString('en-IN'), stringValue: Number(dashboardData.capex).toLocaleString('en-IN'), color: "white" },
+    { label: "CRITICAL AUDIT", value: dashboardData.audit.toString(), stringValue: dashboardData.audit.toString(), color: "#FACC15" }
   ];
 
   const handleCardClick = async (label: string, _value: string) => {
@@ -95,8 +134,26 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
           title = `💬 PFA Portal Alert – ${label}`;
           message = `Please review the current status for ${label}.`;
       }
+      // Format month name for display
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      const displayMonth = monthNames[month - 1] || month;
 
-      const data = await callToAction(["FA/T"], title, message);
+      message = `
+──────────────────────────
+📢  ${title.toUpperCase()}
+──────────────────────────
+
+${message}
+
+📊  CURRENT DATA STATUS:
+• Parameter: ${label}
+• Current Value: ${_value}
+• Zone: North Western Railway
+• Period: ${displayMonth} ${year}
+
+──────────────────────────`;
+
+      const data = await callToAction(["FA/T"], title, message.trim());
       console.log("Data sent successfully:", data);
       alert(`Task created successfully!`);
     } catch (error) {
@@ -133,7 +190,7 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                minHeight: 120,
+                minHeight: 150,
                 border: "1px solid rgba(255,255,255,0.08)",
                 transition: "0.2s all ease-in-out",
                 "&:hover": {
@@ -149,13 +206,17 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
                     {card.label}
                   </Typography>
                 </Box>
-                <Typography sx={{ fontSize: "32px", color: card.color, fontWeight: 800, lineHeight: 1.2 }}>
-                  {card.value}
-                </Typography>
+                {typeof card.value === "string" ? (
+                  <Typography sx={{ fontSize: "32px", color: card.color, fontWeight: 800, lineHeight: 1.2 }}>
+                    {card.value}
+                  </Typography>
+                ) : (
+                  card.value
+                )}
               </Box>
 
               <Box
-                onClick={(e) => { e.stopPropagation(); handleCardClick(card.label, String(card.value)); }}
+                onClick={(e) => { e.stopPropagation(); handleCardClick(card.label, card.stringValue); }}
                 sx={{
                   mt: 1.5,
                   py: 0.6,
@@ -192,10 +253,10 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
 
       <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 1.2, mb: 1.2 }}>
         <Box sx={{ bgcolor: "#F8FAFC", borderRadius: 1.2, p: 1.3, border: "1px solid #E2E8F0" }}>
-          <Typography sx={{ fontSize: "22px", fontWeight: 700, color: "#111827", mb: 1 }}>Division Efficiency Matrix</Typography>
+          <Typography sx={{ fontSize: "22px", fontWeight: 700, color: "#111827", mb: 1 }}>Utilization Matrix</Typography>
           <Box sx={{ height: 320 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={divisionData} margin={{ top: 10, right: 10, left: 8, bottom: 20 }}>
+              <BarChart data={divisionData} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
                 <XAxis
                   dataKey="name"
@@ -208,8 +269,8 @@ export default function ExecutiveSummary({ month, year }: { month: number; year:
                 />
                 <YAxis
                   domain={[0, yAxisMax]}
-                  ticks={yAxisTicks}
-                  tick={false}
+                  tick={{ fontSize: 10, fill: "#64748B" }}
+                  width={40}
                   stroke="#94A3B8"
                   axisLine={{ stroke: "#94A3B8" }}
                 />

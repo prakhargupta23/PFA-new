@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Box, Typography, Chip, IconButton, Dialog, DialogTitle, DialogContent } from "@mui/material";
+import { Box, Typography, Chip, IconButton, Dialog, DialogTitle, DialogContent, Button } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PendingIcon from "@mui/icons-material/Pending";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CloseIcon from "@mui/icons-material/Close";
+import StarIcon from "@mui/icons-material/Star";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import AttachmentIcon from "@mui/icons-material/Attachment";
 import { taskService } from "../services/task.service";
 
 interface Task {
@@ -18,6 +21,7 @@ interface Task {
     msgId: string;
     assignedTo: string;
     createdAt?: string;
+    url?: string;
 }
 
 const formatPhone = (raw: string | null | undefined): string => {
@@ -63,16 +67,16 @@ export default function TaskManagement() {
         }
     }, []);
 
-    // const handleStatusUpdate = async (taskId: string) => {
-    //     try {
-    //         await taskService.updateTaskStatus(taskId);
-    //         // Refresh tasks after updating status
-    //         const updateTaskStatus = await taskService.updateTaskStatus(taskId);
-    //         fetchTasks();
-    //     } catch (error) {
-    //         console.error("Error updating task status:", error);
-    //     }
-    // };
+    const handleStatusUpdate = async (taskId: string) => {
+        try {
+            await taskService.updateTaskStatus(taskId);
+            alert(`Task status updated successfully! ${taskId}`);
+            fetchTasks();
+        } catch (error) {
+            console.error("Error updating task status:", error);
+            alert(`Failed to update task status. ${error}`);
+        }
+    };
 
     useEffect(() => {
         fetchTasks();
@@ -93,14 +97,18 @@ export default function TaskManagement() {
             <Box>
                 <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "#1E293B", mb: 1 }}>All Tasks</Typography>
                 <Box sx={{ borderRadius: 1.2, overflow: "hidden", border: "1px solid #E2E8F0" }}>
-                    <Box sx={{ display: "grid", gridTemplateColumns: "0.8fr 1fr 1.5fr 0.8fr 1fr 0.8fr 0.7fr", px: 1.2, py: 1, bgcolor: "#F1F5F9", alignItems: "center" }}>
+                    <Box sx={{ display: "grid", gridTemplateColumns: "0.8fr 0.8fr 1.2fr 2.8fr 0.8fr 0.8fr 0.8fr 0.7fr 0.4fr 0.3fr", px: 1.2, py: 1, bgcolor: "#F1F5F9", alignItems: "center" }}>
+                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>TASK ID</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>CREATED BY</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>CREATED AT</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>CONTENT</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>TYPE</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>ASSIGNED TO</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>STATUS</Typography>
-                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B", textAlign: "center" }}>TASK ID</Typography>
+
+                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B", textAlign: "center" }}>ACTION</Typography>
+                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B", textAlign: "center" }}>DL</Typography>
+                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B", textAlign: "center" }}></Typography>
                     </Box>
 
                     {loading ? (
@@ -115,82 +123,102 @@ export default function TaskManagement() {
                         tasks.map((task) => {
                             const isPending = task.status === "pending";
                             return (
-                                <Box
-                                    key={task.taskId}
-                                    onClick={() => setSelectedTask(task)}
-                                    sx={{
-                                        display: "grid",
-                                        gridTemplateColumns: "0.8fr 1fr 1.5fr 0.8fr 1fr 0.8fr 0.7fr",
-                                        alignItems: "center",
-                                        px: 1.2,
-                                        py: 1.1,
-                                        borderTop: "1px solid #EDF2F7",
-                                        bgcolor: "#F8FAFC",
-                                        cursor: "pointer",
-                                        "&:hover": { bgcolor: "#EDF2F7" },
-                                    }}
-                                >
-                                    {/* Col 1 – CREATED BY */}
-                                    <Typography sx={{ fontSize: "11px", color: "#334155", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                        {formatPhone(task.createdby)}
-                                    </Typography>
-                                    {/* Col 2 – CREATED AT */}
-                                    <Typography sx={{ fontSize: "11px", color: "#64748B", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                        {formatToIST(task.createdAt)}
-                                    </Typography>
-                                    {/* Col 3 – CONTENT */}
-                                    <Typography sx={{ fontSize: "11px", color: "#64748B", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                        {task.content.length > 80 ? task.content.substring(0, 80) + "…" : task.content}
-                                    </Typography>
-                                    {/* Col 3 – TYPE */}
-                                    <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                        {task.type}
-                                    </Typography>
-                                    {/* Col 4 – ASSIGNED TO */}
-                                    <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                        {formatPhone(task.assignedTo)}
-                                    </Typography>
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.4 }}>
-                                        {isPending ? (
-                                            <PendingIcon sx={{ fontSize: 14, color: "#F59E0B" }} />
-                                        ) : (
-                                            <CheckCircleIcon sx={{ fontSize: 14, color: "#16A34A" }} />
-                                        )}
-                                        <Typography
-                                            sx={{
-                                                fontSize: "11px",
-                                                color: isPending ? "#F59E0B" : "#16A34A",
-                                                fontWeight: 700,
-                                                textTransform: "capitalize",
-                                            }}
-                                        >
-                                            {task.status}
+                                    <Box
+                                        key={task.taskId}
+                                        onClick={() => setSelectedTask(task)}
+                                        sx={{
+                                            display: "grid",
+                                            gridTemplateColumns: "0.8fr 0.8fr 1.2fr 2.8fr 0.8fr 0.8fr 0.8fr 0.7fr 0.4fr 0.3fr",
+                                            alignItems: "center",
+                                            px: 1.2,
+                                            py: 1.1,
+                                            borderTop: "1px solid #EDF2F7",
+                                            bgcolor: "#F8FAFC",
+                                            cursor: "pointer",
+                                            "&:hover": { bgcolor: "#EDF2F7" },
+                                        }}
+                                    >
+                                        <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textAlign: "left" }}>
+                                            {task.taskId}
                                         </Typography>
-                                    </Box>
-                                    <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                        {task.taskId}
-                                    </Typography>
-                                    {/* <Box sx={{ display: "flex", justifyContent: "center" }}>
-                                        {isPending && (
-                                            <Button
-                                                size="small"
-                                                variant="outlined"
+                                        <Typography sx={{ fontSize: "11px", color: "#334155", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                            {formatPhone(task.createdby)}
+                                        </Typography>
+                                        <Typography sx={{ fontSize: "11px", color: "#64748B", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                            {formatToIST(task.createdAt)}
+                                        </Typography>
+                                        <Typography sx={{ fontSize: "11px", color: "#64748B", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                            {task.content.length > 80 ? task.content.substring(0, 80) + "…" : task.content}
+                                        </Typography>
+                                        <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                            {task.type}
+                                        </Typography>
+                                        <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                            {formatPhone(task.assignedTo)}
+                                        </Typography>
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.4 }}>
+                                            {isPending ? (
+                                                <PendingIcon sx={{ fontSize: 14, color: "#F59E0B" }} />
+                                            ) : (
+                                                <CheckCircleIcon sx={{ fontSize: 14, color: "#16A34A" }} />
+                                            )}
+                                            <Typography
                                                 sx={{
-                                                    textTransform: "none",
-                                                    fontSize: "9px",
-                                                    py: 0.4,
-                                                    px: 1,
-                                                    borderColor: "#16A34A",
-                                                    color: "#16A34A",
-                                                    "&:hover": { borderColor: "#16A34A", bgcolor: "#F0FDF4" },
+                                                    fontSize: "11px",
+                                                    color: isPending ? "#F59E0B" : "#16A34A",
+                                                    fontWeight: 700,
+                                                    textTransform: "capitalize",
                                                 }}
-                                                onClick={() => handleStatusUpdate(task._id)}
                                             >
-                                                Complete
-                                            </Button>
-                                        )}
-                                    </Box> */}
-                                </Box>
+                                                {task.status}
+                                            </Typography>
+                                        </Box>
+
+                                        <Box sx={{ display: "flex", justifyContent: "center" }}>
+                                            {isPending && (
+                                                <Button
+                                                    size="small"
+                                                    variant="outlined"
+                                                    sx={{
+                                                        textTransform: "none",
+                                                        fontSize: "9px",
+                                                        py: 0.4,
+                                                        px: 1,
+                                                        borderColor: "#16A34A",
+                                                        color: "#16A34A",
+                                                        "&:hover": { borderColor: "#16A34A", bgcolor: "#F0FDF4" },
+                                                    }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleStatusUpdate(task.taskId);
+                                                    }}
+                                                >
+                                                    Complete
+                                                </Button>
+                                            )}
+                                        </Box>
+
+                                        <Box sx={{ display: "flex", justifyContent: "center" }}>
+                                            {task.url ? (
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        window.open(task.url, "_blank");
+                                                    }}
+                                                    sx={{ color: "#2E63EE", p: 0.5 }}
+                                                >
+                                                    <CloudDownloadIcon sx={{ fontSize: 16 }} />
+                                                </IconButton>
+                                            ) : (
+                                                "—"
+                                            )}
+                                        </Box>
+
+                                        <Box sx={{ display: "flex", justifyContent: "center", color: "#FACC15" }}>
+                                            <StarIcon sx={{ fontSize: 16 }} />
+                                        </Box>
+                                    </Box>
                             );
                         })
                     )}
@@ -198,14 +226,14 @@ export default function TaskManagement() {
             </Box>
 
             {/* Task Details Dialog */}
-            <Dialog 
-                open={Boolean(selectedTask)} 
+            <Dialog
+                open={Boolean(selectedTask)}
                 onClose={() => setSelectedTask(null)}
                 maxWidth="md"
                 fullWidth
                 PaperProps={{
-                    sx: { 
-                        borderRadius: 3, 
+                    sx: {
+                        borderRadius: 3,
                         overflow: 'hidden',
                         boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
                     }
@@ -213,22 +241,22 @@ export default function TaskManagement() {
             >
                 {selectedTask && (
                     <>
-                        <DialogTitle sx={{ 
-                            m: 0, 
-                            px: 3, 
-                            py: 2.5, 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
+                        <DialogTitle sx={{
+                            m: 0,
+                            px: 3,
+                            py: 2.5,
+                            display: 'flex',
+                            justifyContent: 'space-between',
                             alignItems: 'center',
                             bgcolor: "#F8FAFC",
                             borderBottom: "1px solid #E2E8F0"
                         }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                <Box sx={{ 
-                                    width: 8, 
-                                    height: 24, 
-                                    bgcolor: "#2E63EE", 
-                                    borderRadius: 4 
+                                <Box sx={{
+                                    width: 8,
+                                    height: 24,
+                                    bgcolor: "#2E63EE",
+                                    borderRadius: 4
                                 }} />
                                 <Typography sx={{ fontSize: "22px", fontWeight: 800, color: "#0F172A", letterSpacing: "-0.02em" }}>
                                     Task Details
@@ -264,19 +292,19 @@ export default function TaskManagement() {
                                         <Box sx={{ p: 2, bgcolor: "#F8FAFC", borderRadius: 2, border: "1px solid #F1F5F9" }}>
                                             <Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#64748B", mb: 0.5 }}>STATUS</Typography>
                                             <Box sx={{ mt: 0.5 }}>
-                                                <Chip 
-                                                    icon={selectedTask.status === "pending" ? <PendingIcon sx={{ fontSize: 16 }}/> : <CheckCircleIcon sx={{ fontSize: 16 }}/>}
-                                                    label={selectedTask.status} 
-                                                    sx={{ 
-                                                        height: 28, 
-                                                        fontSize: "13px", 
+                                                <Chip
+                                                    icon={selectedTask.status === "pending" ? <PendingIcon sx={{ fontSize: 16 }} /> : <CheckCircleIcon sx={{ fontSize: 16 }} />}
+                                                    label={selectedTask.status}
+                                                    sx={{
+                                                        height: 28,
+                                                        fontSize: "13px",
                                                         fontWeight: 700,
                                                         textTransform: "capitalize",
                                                         px: 0.5,
-                                                        bgcolor: selectedTask.status === "pending" ? "#FEF3C7" : "#DCFCE7", 
+                                                        bgcolor: selectedTask.status === "pending" ? "#FEF3C7" : "#DCFCE7",
                                                         color: selectedTask.status === "pending" ? "#D97706" : "#16A34A",
                                                         "& .MuiChip-icon": { color: "inherit" }
-                                                    }} 
+                                                    }}
                                                 />
                                             </Box>
                                         </Box>
@@ -303,15 +331,39 @@ export default function TaskManagement() {
                                             <Typography sx={{ fontSize: "15px", color: "#0F172A", fontWeight: 600 }}>{selectedTask.segment}</Typography>
                                         </Box>
                                     )}
+
+                                    {selectedTask.url && (
+                                        <Box sx={{ p: 2.5, bgcolor: "#EFF6FF", borderRadius: 2, border: "1px solid #DBE8FF" }}>
+                                            <Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#2E63EE", mb: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                <AttachmentIcon sx={{ fontSize: 14 }} /> ATTACHMENT
+                                            </Typography>
+                                            <Button 
+                                                variant="contained" 
+                                                size="small" 
+                                                startIcon={<CloudDownloadIcon />}
+                                                onClick={() => window.open(selectedTask.url, "_blank")}
+                                                sx={{ 
+                                                    bgcolor: "#2E63EE", 
+                                                    textTransform: 'none',
+                                                    fontSize: '12px',
+                                                    fontWeight: 700,
+                                                    borderRadius: 1.5,
+                                                    "&:hover": { bgcolor: "#1E4DD8" }
+                                                }}
+                                            >
+                                                Download File
+                                            </Button>
+                                        </Box>
+                                    )}
                                 </Box>
 
                                 {/* Right Column: Content */}
                                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                    <Box sx={{ 
+                                    <Box sx={{
                                         flex: 1,
-                                        p: 3, 
-                                        bgcolor: "#F1F5F9", 
-                                        borderRadius: 3, 
+                                        p: 3,
+                                        bgcolor: "#F1F5F9",
+                                        borderRadius: 3,
                                         border: "1px solid #E2E8F0",
                                         display: 'flex',
                                         flexDirection: 'column'
@@ -322,18 +374,18 @@ export default function TaskManagement() {
                                             </Box>
                                             <Typography sx={{ fontSize: "14px", fontWeight: 800, color: "#475569", letterSpacing: "0.05em" }}>TASK CONTENT</Typography>
                                         </Box>
-                                        <Box sx={{ 
-                                            p: 3, 
-                                            bgcolor: "#FFFFFF", 
-                                            borderRadius: 2, 
+                                        <Box sx={{
+                                            p: 3,
+                                            bgcolor: "#FFFFFF",
+                                            borderRadius: 2,
                                             flex: 1,
                                             boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
                                             overflowY: 'auto',
                                             maxHeight: '400px'
                                         }}>
-                                            <Typography sx={{ 
-                                                fontSize: "15px", 
-                                                color: "#1E293B", 
+                                            <Typography sx={{
+                                                fontSize: "15px",
+                                                color: "#1E293B",
                                                 lineHeight: 1.8,
                                                 whiteSpace: "pre-wrap",
                                                 fontWeight: 500

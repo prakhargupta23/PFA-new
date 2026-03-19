@@ -48,6 +48,7 @@ const buildUploadPayload = (finalData: PfaFinalData): ZonalUploadPayload => ({
  */
 export const submitPfaData = async (finalData: PfaFinalData) => {
   try {
+    console.log("finalData", finalData);
     const payload = buildUploadPayload(finalData);
 
     if (payload.zonaldata.length === 0 && payload.unitdata.length === 0) {

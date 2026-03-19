@@ -25,7 +25,7 @@ import {
     CheckCircle as CheckCircleIcon,
     // CalendarToday as CalendarIcon,
 } from '@mui/icons-material';
-import { parseExcelFile, allMonths, fileToBase64 } from "../utils/pfaUtils";
+import { parseExcelFile, allMonths, fileToBase64, getMonthYear } from "../utils/pfaUtils";
 import { submitPfaData } from "../services/pfa.service";
 import { dashboardService } from "../services/dashboardService";
 import { blobService } from "../services/blob.service";
@@ -34,14 +34,16 @@ const DEFAULT_DIVISION = "North Western Railway";
 const BASE_YEAR = 2017;
 const currentYearValue = new Date().getFullYear();
 const yearOptions = Array.from({ length: currentYearValue - BASE_YEAR + 1 }, (_, i) => String(BASE_YEAR + i));
+const dayOptions = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0'));
 
 // ── Real data structure ──────────────────────────────────────────────────────
 // raw = "MM/YYYY" as returned by the API
 interface UploadRecord {
-    raw: string;       // e.g. "01/2026"
+    raw: string;       // e.g. "01/2026" or "18/01/2026"
     monthName: string; // e.g. "January"
     monthNum: number;  // 1-12
     year: number;      // e.g. 2026
+    day?: string;      // e.g. "18"
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -59,6 +61,7 @@ const CapexUpload: React.FC = () => {
 
     const [selectedMonth, setSelectedMonth] = useState<string>(allMonths[now.getMonth()]);
     const [selectedYear, setSelectedYear] = useState<string>(String(now.getFullYear()));
+    const [selectedDay, setSelectedDay] = useState<string>(String(now.getDate()).padStart(2, '0'));
     const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' }>({
         open: false,
         message: "",
@@ -77,13 +80,22 @@ const CapexUpload: React.FC = () => {
             const data = await dashboardService.getUploadDashboardData();
             const uploadedMonths: string[] = data?.months ?? [];
 
-            // Parse each "MM/YYYY" string into a structured record
+            // Parse each "MM/YYYY" or "DD/MM/YYYY" string into a structured record
             const rows: UploadRecord[] = uploadedMonths.map((raw: string) => {
-                const [mmStr, yyyyStr] = raw.split('/');
-                const monthNum = parseInt(mmStr, 10);          // 1-12
-                const year = parseInt(yyyyStr, 10);
-                const monthName = allMonths[monthNum - 1] ?? raw; // e.g. "January"
-                return { raw, monthName, monthNum, year };
+                const parts = raw.split('/');
+                if (parts.length === 3) {
+                    const [ddStr, mmStr, yyyyStr] = parts;
+                    const monthNum = parseInt(mmStr, 10);
+                    const year = parseInt(yyyyStr, 10);
+                    const monthName = allMonths[monthNum - 1] ?? raw;
+                    return { raw, monthName, monthNum, year, day: ddStr };
+                } else {
+                    const [mmStr, yyyyStr] = parts;
+                    const monthNum = parseInt(mmStr, 10);
+                    const year = parseInt(yyyyStr, 10);
+                    const monthName = allMonths[monthNum - 1] ?? raw;
+                    return { raw, monthName, monthNum, year };
+                }
             });
 
             setRecords(rows); // API already returns most-recent first
@@ -105,15 +117,19 @@ const CapexUpload: React.FC = () => {
         try {
             // 1. Upload to Blob first
             const base64 = await fileToBase64(file);
-            const dateStr = `${selectedMonth}_${selectedYear}`;
+            const dateStr = `${selectedDay}_${selectedMonth}_${selectedYear}`;
             await blobService.uploadExcelToBlob("Capex", dateStr, base64);
 
             // 2. Process locally and submit (as per existing logic, or if backend handles it, this might be redundant)
             const buffer = await file.arrayBuffer();
             const { finalData } = await parseExcelFile(buffer, DEFAULT_DIVISION, selectedMonth, selectedYear, []);
 
+            // Combine day into the monthYear string for both Blob and Database
+            const combinedDate = `${selectedDay}/${getMonthYear(selectedMonth, selectedYear)}`;
+
             await submitPfaData({
                 ...finalData,
+                selectedMonthYear: combinedDate,
                 sourceModule: "executive-summary",
                 sourceLabel: "Executive Summary",
             });
@@ -160,7 +176,7 @@ const CapexUpload: React.FC = () => {
 
     const handleDownload = async (rec: UploadRecord) => {
         try {
-            const dateStr = `${rec.monthName}_${rec.year}`;
+            const dateStr = rec.day ? `${rec.day}_${rec.monthName}_${rec.year}` : `${rec.monthName}_${rec.year}`;
             await blobService.downloadFileFromBlob("Capex", dateStr);
             showSnackbar("Download started.", "success");
         } catch (error: any) {
@@ -183,8 +199,20 @@ const CapexUpload: React.FC = () => {
                     </Typography>
                 </Box>
 
-                {/* Month/Year Selectors */}
+                {/* Day/Month/Year Selectors */}
                 <Stack direction="row" spacing={2} sx={{ mb: 0.5 }}>
+                    <FormControl size="small" sx={{ minWidth: 80 }}>
+                        <Typography sx={{ fontSize: '11px', fontWeight: 700, color: '#64748B', mb: 0.5, ml: 0.5 }}>DAY</Typography>
+                        <Select
+                            value={selectedDay}
+                            onChange={(e) => setSelectedDay(e.target.value)}
+                            sx={{ height: 36, bgcolor: 'white', borderRadius: 1.5, fontSize: '13px' }}
+                        >
+                            {dayOptions.map((d) => (
+                                <MenuItem key={d} value={d} sx={{ fontSize: '13px' }}>{d}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                     <FormControl size="small" sx={{ minWidth: 120 }}>
                         <Typography sx={{ fontSize: '11px', fontWeight: 700, color: '#64748B', mb: 0.5, ml: 0.5 }}>SELECT MONTH</Typography>
                         <Select
@@ -350,9 +378,9 @@ const CapexUpload: React.FC = () => {
                                         {idx + 1}
                                     </TableCell>
 
-                                    {/* Period — human-readable: "January 2026" */}
+                                    {/* Period — human-readable: "18 January 2026" */}
                                     <TableCell sx={{ fontWeight: 600, color: '#1E293B', fontSize: '14px', py: 1.8 }}>
-                                        {rec.monthName} {rec.year}
+                                        {rec.day ? `${rec.day} ` : ""}{rec.monthName} {rec.year}
                                     </TableCell>
 
                                     {/* Status — always Uploaded since API only returns uploaded months */}

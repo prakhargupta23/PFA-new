@@ -7,7 +7,8 @@ export const dashboardService = {
   getUploadDashboardData,
   getOweUploadDashboardData,
   getDashboardData,
-  getCapexData
+  getCapexData,
+  getLatestSummaries
 }
 
 async function getUploadDashboardData() {
@@ -52,4 +53,13 @@ async function getCapexData() {
   );
   console.log("get capex data response", response.data);
   return response.data;
+}
+
+async function getLatestSummaries() {
+  console.log("getting latest summaries")
+  const response = await axios.get(
+    `${config.apiUrl}/api/get-latest-summaries`
+  );
+  console.log("get latest summaries response", response.data.data);
+  return response.data.data;
 }
