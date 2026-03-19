@@ -42,7 +42,7 @@ export default function AIDecisionBrain() {
 
     try {
       setLoadingSpeechId(id);
-      const response = await fetch("http://127.0.0.1:5000/text-to-speech", {
+      const response = await fetch("https://nwrsarvam-azd2h8dvb2dsb7d2.centralindia-01.azurewebsites.net/text-to-speech", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -108,7 +108,7 @@ export default function AIDecisionBrain() {
                 <BoltIcon sx={{ fontSize: 14, color: "#FACC15" }} />
                 <Typography sx={{ fontSize: "12px", color: "white", fontWeight: 700 }}>BRIEFING</Typography>
               </Box>
-               <IconButton
+              <IconButton
                 onClick={() => handleSpeak(summaries?.capex?.content, "briefing")}
                 disabled={(speakingId !== null && speakingId !== "briefing") || (loadingSpeechId !== null && loadingSpeechId !== "briefing")}
                 size="small"
