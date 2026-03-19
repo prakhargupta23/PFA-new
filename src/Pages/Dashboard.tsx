@@ -9,8 +9,8 @@ import {
   ListAlt as TaskIcon,
   Logout as LogoutIcon,
   Person as PersonIcon,
-  CalendarToday as CalendarIcon,
-  NotificationsNone as NotificationsIcon,
+  // CalendarToday as CalendarIcon,
+  // NotificationsNone as NotificationsIcon,
 } from "@mui/icons-material";
 import ExecutiveSummary from "../modules/ExecutiveSummary";
 import CapexAnalysis from "../modules/CapexAnalysis";
@@ -42,7 +42,7 @@ const navItems: { key: NavKey; label: string; icon: React.ReactNode }[] = [
 ];
 
 export default function Dashboard() {
-  const now = new Date();
+  // const now = new Date();
   const [activeNav, setActiveNav] = useState<NavKey>("executive-summary");
   const [uploadLoading, setUploadLoading] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<string>("December");
@@ -55,8 +55,8 @@ export default function Dashboard() {
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mainContentRef = useRef<HTMLDivElement>(null);
-  const BASE_YEAR = 2017;
-  const currentYear = now.getFullYear();
+  // const BASE_YEAR = 2017;
+  // const currentYear = now.getFullYear();
   // const yearOptions = Array.from({ length: currentYear - BASE_YEAR + 1 }, (_, i) => String(BASE_YEAR + i));
 
   useEffect(() => {
