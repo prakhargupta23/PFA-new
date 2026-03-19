@@ -8,6 +8,7 @@ import StarIcon from "@mui/icons-material/Star";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import { taskService } from "../services/task.service";
+import { blobService } from "../services/blob.service";
 
 interface Task {
     taskId: string;
@@ -67,6 +68,17 @@ export default function TaskManagement() {
         }
     }, []);
 
+    const handleDownload = async (url: string | undefined) => {
+        if (!url) return;
+        try {
+            await blobService.downloadFileFromBlobusingURL(url);
+        } catch (error) {
+            console.error("Error downloading file:", error);
+            // Fallback to window.open if blob service fetch fails (e.g., CORS or network issues)
+            window.open(url, "_blank");
+        }
+    };
+
     const handleStatusUpdate = async (taskId: string) => {
         try {
             await taskService.updateTaskStatus(taskId);
@@ -107,7 +119,7 @@ export default function TaskManagement() {
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>STATUS</Typography>
 
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B", textAlign: "center" }}>ACTION</Typography>
-                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B", textAlign: "center" }}>DL</Typography>
+                        <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B", textAlign: "center" }}>Completion report</Typography>
                         <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B", textAlign: "center" }}></Typography>
                     </Box>
 
@@ -123,102 +135,102 @@ export default function TaskManagement() {
                         tasks.map((task) => {
                             const isPending = task.status === "pending";
                             return (
-                                    <Box
-                                        key={task.taskId}
-                                        onClick={() => setSelectedTask(task)}
-                                        sx={{
-                                            display: "grid",
-                                            gridTemplateColumns: "0.8fr 0.8fr 1.2fr 2.8fr 0.8fr 0.8fr 0.8fr 0.7fr 0.4fr 0.3fr",
-                                            alignItems: "center",
-                                            px: 1.2,
-                                            py: 1.1,
-                                            borderTop: "1px solid #EDF2F7",
-                                            bgcolor: "#F8FAFC",
-                                            cursor: "pointer",
-                                            "&:hover": { bgcolor: "#EDF2F7" },
-                                        }}
-                                    >
-                                        <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textAlign: "left" }}>
-                                            {task.taskId}
+                                <Box
+                                    key={task.taskId}
+                                    onClick={() => setSelectedTask(task)}
+                                    sx={{
+                                        display: "grid",
+                                        gridTemplateColumns: "0.8fr 0.8fr 1.2fr 2.8fr 0.8fr 0.8fr 0.8fr 0.7fr 0.4fr 0.3fr",
+                                        alignItems: "center",
+                                        px: 1.2,
+                                        py: 1.1,
+                                        borderTop: "1px solid #EDF2F7",
+                                        bgcolor: "#F8FAFC",
+                                        cursor: "pointer",
+                                        "&:hover": { bgcolor: "#EDF2F7" },
+                                    }}
+                                >
+                                    <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textAlign: "left" }}>
+                                        {task.taskId}
+                                    </Typography>
+                                    <Typography sx={{ fontSize: "11px", color: "#334155", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        {formatPhone(task.createdby)}
+                                    </Typography>
+                                    <Typography sx={{ fontSize: "11px", color: "#64748B", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        {formatToIST(task.createdAt)}
+                                    </Typography>
+                                    <Typography sx={{ fontSize: "11px", color: "#64748B", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        {task.content.length > 80 ? task.content.substring(0, 80) + "…" : task.content}
+                                    </Typography>
+                                    <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        {task.type}
+                                    </Typography>
+                                    <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        {formatPhone(task.assignedTo)}
+                                    </Typography>
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.4 }}>
+                                        {isPending ? (
+                                            <PendingIcon sx={{ fontSize: 14, color: "#F59E0B" }} />
+                                        ) : (
+                                            <CheckCircleIcon sx={{ fontSize: 14, color: "#16A34A" }} />
+                                        )}
+                                        <Typography
+                                            sx={{
+                                                fontSize: "11px",
+                                                color: isPending ? "#F59E0B" : "#16A34A",
+                                                fontWeight: 700,
+                                                textTransform: "capitalize",
+                                            }}
+                                        >
+                                            {task.status}
                                         </Typography>
-                                        <Typography sx={{ fontSize: "11px", color: "#334155", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                            {formatPhone(task.createdby)}
-                                        </Typography>
-                                        <Typography sx={{ fontSize: "11px", color: "#64748B", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                            {formatToIST(task.createdAt)}
-                                        </Typography>
-                                        <Typography sx={{ fontSize: "11px", color: "#64748B", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                            {task.content.length > 80 ? task.content.substring(0, 80) + "…" : task.content}
-                                        </Typography>
-                                        <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                            {task.type}
-                                        </Typography>
-                                        <Typography sx={{ fontSize: "11px", color: "#334155", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                            {formatPhone(task.assignedTo)}
-                                        </Typography>
-                                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.4 }}>
-                                            {isPending ? (
-                                                <PendingIcon sx={{ fontSize: 14, color: "#F59E0B" }} />
-                                            ) : (
-                                                <CheckCircleIcon sx={{ fontSize: 14, color: "#16A34A" }} />
-                                            )}
-                                            <Typography
+                                    </Box>
+
+                                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                                        {isPending && (
+                                            <Button
+                                                size="small"
+                                                variant="outlined"
                                                 sx={{
-                                                    fontSize: "11px",
-                                                    color: isPending ? "#F59E0B" : "#16A34A",
-                                                    fontWeight: 700,
-                                                    textTransform: "capitalize",
+                                                    textTransform: "none",
+                                                    fontSize: "9px",
+                                                    py: 0.4,
+                                                    px: 1,
+                                                    borderColor: "#16A34A",
+                                                    color: "#16A34A",
+                                                    "&:hover": { borderColor: "#16A34A", bgcolor: "#F0FDF4" },
+                                                }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleStatusUpdate(task.taskId);
                                                 }}
                                             >
-                                                {task.status}
-                                            </Typography>
-                                        </Box>
-
-                                        <Box sx={{ display: "flex", justifyContent: "center" }}>
-                                            {isPending && (
-                                                <Button
-                                                    size="small"
-                                                    variant="outlined"
-                                                    sx={{
-                                                        textTransform: "none",
-                                                        fontSize: "9px",
-                                                        py: 0.4,
-                                                        px: 1,
-                                                        borderColor: "#16A34A",
-                                                        color: "#16A34A",
-                                                        "&:hover": { borderColor: "#16A34A", bgcolor: "#F0FDF4" },
-                                                    }}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleStatusUpdate(task.taskId);
-                                                    }}
-                                                >
-                                                    Complete
-                                                </Button>
-                                            )}
-                                        </Box>
-
-                                        <Box sx={{ display: "flex", justifyContent: "center" }}>
-                                            {task.url ? (
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        window.open(task.url, "_blank");
-                                                    }}
-                                                    sx={{ color: "#2E63EE", p: 0.5 }}
-                                                >
-                                                    <CloudDownloadIcon sx={{ fontSize: 16 }} />
-                                                </IconButton>
-                                            ) : (
-                                                "—"
-                                            )}
-                                        </Box>
-
-                                        <Box sx={{ display: "flex", justifyContent: "center", color: "#FACC15" }}>
-                                            <StarIcon sx={{ fontSize: 16 }} />
-                                        </Box>
+                                                Complete
+                                            </Button>
+                                        )}
                                     </Box>
+
+                                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                                        {task.url ? (
+                                            <IconButton
+                                                size="small"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDownload(task.url);
+                                                }}
+                                                sx={{ color: "#2E63EE", p: 0.5 }}
+                                            >
+                                                <CloudDownloadIcon sx={{ fontSize: 16 }} />
+                                            </IconButton>
+                                        ) : (
+                                            "—"
+                                        )}
+                                    </Box>
+
+                                    {/* <Box sx={{ display: "flex", justifyContent: "center", color: "#FACC15" }}>
+                                        <StarIcon sx={{ fontSize: 16 }} />
+                                    </Box> */}
+                                </Box>
                             );
                         })
                     )}
@@ -337,13 +349,13 @@ export default function TaskManagement() {
                                             <Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#2E63EE", mb: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                                 <AttachmentIcon sx={{ fontSize: 14 }} /> ATTACHMENT
                                             </Typography>
-                                            <Button 
-                                                variant="contained" 
-                                                size="small" 
+                                            <Button
+                                                variant="contained"
+                                                size="small"
                                                 startIcon={<CloudDownloadIcon />}
-                                                onClick={() => window.open(selectedTask.url, "_blank")}
-                                                sx={{ 
-                                                    bgcolor: "#2E63EE", 
+                                                onClick={() => handleDownload(selectedTask.url)}
+                                                sx={{
+                                                    bgcolor: "#2E63EE",
                                                     textTransform: 'none',
                                                     fontSize: '12px',
                                                     fontWeight: 700,

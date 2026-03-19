@@ -81,7 +81,7 @@ export default function OweManagement({ month, year }: { month?: number; year?: 
         const mappedRows: OweRow[] = rawRows
           .filter((row: any) => {
             const cat = (row.category || "").toUpperCase();
-            return cat.startsWith("SMH-") || cat === "TOTAL" || cat === "TOTAL OWE";
+            return cat.startsWith("SMH-") || cat === "TOTAL" || cat === "TOTAL  OWE" || cat === "TOTAL OWE";
           })
           .map((row: any) => {
             // Use percentVariationBP if available (scaled to 100 for display)
@@ -109,7 +109,7 @@ export default function OweManagement({ month, year }: { month?: number; year?: 
                 row.head ??
                 "-",
               div: "NWR",
-              grant: toCurrency(row.obg ?? row.rbg ?? row.grant ?? 0),
+              grant: toCurrency(row.bpToEndMonth || 0),
               actual: toCurrency(actualRaw),
               variance: toVarianceString(varianceRaw),
               trend: toTrend(trendRaw),
@@ -155,7 +155,6 @@ export default function OweManagement({ month, year }: { month?: number; year?: 
           <Box sx={{ borderRadius: 1.2, overflow: "hidden", border: "1px solid #E2E8F0" }}>
             <Box sx={{ display: "grid", gridTemplateColumns: "2fr 0.7fr 0.7fr 0.7fr 0.7fr 0.8fr 0.5fr", px: 1.2, py: 1, bgcolor: "#F1F5F9", alignItems: "center" }}>
               <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>SMH DESCRIPTION</Typography>
-              <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>DIV</Typography>
               <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>GRANT</Typography>
               <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>ACTUAL</Typography>
               <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#64748B" }}>VAR</Typography>
@@ -168,7 +167,6 @@ export default function OweManagement({ month, year }: { month?: number; year?: 
               return (
                 <Box key={`${row.smh}-${row.div}`} sx={{ display: "grid", gridTemplateColumns: "2fr 0.7fr 0.7fr 0.7fr 0.7fr 0.8fr 0.5fr", alignItems: "center", px: 1.2, py: 1.1, borderTop: "1px solid #EDF2F7", bgcolor: "#F8FAFC" }}>
                   <Typography sx={{ fontSize: "12px", color: "#334155", fontWeight: 600 }}>{row.smh}</Typography>
-                  <Typography sx={{ fontSize: "12px", color: "#64748B" }}>{row.div}</Typography>
                   <Typography sx={{ fontSize: "12px", color: "#334155" }}>{row.grant}</Typography>
                   <Typography sx={{ fontSize: "12px", color: "#334155" }}>{row.actual}</Typography>
                   <Typography sx={{ fontSize: "12px", color: up ? "#DC2626" : "#16A34A", fontWeight: 700 }}>{row.variance}</Typography>

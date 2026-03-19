@@ -37,10 +37,11 @@ function get(url: string) {
 }
 
 function download(url: string) {
+  const isAllowedApiUrl = url.startsWith(config.apiUrl);
   const requestOptions: RequestInit = {
     method: "GET",
-    credentials: "include",
-    headers: { "Content-Type": "application/json", ...authHeader(url) },
+    credentials: isAllowedApiUrl ? "include" : "omit",
+    headers: { ...authHeader(url) },
   };
   return fetch(url, requestOptions);
 }
