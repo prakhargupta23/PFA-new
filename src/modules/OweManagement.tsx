@@ -109,7 +109,7 @@ export default function OweManagement({ month, year }: { month?: number; year?: 
                 row.head ??
                 "-",
               div: "NWR",
-              grant: toCurrency(row.bpToEndMonth || 0),
+              grant: toCurrency(row.obg || 0),
               actual: toCurrency(actualRaw),
               variance: toVarianceString(varianceRaw),
               trend: toTrend(trendRaw),
@@ -149,7 +149,7 @@ export default function OweManagement({ month, year }: { month?: number; year?: 
         <Chip label="Zone: North Western Railway" size="small" sx={{ height: 20, fontSize: "10px", bgcolor: "#DBE8FF", color: "#2F5FE3" }} />
       </Box>
 
-      <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 1.5 }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: "2fr", gap: 1.5 }}>
         <Box>
           <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "#1E293B", mb: 1 }}>SMH-wise Budget Compliance</Typography>
           <Box sx={{ borderRadius: 1.2, overflow: "hidden", border: "1px solid #E2E8F0" }}>
@@ -191,7 +191,7 @@ export default function OweManagement({ month, year }: { month?: number; year?: 
           </Box>
         </Box>
 
-        <Box>
+        {/* <Box>
           <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "#1E293B", mb: 1 }}>Expenditure Risk Markers</Typography>
           <Box sx={{ bgcolor: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: 1.2, p: 1.2 }}>
             <Box sx={{ bgcolor: "#FEECEC", borderRadius: 1, px: 1, py: 0.8, display: "flex", gap: 0.7, mb: 1.3 }}>
@@ -216,7 +216,7 @@ export default function OweManagement({ month, year }: { month?: number; year?: 
               Generate Draft Note for Sr. DFM
             </Button>
           </Box>
-        </Box>
+        </Box> */}
       </Box>
     </Box>
   );

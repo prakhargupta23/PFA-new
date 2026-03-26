@@ -188,7 +188,7 @@ Kindly prepare an action plan for early clearance of long-pending audit objectio
         </Box>
       </Box>
 
-      <Box sx={{ borderRadius: 1.2, border: "1px solid #F4D28A", bgcolor: "#FFF7E6", p: 1.4, display: "flex", gap: 0.8 }}>
+      {/* <Box sx={{ borderRadius: 1.2, border: "1px solid #F4D28A", bgcolor: "#FFF7E6", p: 1.4, display: "flex", gap: 0.8 }}>
         <WarningAmberRoundedIcon sx={{ fontSize: 16, color: "#B45309", mt: 0.1 }} />
         <Box>
           <Typography sx={{ fontSize: "12px", fontWeight: 700, color: "#9A3412", mb: 0.4 }}>AI Governance Insight: Audit Loop Detected</Typography>
@@ -197,7 +197,7 @@ Kindly prepare an action plan for early clearance of long-pending audit objectio
             <strong> Recommendation:</strong> PFA may consider seeking a timeline for final disposal from Dy.FA&amp;CAO/G.
           </Typography>
         </Box>
-      </Box>
+      </Box> */}
     </Box>
   );
 }
