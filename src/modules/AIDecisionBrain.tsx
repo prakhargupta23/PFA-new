@@ -108,7 +108,7 @@ export default function AIDecisionBrain() {
                 <BoltIcon sx={{ fontSize: 14, color: "#FACC15" }} />
                 <Typography sx={{ fontSize: "12px", color: "white", fontWeight: 700 }}>BRIEFING</Typography>
               </Box>
-              <IconButton
+              {/* <IconButton
                 onClick={() => handleSpeak(summaries?.capex?.content, "briefing")}
                 disabled={(speakingId !== null && speakingId !== "briefing") || (loadingSpeechId !== null && loadingSpeechId !== "briefing")}
                 size="small"
@@ -121,7 +121,7 @@ export default function AIDecisionBrain() {
                 ) : (
                   <VolumeUpIcon sx={{ fontSize: 14, color: (speakingId !== null || loadingSpeechId !== null) ? "#94A3B8" : "#A5B4FC" }} />
                 )}
-              </IconButton>
+              </IconButton> */}
             </Box>
             {/* {loading ? (
               <Box sx={{ px: 1.3, pb: 1.3 }}>
@@ -136,7 +136,7 @@ export default function AIDecisionBrain() {
           </Box>
 
           <Box sx={{ bgcolor: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: 1.2, p: 1.2 }}>
-            <Typography sx={{ fontSize: "11px", color: "#334155", fontWeight: 700, mb: 1 }}>EXECUTIVE INSIGHTS</Typography>
+            {/* <Typography sx={{ fontSize: "11px", color: "#334155", fontWeight: 700, mb: 1 }}>EXECUTIVE INSIGHTS</Typography> */}
             {loading ? (
               [1, 2, 3].map((i) => <Skeleton key={i} variant="rectangular" height={80} sx={{ mb: 1, borderRadius: 1 }} />)
             ) : Object.keys(summaries || {}).length === 0 ? (

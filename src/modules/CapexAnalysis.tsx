@@ -30,6 +30,9 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
   const [unitData, setUnitData] = useState<any[]>([]);
   const [selectedDivision, setSelectedDivision] = useState<string>('All');
 
+  const formatFigure = (fig: string) => fig?.toLowerCase().trim() === "crore" ? " Cr" : fig;
+
+
   // Extract unique divisions (AU) from unitData for the dropdown
   const uniqueDivisions = React.useMemo(() => {
     const dus = unitData
@@ -104,7 +107,7 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
   const handleZonalWhatsappClick = async (row: any) => {
     try {
       const title = `📉 PFA Portal Alert – CAPEX Utilization (Zonal)`;
-      const message = `Utilization in ${row.planheadname} is below the internal target.\nKindly prepare an action plan to improve CAPEX utilization under ${row.planheadname} and ensure progress towards the target.\n\nDetails:\nPH No: ${row.planheadno || '-'}\nRBG Total: ${Number(row.rgbtotal || 0).toFixed(2)}\nActual Upto Month: ${Number(row.actualforthemonthlastyeartotal || 0).toFixed(2)}\nUtilization: ${Number(row.actualuptothemonthtotal || 0).toFixed(2)}%`;
+      const message = `Utilization in ${row.planheadname} is below the internal target.\nKindly prepare an action plan to improve CAPEX utilization under ${row.planheadname} and ensure progress towards the target.\n\nDetails:\nPH No: ${row.planheadno || '-'}\nRBG Total: ${Number(row.rgbtotal || 0).toFixed(2)}${formatFigure(row.figure || '')}\nActual Upto Month: ${Number(row.actualuptothemonthtotal || 0).toFixed(2)}${formatFigure(row.figure || '')}\nUtilization: ${Number(row.utilizationoftotal || 0).toFixed(2)}%`;
       await callToAction(["Dy. FA&CAO/B&B"], title, message);
       alert(`Task created successfully for ${row.planheadname}!`);
     } catch (error) {
@@ -115,7 +118,7 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
   const handleUnitWhatsappClick = async (row: any) => {
     try {
       const title = `📉 PFA Portal Alert – CAPEX Utilization (Unit)`;
-      const message = `Utilization in ${row.planheadname} is below the internal target.\nPlease prepare an action plan to increase CAPEX utilization under ${row.planheadname} and improve expenditure progress.\n\nDetails:\nUnit: ${row.au || 'Zonal Total'}\nGrant (RG): ${row.rglastyear}\nActual For Month: ${row.actualforthemonth}\n% Utilization: ${Number(row.percentageutilization).toFixed(2)}%`;
+      const message = `Utilization in ${row.planheadname} is below the internal target.\nPlease prepare an action plan to increase CAPEX utilization under ${row.planheadname} and improve expenditure progress.\n\nDetails:\nUnit: ${row.au || 'Zonal Total'}\nGrant (RG): ${Number(row.rglastyear || 0).toFixed(2)}${formatFigure(row.figure || '')}\nActual For Month: ${Number(row.actualforthemonth || 0).toFixed(2)}${formatFigure(row.figure || '')}\n% Utilization: ${Number(row.percentageutilization).toFixed(2)}%`;
       await callToAction(["Sr. DFM (Unit)"], title, message);
       alert(`Task created successfully for ${row.planheadname}!`);
     } catch (error) {
@@ -198,8 +201,8 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
                   <TableCell sx={{ fontSize: '11px', fontWeight: (row.planheadname === 'Total' || row.planheadname === 'TOTAL' || row.planheadname === 'Grand Total') ? 700 : 600 }}>
                     {row.planheadname}
                   </TableCell>
-                  <TableCell sx={{ fontSize: '11px' }}>{`${Number(row.rgbtotal || 0).toFixed(2)}${row.figure}`}</TableCell>
-                  <TableCell sx={{ fontSize: '11px' }}>{`${Number(row.actualuptothemonthtotal || 0).toFixed(2)}${row.figure}`}</TableCell>
+                  <TableCell sx={{ fontSize: '11px' }}>{`${Number(row.rgbtotal || 0).toFixed(2)}${formatFigure(row.figure || '')}`}</TableCell>
+                  <TableCell sx={{ fontSize: '11px' }}>{`${Number(row.actualuptothemonthtotal || 0).toFixed(2)}${formatFigure(row.figure || '')}`}</TableCell>
                   <TableCell sx={{ fontSize: '11px' }}>
                     <Chip
                       label={`${Number(row.utilizationoftotal || 0).toFixed(2)}%`}
@@ -248,9 +251,9 @@ export default function CapexAnalysis({ month, year }: { month: number; year: nu
                   {/* <TableCell sx={{ fontSize: '11px' }}>{row.index}</TableCell> */}
                   <TableCell sx={{ fontSize: '11px' }}>{row.au || 'Zonal Total'}</TableCell>
                   <TableCell sx={{ fontSize: '11px', fontWeight: 600 }}>{row.planheadname}</TableCell>
-                  <TableCell sx={{ fontSize: '11px' }}>{row.rglastyear}</TableCell>
-                  <TableCell sx={{ fontSize: '11px' }}>{row.actualforthemonth}</TableCell>
-                  <TableCell sx={{ fontSize: '11px' }}>{row.actualtotheendoflastyear}</TableCell>
+                  <TableCell sx={{ fontSize: '11px' }}>{`${Number(row.rglastyear || 0).toFixed(2)}${formatFigure(row.figure || '')}`}</TableCell>
+                  <TableCell sx={{ fontSize: '11px' }}>{`${Number(row.actualforthemonth || 0).toFixed(2)}${formatFigure(row.figure || '')}`}</TableCell>
+                  <TableCell sx={{ fontSize: '11px' }}>{`${Number(row.actualtotheendoflastyear || 0).toFixed(2)}${formatFigure(row.figure || '')}`}</TableCell>
                   <TableCell sx={{ fontSize: '11px' }}>
                     <Chip
                       label={`${Number(row.percentageutilization).toFixed(2)}%`}
