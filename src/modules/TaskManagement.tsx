@@ -34,7 +34,7 @@ const PHONE_DESIGNATION_MAP: Record<string, string> = {
     "9001195128": "FA&CAO(G)",
     "9001195111": "Dy.CAO(G)",
     "7737384957": "Dy.FACAO(W&S)",
-    "9001195105": "Dy.FA&CAO/B&B,GST,",
+    "9001195105": "Dy.FA&CAO/B&B,GST",
     "9001195125": "Dy.FA&CAO/Fin",
     "9001195142": "Dy.FA&CAO(C)I",
     "9001195135": "Dy.FA&CAO(C)",
@@ -43,12 +43,14 @@ const PHONE_DESIGNATION_MAP: Record<string, string> = {
     "9001196100": "Sr.DFM/AII",
     "9001197100": "Sr.DFM/BKN",
     "9001196104": "Dy.CAO/TA",
-    "9971776764": "Dy.FA&CAO(W&S)"
+    "7800752003": "Developer(F&A)",
+    "9971776764": "Developer(W&S)",
+    "120363423746623808": "PFA(saar test group)",
+    "120363407012014309": "PFA(whatsapp group)",
+    "120363422003276029": "NWR(whatsapp group)"
 };
 
 const PHONE_NAME_MAP: Record<string, string> = {
-    // "7737384957": "Adarsh",
-    "9": "Kush Beejal",
     "9958709191": "Kush Beejal",
     "7759966591": "Manish",
     "7800752003": "Prakhar",
@@ -70,7 +72,10 @@ const PHONE_NAME_MAP: Record<string, string> = {
     "9001196100": "Ashok Kr. Meena",
     "9001197100": "Sahil Garg",
     "9001196104": "Pradeep Sharma",
-    "9001196581": "Mangliya Meena"
+    "9001196581": "Mangliya Meena",
+    "120363423746623808": "PFA(saar test group)",
+    "120363407012014309": "PFA(whatsapp group)",
+    "120363422003276029": "NWR(whatsapp group)"
 };
 
 const formatPhone = (raw: string | null | undefined): string => {
@@ -113,7 +118,8 @@ const getDivision = (phone: string | null | undefined): string => {
         "9001195100", "9001195101", "9001195104", "9001195103", "9001195115",
         "9001195128", "9001195111", "9001195106", "9001195105", "9001195125",
         "9001195142", "9001195135", "9001196104", "9001196581", "9958709191",
-        "9958709191", "7800752003", "9971776764",
+        "9958709191", "7800752003", "9971776764", "120363423746623808", "120363407012014309",
+        "120363422003276029"
     ].includes(p)) {
         return "HQ";
     }
