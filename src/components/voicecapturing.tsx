@@ -24,7 +24,7 @@ const VoiceRecorder: React.FC = () => {
             setState("loading");
             return;
         }
-        
+
         // If playing or paused, the main button acts as a play/pause toggle
         if (state === "playing") {
             audioRef.current?.pause();
@@ -57,7 +57,7 @@ const VoiceRecorder: React.FC = () => {
                 reader.onloadend = async () => {
                     const base64cleanedAudio = (reader.result as string).split(",")[1];
                     try {
-                        const response = await fetch("https://nwrsarvam-azd2h8dvb2dsb7d2.centralindia-01.azurewebsites.net/transcribe", {
+                        const response = await fetch("http://127.0.0.1:5000/transcribe", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
@@ -272,18 +272,18 @@ const VoiceRecorder: React.FC = () => {
                                 <rect x="6" y="6" width="12" height="12" rx="2.5" fill="white" />
                             </svg>
                         )}
-                        
+
                         {/* Overlay Pause icon when playing */}
                         {state === "playing" && (
-                             <div style={{ position: "absolute", bottom: 10, right: 10, opacity: 0.8 }}>
+                            <div style={{ position: "absolute", bottom: 10, right: 10, opacity: 0.8 }}>
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                     <rect x="6" y="4" width="4" height="16" fill="white" />
                                     <rect x="14" y="4" width="4" height="16" fill="white" />
                                 </svg>
-                             </div>
+                            </div>
                         )}
                     </button>
-                    
+
                     {/* Extra controls (Replay & Stop) */}
                     {(state === "playing" || state === "paused") && (
                         <>
