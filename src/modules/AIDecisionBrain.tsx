@@ -42,7 +42,7 @@ export default function AIDecisionBrain() {
 
     try {
       setLoadingSpeechId(id);
-      const response = await fetch("https://nwrsarvam-azd2h8dvb2dsb7d2.centralindia-01.azurewebsites.net/text-to-speech", {
+      const response = await fetch("sarvam-c9c0bxf9cgdwdbaf.centralindia-01.azurewebsites.net/text-to-speech", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
